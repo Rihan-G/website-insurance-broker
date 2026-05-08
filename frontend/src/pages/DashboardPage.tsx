@@ -9,6 +9,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import type { DashboardStats, PipelineItem } from "../types";
+import { useCurrency } from "../context/CurrencyContext";
 
 const mockStats: DashboardStats = {
   totalClients: 347,
@@ -78,6 +79,7 @@ function StatCard({
 }
 
 export function DashboardPage() {
+  const { format } = useCurrency();
   return (
     <div className="space-y-8">
       <div className="flex items-start justify-between">
@@ -114,7 +116,7 @@ export function DashboardPage() {
         />
         <StatCard
           title="Monthly Revenue"
-          value={`MUR ${(mockStats.monthlyRevenue / 1000).toFixed(0)}K`}
+          value={format(mockStats.monthlyRevenue)}
           change={mockStats.revenueChange}
           icon={DollarSign}
           iconBg="bg-primary-50 text-primary-600"

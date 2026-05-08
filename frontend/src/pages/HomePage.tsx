@@ -28,6 +28,11 @@ import {
 } from "lucide-react";
 import { useInView } from "../hooks/useInView";
 import { useCounter } from "../hooks/useCounter";
+import { useTypingEffect } from "../hooks/useTypingEffect";
+import { useCurrency } from "../context/CurrencyContext";
+import { CurrencySwitcher } from "../components/CurrencySwitcher";
+import { ScrollProgress } from "../components/ScrollProgress";
+import { BackToTop } from "../components/BackToTop";
 
 function AnimatedSection({
   children,
@@ -108,15 +113,18 @@ const certifications = [
 function QuoteCalculator() {
   const [policyType, setPolicyType] = useState("motor");
   const [coverage, setCoverage] = useState("500000");
+  const { format } = useCurrency();
 
-  const premiumEstimate: Record<string, Record<string, string>> = {
-    motor: { "250000": "₨ 3,200", "500000": "₨ 5,400", "1000000": "₨ 8,700" },
-    home: { "250000": "₨ 2,100", "500000": "₨ 3,800", "1000000": "₨ 6,500" },
-    life: { "250000": "₨ 1,800", "500000": "₨ 3,200", "1000000": "₨ 5,900" },
-    health: { "250000": "₨ 2,800", "500000": "₨ 4,600", "1000000": "₨ 7,200" },
+  const premiumMUR: Record<string, Record<string, number>> = {
+    motor: { "250000": 3200, "500000": 5400, "1000000": 8700 },
+    home: { "250000": 2100, "500000": 3800, "1000000": 6500 },
+    life: { "250000": 1800, "500000": 3200, "1000000": 5900 },
+    health: { "250000": 2800, "500000": 4600, "1000000": 7200 },
   };
 
-  const estimate = premiumEstimate[policyType]?.[coverage] ?? "₨ 5,400";
+  const coverageOptions = [250000, 500000, 1000000];
+  const estimateValue = premiumMUR[policyType]?.[coverage] ?? 5400;
+  const estimate = format(estimateValue);
 
   return (
     <div className="rounded-2xl border border-border bg-surface p-8 shadow-lg">
@@ -144,16 +152,16 @@ function QuoteCalculator() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-surface-foreground mb-1.5">Coverage Amount (MUR)</label>
+          <label className="block text-sm font-medium text-surface-foreground mb-1.5">Coverage Amount</label>
           <div className="relative">
             <select
               value={coverage}
               onChange={(e) => setCoverage(e.target.value)}
               className="w-full appearance-none rounded-lg border border-border bg-surface px-4 py-3 text-sm text-surface-foreground focus:border-primary-500 focus:ring-2 focus:ring-ring/20 focus:outline-none cursor-pointer transition-colors duration-200"
             >
-              <option value="250000">₨ 250,000</option>
-              <option value="500000">₨ 500,000</option>
-              <option value="1000000">₨ 1,000,000</option>
+              {coverageOptions.map((val) => (
+                <option key={val} value={String(val)}>{format(val)}</option>
+              ))}
             </select>
             <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
           </div>
@@ -185,9 +193,18 @@ function QuoteCalculator() {
 
 export function HomePage() {
   const heroRef = useInView();
+  const typedWord = useTypingEffect(
+    ["Partner", "Advisor", "Shield", "Solution"],
+    90,
+    60,
+    2500
+  );
 
   return (
     <div className="min-h-screen bg-primary-50">
+      <ScrollProgress />
+      <BackToTop />
+
       {/* Sticky Navigation */}
       <nav className="fixed top-0 z-50 w-full border-b border-primary-100 bg-white/80 backdrop-blur-lg">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
@@ -195,7 +212,7 @@ export function HomePage() {
             <ShieldCheck className="h-7 w-7 text-accent-500" />
             <span className="text-lg font-bold text-primary-900 tracking-tight">SecureBroker</span>
           </div>
-          <div className="hidden items-center gap-8 text-sm font-medium text-primary-700 md:flex">
+          <div className="hidden items-center gap-8 text-sm font-medium text-primary-700 lg:flex">
             <a href="#services" className="hover:text-primary-900 cursor-pointer transition-colors duration-200">Services</a>
             <a href="#products" className="hover:text-primary-900 cursor-pointer transition-colors duration-200">Products</a>
             <a href="#quote" className="hover:text-primary-900 cursor-pointer transition-colors duration-200">Get Quote</a>
@@ -203,6 +220,7 @@ export function HomePage() {
             <a href="#contact" className="hover:text-primary-900 cursor-pointer transition-colors duration-200">Contact</a>
           </div>
           <div className="flex items-center gap-3">
+            <CurrencySwitcher />
             <Link to="/login" className="hidden rounded-lg px-4 py-2 text-sm font-semibold text-primary-700 hover:bg-primary-50 cursor-pointer transition-colors duration-200 sm:block">
               Sign In
             </Link>
@@ -229,7 +247,8 @@ export function HomePage() {
             </div>
             <h1 className="text-4xl font-bold leading-tight text-white sm:text-5xl lg:text-6xl">
               Your Trusted Insurance{" "}
-              <span className="text-accent-400">Partner</span>
+              <span className="text-accent-400">{typedWord}</span>
+              <span className="animate-pulse text-accent-400">|</span>
             </h1>
             <p className="mt-6 max-w-2xl text-lg text-primary-200 leading-relaxed">
               Comprehensive insurance solutions for individuals and businesses across Mauritius.
