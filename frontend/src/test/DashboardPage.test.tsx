@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
+import { CurrencyProvider } from "../context/CurrencyContext";
 import { DashboardPage } from "../pages/DashboardPage";
 
 vi.mock("../context/AuthContext", () => ({
@@ -17,14 +18,18 @@ vi.mock("../context/AuthContext", () => ({
   }),
 }));
 
+function renderWithCurrency(ui: React.ReactElement) {
+  return render(<CurrencyProvider>{ui}</CurrencyProvider>);
+}
+
 describe("DashboardPage", () => {
   it("renders dashboard heading", () => {
-    render(<DashboardPage />);
+    renderWithCurrency(<DashboardPage />);
     expect(screen.getByText("Dashboard")).toBeInTheDocument();
   });
 
   it("displays stat cards", () => {
-    render(<DashboardPage />);
+    renderWithCurrency(<DashboardPage />);
     expect(screen.getByText("Total Clients")).toBeInTheDocument();
     expect(screen.getByText("Active Policies")).toBeInTheDocument();
     expect(screen.getByText("Pending Documents")).toBeInTheDocument();
@@ -32,14 +37,14 @@ describe("DashboardPage", () => {
   });
 
   it("shows document pipeline items", () => {
-    render(<DashboardPage />);
+    renderWithCurrency(<DashboardPage />);
     expect(screen.getByText("Marie Dupont")).toBeInTheDocument();
     expect(screen.getByText("Jean-Pierre Ramgoolam")).toBeInTheDocument();
     expect(screen.getByText("Document Pipeline")).toBeInTheDocument();
   });
 
   it("shows revenue trend section", () => {
-    render(<DashboardPage />);
+    renderWithCurrency(<DashboardPage />);
     expect(screen.getByText("Revenue Trend")).toBeInTheDocument();
     expect(screen.getByText("+12.5% Growth")).toBeInTheDocument();
   });

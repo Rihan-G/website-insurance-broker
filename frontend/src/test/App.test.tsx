@@ -2,6 +2,7 @@ import { render, screen, act } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { describe, it, expect, vi } from "vitest";
 import { ThemeProvider } from "../context/ThemeContext";
+import { CurrencyProvider } from "../context/CurrencyContext";
 
 vi.mock("../context/AuthContext", () => ({
   useAuth: () => ({
@@ -25,7 +26,9 @@ function renderApp(path: string) {
   return render(
     <MemoryRouter initialEntries={[path]}>
       <ThemeProvider>
-        <App />
+        <CurrencyProvider>
+          <App />
+        </CurrencyProvider>
       </ThemeProvider>
     </MemoryRouter>,
   );

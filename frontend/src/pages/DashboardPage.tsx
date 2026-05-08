@@ -15,6 +15,7 @@ import { useAuth } from "../context/AuthContext";
 import { DOCUMENT_STATUS_BADGE_CLASS, labelFromMime } from "../lib/documentsDisplay";
 import { supabase } from "../lib/supabase";
 import type { DashboardStats, PipelineItem } from "../types";
+import { useCurrency } from "../context/CurrencyContext";
 
 const demoStats: DashboardStats = {
   totalClients: 347,
@@ -97,6 +98,7 @@ function StatCard({
 }
 
 export function DashboardPage() {
+  const { format } = useCurrency();
   const { user, profile, session, demoAuthActive } = useAuth();
   const [stats, setStats] = useState<DashboardStats | null>(demoAuthActive ? demoStats : null);
   const [pipeline, setPipeline] = useState<PipelineItem[]>(demoAuthActive ? demoPipeline : []);
@@ -314,7 +316,7 @@ export function DashboardPage() {
             />
             <StatCard
               title="Paid This Month"
-              value={`MUR ${viewStats.monthlyRevenue >= 1000 ? `${(viewStats.monthlyRevenue / 1000).toFixed(1)}K` : viewStats.monthlyRevenue.toLocaleString(undefined, { maximumFractionDigits: 0 })}`}
+              value={format(viewStats.monthlyRevenue)}
               icon={DollarSign}
               iconBg="bg-primary-50 text-primary-600"
               accent
@@ -350,7 +352,7 @@ export function DashboardPage() {
             />
             <StatCard
               title="Monthly Revenue"
-              value={`MUR ${viewStats.monthlyRevenue >= 1000 ? `${(viewStats.monthlyRevenue / 1000).toFixed(1)}K` : viewStats.monthlyRevenue.toLocaleString(undefined, { maximumFractionDigits: 0 })}`}
+              value={format(viewStats.monthlyRevenue)}
               change={demoAuthActive ? demoStats.revenueChange : undefined}
               icon={DollarSign}
               iconBg="bg-primary-50 text-primary-600"
