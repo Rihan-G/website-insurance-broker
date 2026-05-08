@@ -25,8 +25,8 @@ describe("App", () => {
         <App />
       </MemoryRouter>
     );
-    expect(screen.getByText(/Insurance Management/)).toBeInTheDocument();
-    expect(screen.getByText("Get Started")).toBeInTheDocument();
+    expect(screen.getByText(/Your Trusted Insurance/)).toBeInTheDocument();
+    expect(screen.getAllByText(/Get a Quote/).length).toBeGreaterThanOrEqual(1);
   });
 
   it("renders login page at /login", () => {
