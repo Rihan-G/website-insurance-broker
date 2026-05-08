@@ -3,6 +3,7 @@ import { db } from "./db";
 
 export interface UploadResult {
   path: string;
+  /** Unused for private buckets; use `createDocumentSignedUrl` from `documentStorage.ts`. */
   url: string;
   size: number;
   mimeType: string;
@@ -39,13 +40,10 @@ export async function uploadDocument(
 
   if (error) throw new Error(error.message);
 
-  onProgress?.(90);
-
-  const { data: urlData } = supabase.storage.from("documents").getPublicUrl(path);
-
   onProgress?.(100);
 
-  return { path, url: urlData.publicUrl, size: file.size, mimeType: file.type };
+  // Bucket is private; use `documentStorage.ts` signed URLs when exposing files to users.
+  return { path, url: "", size: file.size, mimeType: file.type };
 }
 
 export async function saveDocumentRecord(

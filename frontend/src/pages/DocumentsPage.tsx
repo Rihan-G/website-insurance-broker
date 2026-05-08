@@ -7,11 +7,14 @@ import {
   formatBytes,
   labelFromMime,
 } from "../lib/documentsDisplay";
+import { openDocumentInNewTab, triggerDocumentDownload } from "../lib/documentStorage";
 import { exportToCsv } from "../lib/exportService";
 import { supabase } from "../lib/supabase";
 
 interface DocumentRow {
   id: string;
+  /** Storage object path inside bucket `documents` (undefined in demo/mock rows). */
+  filePath?: string | null;
   fileName: string;
   client: string;
   type: string;
@@ -36,6 +39,7 @@ export function DocumentsPage() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [liveRows, setLiveRows] = useState<DocumentRow[]>([]);
   const [loading, setLoading] = useState(false);
+  const [storageActionId, setStorageActionId] = useState<string | null>(null);
 
   useEffect(() => {
     if (demoAuthActive) {
@@ -51,6 +55,7 @@ export function DocumentsPage() {
         .select(
           `
           id,
+          file_path,
           file_name,
           file_size,
           mime_type,
@@ -74,6 +79,7 @@ export function DocumentsPage() {
 
       type Row = {
         id: string;
+        file_path: string;
         file_name: string;
         file_size: number;
         mime_type: string;
@@ -86,6 +92,7 @@ export function DocumentsPage() {
       setLiveRows(
         ((data ?? []) as Row[]).map((r) => ({
           id: r.id,
+          filePath: r.file_path,
           fileName: r.file_name,
           client: profile?.role === "client" ? "You" : (r.client?.full_name ?? "Client"),
           type: labelFromMime(r.mime_type),
@@ -125,6 +132,7 @@ export function DocumentsPage() {
     exportToCsv(
       filtered.map((d) => ({
         File: d.fileName,
+        "Storage Path": d.filePath ?? "",
         Client: d.client,
         Type: d.type,
         Status: d.status,
@@ -136,6 +144,42 @@ export function DocumentsPage() {
     );
     toast.success("CSV downloaded.");
   }, [filtered]);
+
+  const handleView = useCallback(
+    async (doc: DocumentRow) => {
+      if (demoAuthActive || !doc.filePath) {
+        toast.error(demoAuthActive ? "Demo mode — no Storage file." : "This row has no file path.");
+        return;
+      }
+      setStorageActionId(doc.id);
+      try {
+        await openDocumentInNewTab(doc.filePath);
+      } catch (e) {
+        toast.error(e instanceof Error ? e.message : "Could not open file.");
+      } finally {
+        setStorageActionId(null);
+      }
+    },
+    [demoAuthActive],
+  );
+
+  const handleDownloadRow = useCallback(
+    async (doc: DocumentRow) => {
+      if (demoAuthActive || !doc.filePath) {
+        toast.error(demoAuthActive ? "Demo mode — no Storage file." : "This row has no file path.");
+        return;
+      }
+      setStorageActionId(doc.id);
+      try {
+        await triggerDocumentDownload(doc.filePath, doc.fileName);
+      } catch (e) {
+        toast.error(e instanceof Error ? e.message : "Could not download file.");
+      } finally {
+        setStorageActionId(null);
+      }
+    },
+    [demoAuthActive],
+  );
 
   return (
     <div className="space-y-6">
@@ -251,14 +295,18 @@ export function DocumentsPage() {
                       <button
                         type="button"
                         aria-label={`View ${doc.fileName}`}
-                        className="rounded-lg p-2 text-muted-foreground hover:bg-muted hover:text-surface-foreground cursor-pointer transition-colors duration-200"
+                        disabled={demoAuthActive || !doc.filePath || storageActionId === doc.id}
+                        onClick={() => void handleView(doc)}
+                        className="rounded-lg p-2 text-muted-foreground hover:bg-muted hover:text-surface-foreground cursor-pointer transition-colors duration-200 disabled:pointer-events-none disabled:opacity-40"
                       >
                         <Eye className="h-4 w-4" />
                       </button>
                       <button
                         type="button"
                         aria-label={`Download ${doc.fileName}`}
-                        className="rounded-lg p-2 text-muted-foreground hover:bg-muted hover:text-surface-foreground cursor-pointer transition-colors duration-200"
+                        disabled={demoAuthActive || !doc.filePath || storageActionId === doc.id}
+                        onClick={() => void handleDownloadRow(doc)}
+                        className="rounded-lg p-2 text-muted-foreground hover:bg-muted hover:text-surface-foreground cursor-pointer transition-colors duration-200 disabled:pointer-events-none disabled:opacity-40"
                       >
                         <Download className="h-4 w-4" />
                       </button>
