@@ -1,0 +1,17 @@
+{
+  "name": "insurance-broker-app",
+  "private": true,
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild"]
+  },
+  "scripts": {
+    "dev": "pnpm --filter frontend dev",
+    "build": "pnpm --filter frontend build",
+    "lint": "pnpm --filter frontend lint",
+    "test": "pnpm --filter frontend test",
+    "preview": "pnpm --filter frontend preview"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
