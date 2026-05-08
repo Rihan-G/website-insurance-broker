@@ -2,6 +2,18 @@
 
 A modern insurance broker management platform built with React, TypeScript, and Supabase.
 
+## Demo
+
+https://github.com/user-attachments/assets/dashboard_walkthrough.mp4
+
+| Login | Dashboard | Documents |
+|:---:|:---:|:---:|
+| ![Login](docs/demo/login_page.webp) | ![Dashboard](docs/demo/dashboard.webp) | ![Documents](docs/demo/documents_page.webp) |
+
+| Upload | Clients | Settings |
+|:---:|:---:|:---:|
+| ![Upload](docs/demo/upload_page.webp) | ![Clients](docs/demo/clients_page.webp) | ![Settings](docs/demo/settings_page.webp) |
+
 ## Tech Stack
 
 - **Frontend**: React 19 + TypeScript + Vite + Tailwind CSS v4
