@@ -25,7 +25,7 @@ describe("App", () => {
         <App />
       </MemoryRouter>
     );
-    expect(screen.getByText("Welcome back")).toBeInTheDocument();
+    expect(screen.getByText("Secure Sign In")).toBeInTheDocument();
   });
 
   it("renders login page at /login", () => {

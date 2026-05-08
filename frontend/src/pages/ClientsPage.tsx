@@ -22,9 +22,9 @@ const mockClients: Client[] = [
 ];
 
 const statusStyles: Record<string, string> = {
-  active: "bg-green-100 text-green-700",
-  inactive: "bg-gray-100 text-gray-700",
-  pending: "bg-yellow-100 text-yellow-700",
+  active: "bg-accent-50 text-accent-600",
+  inactive: "bg-muted text-muted-foreground",
+  pending: "bg-warning-50 text-warning-600",
 };
 
 export function ClientsPage() {
@@ -40,36 +40,36 @@ export function ClientsPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Clients</h2>
-          <p className="text-gray-500">Manage your insurance clients</p>
+          <h2 className="text-2xl font-bold text-surface-foreground">Clients</h2>
+          <p className="text-muted-foreground">Manage your insurance clients</p>
         </div>
-        <button className="flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-primary-700 transition-colors">
+        <button className="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-700 cursor-pointer transition-colors duration-200">
           <UserPlus className="h-4 w-4" />
           Add Client
         </button>
       </div>
 
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <input
           type="text"
           placeholder="Search clients..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full rounded-lg border border-gray-300 py-2.5 pl-10 pr-4 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none"
+          className="w-full rounded-lg border border-border bg-surface py-2.5 pl-10 pr-4 text-sm text-surface-foreground placeholder-muted-foreground focus:border-primary-500 focus:ring-2 focus:ring-ring/20 focus:outline-none transition-colors duration-200"
         />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {filtered.map((client) => (
-          <div key={client.id} className="rounded-xl border bg-white p-6 shadow-sm hover:shadow-md transition-shadow">
+          <div key={client.id} className="rounded-xl border border-border bg-surface p-6 hover:shadow-md hover:border-primary-200 cursor-pointer transition-all duration-200">
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 text-primary-700 font-semibold">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 text-primary-700 text-sm font-bold">
                   {client.name.split(" ").map((n) => n[0]).join("")}
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-900">{client.name}</p>
+                  <p className="font-semibold text-surface-foreground">{client.name}</p>
                   <span className={`mt-1 inline-block rounded-full px-2 py-0.5 text-xs font-medium capitalize ${statusStyles[client.status]}`}>
                     {client.status}
                   </span>
@@ -77,25 +77,25 @@ export function ClientsPage() {
               </div>
             </div>
 
-            <div className="mt-4 space-y-2 text-sm text-gray-600">
+            <div className="mt-4 space-y-2 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
-                <Mail className="h-4 w-4 text-gray-400" />
+                <Mail className="h-4 w-4 shrink-0" />
                 <span className="truncate">{client.email}</span>
               </div>
               <div className="flex items-center gap-2">
-                <Phone className="h-4 w-4 text-gray-400" />
+                <Phone className="h-4 w-4 shrink-0" />
                 <span>{client.phone}</span>
               </div>
             </div>
 
-            <div className="mt-4 flex items-center gap-4 border-t pt-4 text-sm">
-              <div className="flex items-center gap-1.5 text-gray-500">
+            <div className="mt-4 flex items-center gap-4 border-t border-border pt-4 text-sm">
+              <div className="flex items-center gap-1.5 text-muted-foreground">
                 <FileText className="h-4 w-4" />
-                <span>{client.policies} policies</span>
+                <span className="font-medium">{client.policies} policies</span>
               </div>
-              <div className="flex items-center gap-1.5 text-gray-500">
+              <div className="flex items-center gap-1.5 text-muted-foreground">
                 <FileText className="h-4 w-4" />
-                <span>{client.documents} docs</span>
+                <span className="font-medium">{client.documents} docs</span>
               </div>
             </div>
           </div>
@@ -103,7 +103,7 @@ export function ClientsPage() {
       </div>
 
       {filtered.length === 0 && (
-        <div className="rounded-xl border bg-white py-12 text-center text-gray-500 shadow-sm">
+        <div className="rounded-xl border border-border bg-surface py-12 text-center text-muted-foreground">
           No clients found matching &quot;{searchTerm}&quot;.
         </div>
       )}

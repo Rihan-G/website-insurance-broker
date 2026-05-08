@@ -22,11 +22,11 @@ const mockDocuments: DocumentRow[] = [
 ];
 
 const statusStyles: Record<string, string> = {
-  uploaded: "bg-blue-100 text-blue-700",
-  processing: "bg-yellow-100 text-yellow-700",
+  uploaded: "bg-primary-100 text-primary-700",
+  processing: "bg-warning-50 text-warning-600",
   reviewed: "bg-purple-100 text-purple-700",
-  approved: "bg-green-100 text-green-700",
-  rejected: "bg-red-100 text-red-700",
+  approved: "bg-accent-50 text-accent-600",
+  rejected: "bg-danger-50 text-danger-600",
 };
 
 export function DocumentsPage() {
@@ -45,10 +45,10 @@ export function DocumentsPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Documents</h2>
-          <p className="text-gray-500">Manage client documents and OCR results</p>
+          <h2 className="text-2xl font-bold text-surface-foreground">Documents</h2>
+          <p className="text-muted-foreground">Manage client documents and OCR results</p>
         </div>
-        <button className="flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-primary-700 transition-colors">
+        <button className="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-700 cursor-pointer transition-colors duration-200">
           <Download className="h-4 w-4" />
           Export CSV
         </button>
@@ -56,21 +56,21 @@ export function DocumentsPage() {
 
       <div className="flex flex-col gap-3 sm:flex-row">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <input
             type="text"
             placeholder="Search documents or clients..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 py-2.5 pl-10 pr-4 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none"
+            className="w-full rounded-lg border border-border bg-surface py-2.5 pl-10 pr-4 text-sm text-surface-foreground placeholder-muted-foreground focus:border-primary-500 focus:ring-2 focus:ring-ring/20 focus:outline-none transition-colors duration-200"
           />
         </div>
         <div className="relative">
-          <Filter className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+          <Filter className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="appearance-none rounded-lg border border-gray-300 py-2.5 pl-10 pr-10 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none"
+            className="appearance-none rounded-lg border border-border bg-surface py-2.5 pl-10 pr-10 text-sm text-surface-foreground focus:border-primary-500 focus:ring-2 focus:ring-ring/20 focus:outline-none cursor-pointer transition-colors duration-200"
           >
             <option value="all">All Status</option>
             <option value="uploaded">Uploaded</option>
@@ -79,38 +79,40 @@ export function DocumentsPage() {
             <option value="approved">Approved</option>
             <option value="rejected">Rejected</option>
           </select>
-          <ChevronDown className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 pointer-events-none" />
+          <ChevronDown className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-xl border bg-white shadow-sm">
+      <div className="overflow-hidden rounded-xl border border-border bg-surface">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b bg-gray-50 text-left">
-                <th className="px-6 py-3 font-medium text-gray-500">Document</th>
-                <th className="px-6 py-3 font-medium text-gray-500">Client</th>
-                <th className="px-6 py-3 font-medium text-gray-500">Type</th>
-                <th className="px-6 py-3 font-medium text-gray-500">Status</th>
-                <th className="px-6 py-3 font-medium text-gray-500">OCR Score</th>
-                <th className="px-6 py-3 font-medium text-gray-500">Date</th>
-                <th className="px-6 py-3 font-medium text-gray-500">Actions</th>
+              <tr className="border-b border-border bg-muted text-left">
+                <th className="px-6 py-3 font-semibold text-surface-foreground">Document</th>
+                <th className="px-6 py-3 font-semibold text-surface-foreground">Client</th>
+                <th className="px-6 py-3 font-semibold text-surface-foreground">Type</th>
+                <th className="px-6 py-3 font-semibold text-surface-foreground">Status</th>
+                <th className="px-6 py-3 font-semibold text-surface-foreground">OCR Score</th>
+                <th className="px-6 py-3 font-semibold text-surface-foreground">Date</th>
+                <th className="px-6 py-3 font-semibold text-surface-foreground">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y">
+            <tbody className="divide-y divide-border">
               {filtered.map((doc) => (
-                <tr key={doc.id} className="hover:bg-gray-50 transition-colors">
+                <tr key={doc.id} className="hover:bg-primary-50/50 transition-colors duration-150">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <FileText className="h-5 w-5 text-gray-400" />
+                      <div className="rounded-lg bg-primary-50 p-2">
+                        <FileText className="h-4 w-4 text-primary-600" />
+                      </div>
                       <div>
-                        <p className="font-medium text-gray-900">{doc.fileName}</p>
-                        <p className="text-xs text-gray-400">{doc.size}</p>
+                        <p className="font-medium text-surface-foreground">{doc.fileName}</p>
+                        <p className="text-xs text-muted-foreground">{doc.size}</p>
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-gray-700">{doc.client}</td>
-                  <td className="px-6 py-4 text-gray-700">{doc.type}</td>
+                  <td className="px-6 py-4 text-surface-foreground">{doc.client}</td>
+                  <td className="px-6 py-4 text-muted-foreground">{doc.type}</td>
                   <td className="px-6 py-4">
                     <span className={`rounded-full px-2.5 py-1 text-xs font-medium capitalize ${statusStyles[doc.status]}`}>
                       {doc.status}
@@ -119,27 +121,27 @@ export function DocumentsPage() {
                   <td className="px-6 py-4">
                     {doc.confidence !== null ? (
                       <div className="flex items-center gap-2">
-                        <div className="h-2 w-16 rounded-full bg-gray-100">
+                        <div className="h-2 w-16 rounded-full bg-muted">
                           <div
-                            className={`h-2 rounded-full ${
-                              doc.confidence >= 80 ? "bg-green-500" : doc.confidence >= 60 ? "bg-yellow-500" : "bg-red-500"
+                            className={`h-2 rounded-full transition-all duration-300 ${
+                              doc.confidence >= 80 ? "bg-accent-500" : doc.confidence >= 60 ? "bg-warning-500" : "bg-danger-500"
                             }`}
                             style={{ width: `${doc.confidence}%` }}
                           />
                         </div>
-                        <span className="text-gray-500">{doc.confidence}%</span>
+                        <span className="text-xs font-medium text-muted-foreground">{doc.confidence}%</span>
                       </div>
                     ) : (
-                      <span className="text-gray-400">Pending</span>
+                      <span className="text-xs text-muted-foreground">Pending</span>
                     )}
                   </td>
-                  <td className="px-6 py-4 text-gray-500">{doc.uploadedAt}</td>
+                  <td className="px-6 py-4 text-muted-foreground">{doc.uploadedAt}</td>
                   <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <button className="rounded p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600">
+                    <div className="flex items-center gap-1">
+                      <button className="rounded-lg p-2 text-muted-foreground hover:bg-muted hover:text-surface-foreground cursor-pointer transition-colors duration-200">
                         <Eye className="h-4 w-4" />
                       </button>
-                      <button className="rounded p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600">
+                      <button className="rounded-lg p-2 text-muted-foreground hover:bg-muted hover:text-surface-foreground cursor-pointer transition-colors duration-200">
                         <Download className="h-4 w-4" />
                       </button>
                     </div>
@@ -150,7 +152,7 @@ export function DocumentsPage() {
           </table>
         </div>
         {filtered.length === 0 && (
-          <div className="py-12 text-center text-gray-500">
+          <div className="py-12 text-center text-muted-foreground">
             No documents found matching your criteria.
           </div>
         )}
