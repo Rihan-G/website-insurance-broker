@@ -105,12 +105,19 @@ function buildUser(profile: Profile): User {
   } as User;
 }
 
+function supabaseLooksUnconfigured(): boolean {
+  const key =
+    import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY?.trim() ??
+    import.meta.env.VITE_SUPABASE_ANON_KEY?.trim() ??
+    "";
+  return !key || key.includes("placeholder");
+}
+
 /** Demo login when Supabase env is not wired, or when `VITE_ALLOW_DEMO_LOGIN=true`. */
 export function isDemoAuthEnabled(): boolean {
   if (import.meta.env.VITE_ALLOW_DEMO_LOGIN === "false") return false;
   if (import.meta.env.VITE_ALLOW_DEMO_LOGIN === "true") return true;
-  const key = import.meta.env.VITE_SUPABASE_ANON_KEY ?? "";
-  return import.meta.env.DEV && key.includes("placeholder");
+  return import.meta.env.DEV && supabaseLooksUnconfigured();
 }
 
 export function matchDemoLogin(email: string, password: string): DemoBundle | null {

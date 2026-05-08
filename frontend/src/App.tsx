@@ -63,7 +63,14 @@ export default function App() {
         <Route index element={<DashboardPage />} />
         <Route path="documents" element={<DocumentsPage />} />
         <Route path="upload" element={<UploadPage />} />
-        <Route path="clients" element={<ClientsPage />} />
+        <Route
+          path="clients"
+          element={
+            <RoleGuard allowedRoles={["admin", "broker"]}>
+              <ClientsPage />
+            </RoleGuard>
+          }
+        />
         <Route path="settings" element={<SettingsPage />} />
 
         {/* Phase 2 – Admin & Security */}

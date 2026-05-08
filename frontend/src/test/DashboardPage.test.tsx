@@ -1,6 +1,21 @@
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { DashboardPage } from "../pages/DashboardPage";
+
+vi.mock("../context/AuthContext", () => ({
+  useAuth: () => ({
+    user: { id: "demo-user-id" },
+    profile: null,
+    session: null,
+    loading: false,
+    demoAuthActive: true,
+    signIn: vi.fn(),
+    signUp: vi.fn(),
+    signOut: vi.fn(),
+    isAdmin: false,
+    demoAuthAvailable: true,
+  }),
+}));
 
 describe("DashboardPage", () => {
   it("renders dashboard heading", () => {

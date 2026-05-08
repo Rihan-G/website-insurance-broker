@@ -22,6 +22,8 @@ interface AuthState {
   profile: Profile | null;
   session: Session | null;
   loading: boolean;
+  /** True when using in-browser demo users (no Supabase session). */
+  demoAuthActive: boolean;
   signIn: (email: string, password: string) => Promise<SignInResult>;
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
@@ -165,6 +167,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const isAdmin = profile?.role === "admin";
+  const demoAuthActive = Boolean(user && !session);
 
   return (
     <AuthContext.Provider
@@ -173,6 +176,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         profile,
         session,
         loading,
+        demoAuthActive,
         signIn,
         signUp,
         signOut,

@@ -9,6 +9,7 @@ vi.mock("../context/AuthContext", () => ({
     profile: null,
     session: null,
     loading: false,
+    demoAuthActive: false,
     signIn: vi.fn().mockResolvedValue({ error: null, profile: null }),
     signUp: vi.fn(),
     signOut: vi.fn(),

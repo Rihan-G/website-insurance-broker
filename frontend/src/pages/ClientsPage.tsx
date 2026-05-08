@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Search, UserPlus, Mail, Phone, FileText } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import { supabase } from "../lib/supabase";
 
 interface Client {
   id: string;
@@ -27,13 +29,86 @@ const statusStyles: Record<string, string> = {
   pending: "bg-warning-50 text-warning-600",
 };
 
-export function ClientsPage() {
-  const [searchTerm, setSearchTerm] = useState("");
+function deriveStatus(activePolicies: number, pendingPolicies: number): Client["status"] {
+  if (activePolicies > 0) return "active";
+  if (pendingPolicies > 0) return "pending";
+  return "inactive";
+}
 
-  const filtered = mockClients.filter(
-    (c) =>
-      c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      c.email.toLowerCase().includes(searchTerm.toLowerCase())
+export function ClientsPage() {
+  const { demoAuthActive } = useAuth();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [liveClients, setLiveClients] = useState<Client[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (demoAuthActive) {
+      setLiveClients([]);
+      return;
+    }
+
+    let cancelled = false;
+    async function load() {
+      setLoading(true);
+      const [{ data: profiles, error: pErr }, polRes, docRes] = await Promise.all([
+        supabase.from("profiles").select("id,email,full_name,phone,created_at").eq("role", "client").order("created_at", { ascending: false }),
+        supabase.from("policies").select("client_id,status"),
+        supabase.from("documents").select("client_id"),
+      ]);
+      setLoading(false);
+      if (cancelled || pErr || !profiles) {
+        setLiveClients([]);
+        return;
+      }
+
+      const polByClient = new Map<string, { active: number; pending: number; total: number }>();
+      for (const row of polRes.data ?? []) {
+        const cid = row.client_id;
+        const prev = polByClient.get(cid) ?? { active: 0, pending: 0, total: 0 };
+        prev.total += 1;
+        if (row.status === "active") prev.active += 1;
+        if (row.status === "pending") prev.pending += 1;
+        polByClient.set(cid, prev);
+      }
+
+      const docByClient = new Map<string, number>();
+      for (const row of docRes.data ?? []) {
+        docByClient.set(row.client_id, (docByClient.get(row.client_id) ?? 0) + 1);
+      }
+
+      setLiveClients(
+        profiles.map((p) => {
+          const pc = polByClient.get(p.id) ?? { active: 0, pending: 0, total: 0 };
+          return {
+            id: p.id,
+            name: p.full_name,
+            email: p.email,
+            phone: p.phone ?? "—",
+            policies: pc.total,
+            documents: docByClient.get(p.id) ?? 0,
+            status: deriveStatus(pc.active, pc.pending),
+            joinedAt: p.created_at.slice(0, 10),
+          };
+        }),
+      );
+    }
+
+    void load();
+    return () => {
+      cancelled = true;
+    };
+  }, [demoAuthActive]);
+
+  const rows = demoAuthActive ? mockClients : liveClients;
+
+  const filtered = useMemo(
+    () =>
+      rows.filter(
+        (c) =>
+          c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          c.email.toLowerCase().includes(searchTerm.toLowerCase()),
+      ),
+    [rows, searchTerm],
   );
 
   return (
@@ -41,9 +116,14 @@ export function ClientsPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="text-2xl font-bold text-surface-foreground">Clients</h2>
-          <p className="text-muted-foreground">Manage your insurance clients</p>
+          <p className="text-muted-foreground">
+            {demoAuthActive ? "Demo sample data" : loading ? "Loading from Supabase…" : "Manage your insurance clients"}
+          </p>
         </div>
-        <button className="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-700 cursor-pointer transition-colors duration-200">
+        <button
+          type="button"
+          className="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-700 cursor-pointer transition-colors duration-200"
+        >
           <UserPlus className="h-4 w-4" />
           Add Client
         </button>
@@ -62,15 +142,20 @@ export function ClientsPage() {
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {filtered.map((client) => (
-          <div key={client.id} className="rounded-xl border border-border bg-surface p-6 hover:shadow-md hover:border-primary-200 cursor-pointer transition-all duration-200">
+          <div
+            key={client.id}
+            className="rounded-xl border border-border bg-surface p-6 hover:shadow-md hover:border-primary-200 cursor-pointer transition-all duration-200"
+          >
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 text-primary-700 text-sm font-bold">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 text-primary-700 text-sm font-bold dark:bg-primary-950 dark:text-primary-300">
                   {client.name.split(" ").map((n) => n[0]).join("")}
                 </div>
                 <div>
                   <p className="font-semibold text-surface-foreground">{client.name}</p>
-                  <span className={`mt-1 inline-block rounded-full px-2 py-0.5 text-xs font-medium capitalize ${statusStyles[client.status]}`}>
+                  <span
+                    className={`mt-1 inline-block rounded-full px-2 py-0.5 text-xs font-medium capitalize ${statusStyles[client.status]}`}
+                  >
                     {client.status}
                   </span>
                 </div>
@@ -104,7 +189,7 @@ export function ClientsPage() {
 
       {filtered.length === 0 && (
         <div className="rounded-xl border border-border bg-surface py-12 text-center text-muted-foreground">
-          No clients found matching &quot;{searchTerm}&quot;.
+          {searchTerm ? <>No clients found matching &quot;{searchTerm}&quot;.</> : <>No clients in the database yet.</>}
         </div>
       )}
     </div>
