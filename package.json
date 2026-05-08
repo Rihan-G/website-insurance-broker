@@ -2,7 +2,7 @@
   "name": "insurance-broker-app",
   "private": true,
   "pnpm": {
-    "onlyBuiltDependencies": ["esbuild"]
+    "onlyBuiltDependencies": ["core-js", "esbuild"]
   },
   "scripts": {
     "dev": "pnpm --filter frontend dev",

@@ -1,0 +1,84 @@
+/**
+ * ParticleField — visible floating particles
+ * ui-ux-pro-max-skill #15: Motion-Driven UI
+ *
+ * Per-particle layout lives in a scoped <style> block so divs need no inline
+ * `style` attributes (Microsoft Edge Tools / accessibility linters).
+ */
+import { useId, useMemo } from "react";
+
+const PALETTE = [
+  "rgba(56,189,248,0.9)", // sky-blue
+  "rgba(74,222,128,0.85)", // green
+  "rgba(14,165,233,0.9)", // primary blue
+  "rgba(245,158,11,0.8)", // amber
+  "rgba(167,243,208,0.8)", // soft mint
+  "rgba(255,255,255,0.7)", // white
+  "rgba(56,189,248,0.6)", // light sky
+];
+
+function seededValue(seed: number, min: number, max: number): number {
+  const s = Math.abs(Math.sin(seed * 9301 + 49297) * 233280);
+  return min + (s % 1) * (max - min);
+}
+
+interface ParticleFieldProps {
+  count?: number;
+  variant?: "rise" | "drift";
+  className?: string;
+}
+
+export function ParticleField({ count = 28, variant = "rise", className = "" }: ParticleFieldProps) {
+  const rawId = useId();
+  const scopeId = `pf-${rawId.replace(/:/g, "")}`;
+
+  const slotCss = useMemo(() => {
+    const rules: string[] = [];
+    for (let i = 0; i < count; i++) {
+      const size = seededValue(i * 3 + 1, 3, 10);
+      const left = seededValue(i * 3 + 2, 2, 98);
+      const bottom = seededValue(i * 3 + 3, -5, 15);
+      const dur = seededValue(i * 3 + 4, 7, 18);
+      const delay = seededValue(i * 3 + 5, 0, 12);
+      const color = PALETTE[i % PALETTE.length];
+      const isSquare = i % 5 === 0;
+      const isDiamond = i % 7 === 0;
+      const topDrift = `${seededValue(i * 3 + 6, 5, 90)}%`;
+
+      const pos =
+        variant === "rise"
+          ? `left: ${left}%; bottom: ${bottom}%;`
+          : `left: ${left}%; top: ${topDrift};`;
+
+      const transformClause = isDiamond ? "transform: rotate(45deg);" : "";
+
+      rules.push(`#${scopeId} [data-slot="${i}"] {
+          ${pos}
+          width: ${size}px;
+          height: ${size}px;
+          background: ${color};
+          box-shadow: 0 0 ${size * 2}px ${color}, 0 0 ${size * 4}px ${color};
+          animation-duration: ${dur}s;
+          animation-delay: ${delay}s;
+          border-radius: ${isDiamond ? "2px" : isSquare ? "3px" : "50%"};
+          ${transformClause}
+        }`);
+    }
+    return rules.join("\n");
+  }, [count, variant, scopeId]);
+
+  return (
+    <>
+      <style>{slotCss}</style>
+      <div id={`${scopeId}`} className={`particle-field ${className}`}>
+        {Array.from({ length: count }, (_, i) => (
+          <div
+            key={i}
+            data-slot={i}
+            className={variant === "rise" ? "particle-rise" : "particle-drift"}
+          />
+        ))}
+      </div>
+    </>
+  );
+}

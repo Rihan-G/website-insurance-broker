@@ -28,6 +28,11 @@ import {
 } from "lucide-react";
 import { useInView } from "../hooks/useInView";
 import { useCounter } from "../hooks/useCounter";
+import { ParticleField } from "../components/ParticleField";
+import { WaveDivider } from "../components/WaveDivider";
+import { KineticHeading, Typewriter } from "../components/KineticHeading";
+import { useTheme } from "../context/ThemeContext";
+import { ThemeToggle } from "../components/ThemeToggle";
 
 function AnimatedSection({
   children,
@@ -119,9 +124,9 @@ function QuoteCalculator() {
   const estimate = premiumEstimate[policyType]?.[coverage] ?? "₨ 5,400";
 
   return (
-    <div className="rounded-2xl border border-border bg-surface p-8 shadow-lg">
+    <div className="neon-border rounded-2xl bg-surface p-8 shadow-xl">
       <div className="flex items-center gap-2 mb-6">
-        <Calculator className="h-6 w-6 text-primary-600" />
+        <Calculator className="h-6 w-6 text-primary-600 ring-pulse" />
         <h3 className="text-xl font-bold text-surface-foreground">Quick Quote Estimate</h3>
       </div>
 
@@ -130,6 +135,7 @@ function QuoteCalculator() {
           <label className="block text-sm font-medium text-surface-foreground mb-1.5">Policy Type</label>
           <div className="relative">
             <select
+              aria-label="Select policy type"
               value={policyType}
               onChange={(e) => setPolicyType(e.target.value)}
               className="w-full appearance-none rounded-lg border border-border bg-surface px-4 py-3 text-sm text-surface-foreground focus:border-primary-500 focus:ring-2 focus:ring-ring/20 focus:outline-none cursor-pointer transition-colors duration-200"
@@ -147,6 +153,7 @@ function QuoteCalculator() {
           <label className="block text-sm font-medium text-surface-foreground mb-1.5">Coverage Amount (MUR)</label>
           <div className="relative">
             <select
+              aria-label="Select coverage amount"
               value={coverage}
               onChange={(e) => setCoverage(e.target.value)}
               className="w-full appearance-none rounded-lg border border-border bg-surface px-4 py-3 text-sm text-surface-foreground focus:border-primary-500 focus:ring-2 focus:ring-ring/20 focus:outline-none cursor-pointer transition-colors duration-200"
@@ -159,9 +166,9 @@ function QuoteCalculator() {
           </div>
         </div>
 
-        <div className="rounded-xl bg-primary-50 border border-primary-200 p-5 text-center">
+        <div className="rounded-xl bg-primary-50 dark:bg-primary-950/40 border border-primary-200 dark:border-primary-800 p-5 text-center">
           <p className="text-sm text-muted-foreground">Estimated Monthly Premium</p>
-          <p className="mt-1 text-3xl font-bold text-primary-700 transition-all duration-300">{estimate}</p>
+          <p className="mt-1 text-3xl font-bold text-primary-700 dark:text-primary-300 transition-all duration-300">{estimate}</p>
           <p className="mt-1 text-xs text-muted-foreground">per month *</p>
         </div>
 
@@ -185,25 +192,28 @@ function QuoteCalculator() {
 
 export function HomePage() {
   const heroRef = useInView();
+  const { resolved } = useTheme();
+  const waveLightFill = resolved === "dark" ? "#111c2f" : "#ffffff";
 
   return (
-    <div className="min-h-screen bg-primary-50">
+    <div className="min-h-screen bg-primary-50 dark:bg-background">
       {/* Sticky Navigation */}
-      <nav className="fixed top-0 z-50 w-full border-b border-primary-100 bg-white/80 backdrop-blur-lg">
+      <nav className="fixed top-0 z-50 w-full border-b border-primary-100 dark:border-border bg-white/80 dark:bg-surface/90 backdrop-blur-lg">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
           <div className="flex items-center gap-2.5">
             <ShieldCheck className="h-7 w-7 text-accent-500" />
-            <span className="text-lg font-bold text-primary-900 tracking-tight">SecureBroker</span>
+            <span className="text-lg font-bold text-primary-900 dark:text-primary-50 tracking-tight">SecureBroker</span>
           </div>
-          <div className="hidden items-center gap-8 text-sm font-medium text-primary-700 md:flex">
-            <a href="#services" className="hover:text-primary-900 cursor-pointer transition-colors duration-200">Services</a>
-            <a href="#products" className="hover:text-primary-900 cursor-pointer transition-colors duration-200">Products</a>
-            <a href="#quote" className="hover:text-primary-900 cursor-pointer transition-colors duration-200">Get Quote</a>
-            <a href="#testimonials" className="hover:text-primary-900 cursor-pointer transition-colors duration-200">Testimonials</a>
-            <a href="#contact" className="hover:text-primary-900 cursor-pointer transition-colors duration-200">Contact</a>
+          <div className="hidden items-center gap-8 text-sm font-medium text-primary-700 dark:text-primary-200 md:flex">
+            <a href="#services" className="hover:text-primary-900 dark:hover:text-white cursor-pointer transition-colors duration-200">Services</a>
+            <a href="#products" className="hover:text-primary-900 dark:hover:text-white cursor-pointer transition-colors duration-200">Products</a>
+            <a href="#quote" className="hover:text-primary-900 dark:hover:text-white cursor-pointer transition-colors duration-200">Get Quote</a>
+            <a href="#testimonials" className="hover:text-primary-900 dark:hover:text-white cursor-pointer transition-colors duration-200">Testimonials</a>
+            <a href="#contact" className="hover:text-primary-900 dark:hover:text-white cursor-pointer transition-colors duration-200">Contact</a>
           </div>
           <div className="flex items-center gap-3">
-            <Link to="/login" className="hidden rounded-lg px-4 py-2 text-sm font-semibold text-primary-700 hover:bg-primary-50 cursor-pointer transition-colors duration-200 sm:block">
+            <ThemeToggle />
+            <Link to="/login" className="hidden rounded-lg px-4 py-2 text-sm font-semibold text-primary-700 dark:text-primary-200 hover:bg-primary-50 dark:hover:bg-muted cursor-pointer transition-colors duration-200 sm:block">
               Sign In
             </Link>
             <Link to="/login" className="rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-700 cursor-pointer transition-colors duration-200">
@@ -213,44 +223,84 @@ export function HomePage() {
         </div>
       </nav>
 
-      {/* Hero — Trust & Authority pattern */}
+      {/* ═══════════════════════════════════════════════════════════════
+           Hero — Aurora UI + Motion-Driven + Kinetic Typography
+           ui-ux-pro-max-skill #10 Aurora, #15 Motion-Driven, #30 Kinetic
+          ═══════════════════════════════════════════════════════════════ */}
       <section className="relative overflow-hidden pt-16">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary-900 via-primary-800 to-primary-950" />
-        <div className="absolute inset-0 opacity-[0.07]">
-          <div className="absolute top-20 left-10 h-72 w-72 rounded-full bg-accent-500 blur-3xl animate-float" />
-          <div className="absolute bottom-20 right-10 h-96 w-96 rounded-full bg-primary-400 blur-3xl animate-float-delayed" />
+        {/* Animated mesh base */}
+        <div className="absolute inset-0 animated-mesh" />
+
+        {/* VISIBLE Aurora orbs — lower blur, higher opacity */}
+        <div className="aurora-bg">
+          {/* Large cyan orb — top-left */}
+          <div className="aurora-orb-1 aurora-home-hero-1" />
+          {/* Large green orb — bottom-right */}
+          <div className="aurora-orb-2 aurora-home-hero-2" />
+          {/* Medium sky orb — center-right */}
+          <div className="aurora-orb-3 aurora-home-hero-3" />
+          {/* Small amber orb — bottom-left */}
+          <div className="aurora-orb-4 aurora-home-hero-4" />
+          {/* Extra small white orb — top-right */}
+          <div className="aurora-orb-1 aurora-home-hero-5" />
         </div>
+
+        {/* Animated scan line */}
+        <div className="scan-line" />
+
+        {/* Rising particles */}
+        <ParticleField count={35} variant="rise" />
+
+        {/* Dot grid overlay */}
+        <div className="absolute inset-0 dot-grid opacity-20" />
 
         <div className="relative mx-auto max-w-7xl px-6 py-24 md:py-32 lg:py-40">
           <div ref={heroRef.ref} className={`max-w-3xl animate-on-scroll ${heroRef.isInView ? "in-view" : ""}`}>
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-sm font-medium text-primary-100 backdrop-blur-sm border border-white/10">
+
+            {/* Floating badge */}
+            <div className="mb-6 badge-float inline-flex items-center gap-2 rounded-full glass px-4 py-1.5 text-sm font-semibold text-accent-300 ring-1 ring-accent-500/30">
               <ShieldCheck className="h-4 w-4 text-accent-400" />
               Licensed Insurance Broker — Mauritius
+              <span className="h-2 w-2 rounded-full bg-accent-400 animate-pulse ring-2 ring-accent-400/40" />
             </div>
-            <h1 className="text-4xl font-bold leading-tight text-white sm:text-5xl lg:text-6xl">
-              Your Trusted Insurance{" "}
-              <span className="text-accent-400">Partner</span>
+
+            {/* Kinetic heading */}
+            <h1 className="text-4xl font-extrabold leading-tight text-white sm:text-5xl lg:text-6xl">
+              <KineticHeading
+                text="Your Trusted Insurance"
+                highlightWords={[]}
+                delay={300}
+              />
+              <br />
+              <Typewriter
+                words={["Partner", "Protector", "Advisor", "Platform"]}
+                className="text-gradient-warm"
+                speed={80}
+              />
             </h1>
+
             <p className="mt-6 max-w-2xl text-lg text-primary-200 leading-relaxed">
               Comprehensive insurance solutions for individuals and businesses across Mauritius.
               Upload documents, get instant quotes, manage policies — all in one secure portal.
             </p>
+
             <div className="mt-10 flex flex-wrap items-center gap-4">
               <a
                 href="#quote"
-                className="inline-flex items-center gap-2 rounded-lg bg-accent-500 px-6 py-3.5 text-sm font-semibold text-white hover:bg-accent-600 cursor-pointer transition-colors duration-200 animate-pulse-glow"
+                className="btn-glow ring-pulse inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-accent-500 to-accent-600 px-7 py-3.5 text-sm font-bold text-white hover:from-accent-600 hover:to-accent-700 cursor-pointer shadow-lg shadow-accent-500/40 transition-all duration-200"
               >
                 <Calculator className="h-4 w-4" />
-                Get a Quote
+                Get a Free Quote
               </a>
               <Link
                 to="/login"
-                className="inline-flex items-center gap-2 rounded-lg border border-white/20 bg-white/5 px-6 py-3.5 text-sm font-semibold text-white backdrop-blur-sm hover:bg-white/10 cursor-pointer transition-colors duration-200"
+                className="inline-flex items-center gap-2 rounded-xl glass border border-white/25 px-7 py-3.5 text-sm font-semibold text-white hover:bg-white/15 cursor-pointer transition-all duration-200"
               >
                 Client Portal
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
+
             <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-primary-200">
               {["No obligation quote", "256-bit SSL encryption", "FSC Mauritius Licensed"].map((t) => (
                 <span key={t} className="flex items-center gap-1.5">
@@ -261,32 +311,54 @@ export function HomePage() {
             </div>
           </div>
         </div>
+
+        {/* Animated wave bottom */}
+        <WaveDivider topColor="#082F49" bottomColor={waveLightFill} height={80} />
       </section>
 
-      {/* Trusted Insurers Logo Bar */}
-      <section className="bg-white border-y border-border py-8 overflow-hidden">
-        <div className="mx-auto max-w-7xl px-6">
-          <p className="text-center text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-6">
-            Partnered with leading insurers
-          </p>
-          <div className="flex items-center justify-center gap-8 flex-wrap">
-            {insurers.map((name) => (
-              <span key={name} className="text-sm font-semibold text-muted-foreground/60 hover:text-primary-600 cursor-default transition-colors duration-200 whitespace-nowrap">
-                {name}
-              </span>
+      {/* Trusted Insurers — Auto-scrolling marquee ticker */}
+      <section className="bg-white dark:bg-slate-900 border-y border-border py-6 overflow-hidden">
+        <p className="text-center text-xs font-bold text-muted-foreground uppercase tracking-widest mb-5">
+          Partnered with leading insurers
+        </p>
+        <div className="marquee-container">
+          {/* Duplicate list for seamless loop */}
+          <div className="flex animate-marquee gap-0">
+            {[...insurers, ...insurers].map((name, i) => (
+              <div key={`${name}-${i}`} className="flex items-center gap-8 px-8 shrink-0">
+                <span className="text-sm font-semibold text-muted-foreground/70 hover:text-primary-600 cursor-default transition-colors duration-200 whitespace-nowrap">
+                  {name}
+                </span>
+                <span className="h-1 w-1 rounded-full bg-primary-200 shrink-0" />
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Stats */}
-      <section className="bg-primary-800">
-        <div className="mx-auto grid max-w-7xl grid-cols-2 gap-8 px-6 py-12 md:grid-cols-4">
-          <StatCounter value={700} suffix="+" label="Active Clients" />
-          <StatCounter value={2500} suffix="+" label="Policies Managed" />
-          <StatCounter value={99} suffix=".9%" label="Uptime SLA" />
-          <StatCounter value={15000} suffix="+" label="Documents Processed" />
+      {/* Stats — Glassmorphism cards with glow animation */}
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 animated-mesh" />
+        {/* Visible orbs in stats too */}
+        <div className="aurora-bg">
+          <div className="aurora-orb-3 aurora-home-stats-1" />
+          <div className="aurora-orb-4 aurora-home-stats-2" />
         </div>
+        <ParticleField count={12} variant="drift" />
+        <div className="absolute inset-0 dot-grid opacity-10" />
+        <div className="relative mx-auto grid max-w-7xl grid-cols-2 gap-5 px-6 py-14 md:grid-cols-4">
+          {[
+            { value: 700,   suffix: "+",   label: "Active Clients" },
+            { value: 2500,  suffix: "+",   label: "Policies Managed" },
+            { value: 99,    suffix: ".9%", label: "Uptime SLA" },
+            { value: 15000, suffix: "+",   label: "Documents Processed" },
+          ].map((s) => (
+            <div key={s.label} className="glass glow-card-anim rounded-2xl p-5 text-center ring-1 ring-white/10">
+              <StatCounter value={s.value} suffix={s.suffix} label={s.label} />
+            </div>
+          ))}
+        </div>
+        <WaveDivider topColor="#082F49" bottomColor={waveLightFill} height={60} flip />
       </section>
 
       {/* Certifications Bar */}
@@ -308,7 +380,7 @@ export function HomePage() {
         <div className="mx-auto max-w-7xl px-6">
           <AnimatedSection className="text-center">
             <span className="text-sm font-semibold text-primary-600 uppercase tracking-wider">Insurance Products</span>
-            <h2 className="mt-3 text-3xl font-bold text-primary-900 sm:text-4xl">
+            <h2 className="mt-3 text-3xl font-bold text-primary-900 dark:text-primary-50 sm:text-4xl">
               Comprehensive Coverage for Every Need
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
@@ -316,20 +388,21 @@ export function HomePage() {
             </p>
           </AnimatedSection>
 
-          <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {/* Bento Box Grid — ui-ux-pro-max-skill #21 */}
+          <div className="mt-16 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {policyTypes.map((p, i) => (
               <AnimatedSection key={p.name} className={`stagger-${i + 1}`} animation="animate-scale-in">
                 <a
                   href="#quote"
-                  className="group flex items-start gap-4 rounded-2xl border border-border bg-surface p-6 hover:shadow-md hover:border-primary-200 cursor-pointer transition-all duration-300"
+                  className="card-hover card-glow group flex items-start gap-4 rounded-2xl border border-border bg-surface p-6 cursor-pointer"
                 >
-                  <div className="rounded-xl bg-primary-50 p-3 group-hover:bg-primary-100 transition-colors duration-300 shrink-0">
+                  <div className="rounded-xl bg-gradient-to-br from-primary-50 to-primary-100 p-3 group-hover:from-primary-100 group-hover:to-primary-200 transition-all duration-300 shrink-0 shadow-sm">
                     <p.icon className="h-6 w-6 text-primary-600" />
                   </div>
-                  <div>
-                    <h3 className="font-semibold text-surface-foreground">{p.name}</h3>
-                    <p className="mt-1 text-sm text-muted-foreground">{p.desc}</p>
-                    <span className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-primary-600 group-hover:gap-2 transition-all duration-200">
+                  <div className="min-w-0">
+                    <h3 className="font-bold text-surface-foreground">{p.name}</h3>
+                    <p className="mt-1 text-sm text-muted-foreground leading-relaxed">{p.desc}</p>
+                    <span className="mt-3 inline-flex items-center gap-1.5 text-xs font-bold text-primary-600 group-hover:gap-2.5 transition-all duration-200">
                       Get Quote <ArrowRight className="h-3 w-3" />
                     </span>
                   </div>
@@ -347,7 +420,7 @@ export function HomePage() {
             <div>
               <AnimatedSection animation="animate-slide-left">
                 <span className="text-sm font-semibold text-accent-600 uppercase tracking-wider">Instant Estimate</span>
-                <h2 className="mt-3 text-3xl font-bold text-primary-900 sm:text-4xl">
+                <h2 className="mt-3 text-3xl font-bold text-primary-900 dark:text-primary-50 sm:text-4xl">
                   Get Your Quote in Seconds
                 </h2>
                 <p className="mt-4 text-muted-foreground max-w-lg">
@@ -386,7 +459,7 @@ export function HomePage() {
         <div className="mx-auto max-w-7xl px-6">
           <AnimatedSection className="text-center">
             <span className="text-sm font-semibold text-primary-600 uppercase tracking-wider">Our Platform</span>
-            <h2 className="mt-3 text-3xl font-bold text-primary-900 sm:text-4xl">
+            <h2 className="mt-3 text-3xl font-bold text-primary-900 dark:text-primary-50 sm:text-4xl">
               Built for Insurance Professionals
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
@@ -394,15 +467,19 @@ export function HomePage() {
             </p>
           </AnimatedSection>
 
-          <div className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-16 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {services.map((service, i) => (
               <AnimatedSection key={service.title} className={`stagger-${i + 1}`} animation="animate-scale-in">
-                <div className="group rounded-2xl border border-border bg-surface p-8 hover:shadow-lg hover:border-primary-200 cursor-pointer transition-all duration-300">
-                  <div className="inline-flex rounded-xl bg-primary-50 p-3 group-hover:bg-primary-100 transition-colors duration-300">
-                    <service.icon className="h-6 w-6 text-primary-600" />
+                <div className="card-hover card-glow group rounded-2xl border border-border bg-surface p-7 cursor-default relative overflow-hidden">
+                  {/* Subtle gradient on hover */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary-50/0 to-primary-50/0 group-hover:from-primary-50/40 group-hover:to-transparent transition-all duration-300 pointer-events-none" />
+                  <div className="relative">
+                    <div className="inline-flex rounded-xl bg-gradient-to-br from-primary-50 to-primary-100 p-3 group-hover:from-primary-100 group-hover:to-primary-200 transition-all duration-300 shadow-sm">
+                      <service.icon className="h-6 w-6 text-primary-600" />
+                    </div>
+                    <h3 className="mt-5 text-lg font-bold text-surface-foreground">{service.title}</h3>
+                    <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{service.desc}</p>
                   </div>
-                  <h3 className="mt-5 text-lg font-semibold text-surface-foreground">{service.title}</h3>
-                  <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{service.desc}</p>
                 </div>
               </AnimatedSection>
             ))}
@@ -415,15 +492,16 @@ export function HomePage() {
         <div className="mx-auto max-w-7xl px-6">
           <AnimatedSection className="text-center">
             <span className="text-sm font-semibold text-primary-600 uppercase tracking-wider">Client Stories</span>
-            <h2 className="mt-3 text-3xl font-bold text-primary-900 sm:text-4xl">
+            <h2 className="mt-3 text-3xl font-bold text-primary-900 dark:text-primary-50 sm:text-4xl">
               Trusted by Clients Across Mauritius
             </h2>
           </AnimatedSection>
 
-          <div className="mt-16 grid gap-8 md:grid-cols-3">
+          <div className="mt-16 grid gap-6 md:grid-cols-3">
             {testimonials.map((t, i) => (
               <AnimatedSection key={t.name} className={`stagger-${i + 1}`} animation="animate-on-scroll">
-                <div className="rounded-2xl border border-border bg-primary-50/30 p-8 hover:shadow-md transition-shadow duration-300">
+                <div className="card-hover group rounded-2xl border border-border bg-surface p-8 relative overflow-hidden">
+                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary-400 via-accent-400 to-primary-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   <div className="flex gap-1">
                     {Array.from({ length: t.rating }).map((_, j) => (
                       <Star key={j} className="h-4 w-4 fill-warning-500 text-warning-500" />
@@ -433,11 +511,11 @@ export function HomePage() {
                     &ldquo;{t.text}&rdquo;
                   </p>
                   <div className="mt-6 flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 text-primary-700 text-sm font-bold">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-primary-100 to-primary-200 dark:from-primary-800 dark:to-primary-900 text-primary-700 dark:text-primary-100 text-sm font-bold shadow-sm">
                       {t.name.split(" ").map((n) => n[0]).join("")}
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-surface-foreground">{t.name}</p>
+                      <p className="text-sm font-bold text-surface-foreground">{t.name}</p>
                       <p className="text-xs text-muted-foreground">{t.role}</p>
                     </div>
                   </div>
@@ -448,16 +526,21 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* CTA */}
+      {/* CTA — Full aurora with particles */}
       <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-primary-900 to-primary-800" />
-        <div className="absolute inset-0 opacity-[0.07]">
-          <div className="absolute top-10 right-20 h-64 w-64 rounded-full bg-accent-500 blur-3xl animate-float" />
+        <div className="absolute inset-0 animated-mesh" />
+        <div className="aurora-bg">
+          <div className="aurora-orb-1 aurora-home-cta-1" />
+          <div className="aurora-orb-2 aurora-home-cta-2" />
+          <div className="aurora-orb-3 aurora-home-cta-3" />
         </div>
+        <div className="scan-line scan-line-delayed" />
+        <ParticleField count={20} variant="rise" />
+        <div className="absolute inset-0 dot-grid opacity-12" />
         <div className="relative mx-auto max-w-7xl px-6 py-20 lg:py-28">
           <AnimatedSection className="text-center">
             <Building2 className="mx-auto h-10 w-10 text-accent-400 mb-4" />
-            <h2 className="text-3xl font-bold text-white sm:text-4xl">
+            <h2 className="text-3xl font-extrabold text-white sm:text-4xl">
               Ready to Protect What Matters?
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-primary-200">
@@ -467,14 +550,14 @@ export function HomePage() {
             <div className="mt-10 flex flex-wrap justify-center gap-4">
               <a
                 href="#quote"
-                className="inline-flex items-center gap-2 rounded-lg bg-accent-500 px-8 py-3.5 text-sm font-semibold text-white hover:bg-accent-600 cursor-pointer transition-colors duration-200"
+                className="btn-glow inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-accent-500 to-accent-600 px-8 py-3.5 text-sm font-bold text-white hover:from-accent-600 hover:to-accent-700 cursor-pointer shadow-lg shadow-accent-500/30 transition-all duration-200"
               >
                 <Calculator className="h-4 w-4" />
                 Get Your Quote
               </a>
               <Link
                 to="/login"
-                className="inline-flex items-center gap-2 rounded-lg border border-white/20 bg-white/5 px-8 py-3.5 text-sm font-semibold text-white backdrop-blur-sm hover:bg-white/10 cursor-pointer transition-colors duration-200"
+                className="inline-flex items-center gap-2 rounded-xl glass border border-white/20 px-8 py-3.5 text-sm font-semibold text-white hover:bg-white/15 cursor-pointer transition-all duration-200"
               >
                 Access Client Portal
                 <ArrowRight className="h-4 w-4" />

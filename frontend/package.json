@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "type-check": "tsc -b",
     "preview": "vite preview",
     "lint": "eslint . && tsc --noEmit",
     "test": "vitest run",
@@ -14,10 +15,21 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.0",
+    "@types/papaparse": "^5.5.2",
+    "date-fns": "^4.1.0",
+    "i18next": "^26.0.10",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.7",
     "lucide-react": "^0.475.0",
+    "otpauth": "^9.5.1",
+    "papaparse": "^5.5.3",
+    "qrcode.react": "^4.2.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-router-dom": "^7.1.0"
+    "react-hot-toast": "^2.6.0",
+    "react-i18next": "^17.0.7",
+    "react-router-dom": "^7.1.0",
+    "recharts": "^3.8.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",

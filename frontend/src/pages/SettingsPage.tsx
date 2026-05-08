@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Save, Bell, Lock, Globe, Palette } from "lucide-react";
+import { useTheme, type ThemePreference } from "../context/ThemeContext";
 
 export function SettingsPage() {
+  const { preference, setPreference } = useTheme();
   const [notifications, setNotifications] = useState({
     email: true,
     sms: false,
@@ -91,7 +93,7 @@ export function SettingsPage() {
                       setNotifications((prev) => ({ ...prev, [item.key]: !prev[item.key] }))
                     }
                     className={`relative h-6 w-11 rounded-full cursor-pointer transition-colors duration-200 ${
-                      notifications[item.key] ? "bg-accent-500" : "bg-gray-300"
+                      notifications[item.key] ? "bg-accent-500" : "bg-gray-300 dark:bg-slate-600"
                     }`}
                   >
                     <span
@@ -136,16 +138,31 @@ export function SettingsPage() {
               </div>
               Appearance
             </h3>
-            <div className="mt-5">
-              <div className="flex gap-3">
-                <button className="flex-1 rounded-lg border-2 border-primary-500 bg-primary-50 p-3 text-center text-sm font-semibold text-primary-700 cursor-pointer transition-colors duration-200">
-                  Light
+            <div className="mt-5 flex flex-wrap gap-2">
+              {(
+                [
+                  ["light", "Light"],
+                  ["dark", "Dark"],
+                  ["system", "System"],
+                ] as const satisfies ReadonlyArray<readonly [ThemePreference, string]>
+              ).map(([value, label]) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setPreference(value)}
+                  className={`min-w-[5.5rem] flex-1 rounded-lg border-2 px-3 py-2.5 text-center text-sm font-semibold cursor-pointer transition-colors duration-200 ${
+                    preference === value
+                      ? "border-primary-500 bg-primary-50 dark:bg-primary-950/60 text-primary-700 dark:text-primary-200"
+                      : "border-border text-muted-foreground hover:border-primary-300 dark:hover:border-primary-600"
+                  }`}
+                >
+                  {label}
                 </button>
-                <button className="flex-1 rounded-lg border-2 border-border p-3 text-center text-sm font-medium text-muted-foreground hover:border-primary-300 cursor-pointer transition-colors duration-200">
-                  Dark
-                </button>
-              </div>
+              ))}
             </div>
+            <p className="mt-3 text-xs text-muted-foreground">
+              System follows your device appearance. Theme is saved on this browser.
+            </p>
           </div>
         </div>
       </div>

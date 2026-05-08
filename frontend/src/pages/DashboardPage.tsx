@@ -41,43 +41,50 @@ function StatCard({
   change,
   icon: Icon,
   iconBg,
+  accent = false,
 }: {
   title: string;
   value: string;
   change?: number;
   icon: React.ComponentType<{ className?: string }>;
   iconBg: string;
+  accent?: boolean;
 }) {
   return (
-    <div className="rounded-xl border border-border bg-surface p-6 hover:shadow-md transition-shadow duration-200">
-      <div className="flex items-center justify-between">
-        <p className="text-sm font-medium text-muted-foreground">{title}</p>
-        <div className={`rounded-lg p-2 ${iconBg}`}>
-          <Icon className="h-5 w-5" />
+    <div className={`card-hover card-glow rounded-2xl border p-6 relative overflow-hidden group ${accent ? "border-primary-200 bg-gradient-to-br from-primary-600 to-primary-700 text-white" : "border-border bg-surface"}`}>
+      {/* Subtle shimmer on hover */}
+      <div className="absolute inset-0 bg-gradient-to-br from-white/0 to-white/0 group-hover:from-white/5 group-hover:to-transparent transition-all duration-300 pointer-events-none" />
+      <div className="relative">
+        <div className="flex items-center justify-between">
+          <p className={`text-sm font-semibold ${accent ? "text-primary-100" : "text-muted-foreground"}`}>{title}</p>
+          <div className={`rounded-xl p-2.5 shadow-sm ${accent ? "bg-white/15 border border-white/20" : iconBg}`}>
+            <Icon className={`h-5 w-5 ${accent ? "text-white" : ""}`} />
+          </div>
         </div>
+        <p className={`mt-3 text-3xl font-extrabold animate-number-pop ${accent ? "text-white" : "text-surface-foreground"}`}>{value}</p>
+        {change !== undefined && (
+          <div className="mt-2 flex items-center gap-1 text-sm">
+            {change > 0 ? (
+              <>
+                <ArrowUpRight className={`h-4 w-4 ${accent ? "text-accent-200" : "text-accent-500"}`} />
+                <span className={`font-bold ${accent ? "text-accent-200" : "text-accent-600"}`}>+{change}%</span>
+              </>
+            ) : (
+              <>
+                <ArrowDownRight className="h-4 w-4 text-danger-400" />
+                <span className="font-bold text-danger-400">{change}%</span>
+              </>
+            )}
+            <span className={`${accent ? "text-primary-200" : "text-muted-foreground"}`}>vs last month</span>
+          </div>
+        )}
       </div>
-      <p className="mt-3 text-3xl font-bold text-surface-foreground">{value}</p>
-      {change !== undefined && (
-        <div className="mt-2 flex items-center gap-1 text-sm">
-          {change > 0 ? (
-            <>
-              <ArrowUpRight className="h-4 w-4 text-accent-500" />
-              <span className="font-medium text-accent-600">+{change}%</span>
-            </>
-          ) : (
-            <>
-              <ArrowDownRight className="h-4 w-4 text-danger-500" />
-              <span className="font-medium text-danger-600">{change}%</span>
-            </>
-          )}
-          <span className="text-muted-foreground">vs last month</span>
-        </div>
-      )}
     </div>
   );
 }
 
 export function DashboardPage() {
+  const revenueHeights = [65, 72, 58, 80, 85, 78, 92, 88, 95, 90, 98, 100];
   return (
     <div className="space-y-8">
       <div className="flex items-start justify-between">
@@ -91,7 +98,7 @@ export function DashboardPage() {
         </span>
       </div>
 
-      <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
           title="Total Clients"
           value={mockStats.totalClients.toLocaleString()}
@@ -118,6 +125,7 @@ export function DashboardPage() {
           change={mockStats.revenueChange}
           icon={DollarSign}
           iconBg="bg-primary-50 text-primary-600"
+          accent
         />
       </div>
 
@@ -144,16 +152,20 @@ export function DashboardPage() {
                 </span>
                 {item.confidence !== undefined && (
                   <div className="hidden sm:flex items-center gap-2">
-                    <div className="h-2 w-16 rounded-full bg-muted">
-                      <div
-                        className={`h-2 rounded-full transition-all duration-300 ${
-                          item.confidence >= 80 ? "bg-accent-500" : item.confidence >= 60 ? "bg-warning-500" : "bg-danger-500"
-                        }`}
-                        style={{ width: `${item.confidence}%` }}
-                      />
-                    </div>
-                    <span className="text-xs font-medium text-muted-foreground w-8">{item.confidence}%</span>
-                  </div>
+                  <progress
+                    className={`thin-progress thin-progress--sm ${
+                      item.confidence >= 80
+                        ? "thin-progress--success"
+                        : item.confidence >= 60
+                          ? "thin-progress--warning"
+                          : "thin-progress--danger"
+                    }`}
+                    max={100}
+                    value={item.confidence}
+                    aria-label={`OCR confidence ${item.confidence} percent`}
+                  />
+                  <span className="text-xs font-medium text-muted-foreground w-8">{item.confidence}%</span>
+                </div>
                 )}
               </div>
             ))}
@@ -165,17 +177,27 @@ export function DashboardPage() {
           <div className="border-b border-border px-6 py-4">
             <h3 className="font-semibold text-surface-foreground">Revenue Trend</h3>
           </div>
-          <div className="p-6">
-            <div className="flex items-end gap-1.5 h-40">
-              {[65, 72, 58, 80, 85, 78, 92, 88, 95, 90, 98, 100].map((h, i) => (
-                <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                  <div
-                    className="w-full rounded-t-sm bg-primary-500 hover:bg-primary-600 cursor-pointer transition-colors duration-200"
-                    style={{ height: `${h}%` }}
+            <div className="p-6">
+              <svg
+                viewBox="0 0 120 100"
+                preserveAspectRatio="none"
+                className="h-40 w-full"
+                role="img"
+                aria-label="Revenue trend chart"
+              >
+                {revenueHeights.map((h, i) => (
+                  <rect
+                    key={i}
+                    x={i * 10 + 1.5}
+                    y={100 - h}
+                    width={7}
+                    height={h}
+                    rx={1.5}
+                    fill="var(--color-primary-500)"
+                    className="cursor-pointer hover:opacity-90 transition-opacity duration-200"
                   />
-                </div>
-              ))}
-            </div>
+                ))}
+              </svg>
             <div className="mt-3 flex justify-between text-xs text-muted-foreground font-medium">
               <span>Jan</span>
               <span>Jun</span>
