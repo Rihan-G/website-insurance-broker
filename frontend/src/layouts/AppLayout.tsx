@@ -14,11 +14,11 @@ import {
 import { useAuth } from "../context/AuthContext";
 
 const navigation = [
-  { name: "Dashboard", to: "/", icon: LayoutDashboard },
-  { name: "Documents", to: "/documents", icon: FileText },
-  { name: "Upload", to: "/upload", icon: Upload },
-  { name: "Clients", to: "/clients", icon: Users },
-  { name: "Settings", to: "/settings", icon: Settings },
+  { name: "Dashboard", to: "/dashboard", icon: LayoutDashboard },
+  { name: "Documents", to: "/dashboard/documents", icon: FileText },
+  { name: "Upload", to: "/dashboard/upload", icon: Upload },
+  { name: "Clients", to: "/dashboard/clients", icon: Users },
+  { name: "Settings", to: "/dashboard/settings", icon: Settings },
 ];
 
 export function AppLayout() {
@@ -55,7 +55,7 @@ export function AppLayout() {
             <NavLink
               key={item.name}
               to={item.to}
-              end={item.to === "/"}
+              end={item.to === "/dashboard"}
               onClick={() => setSidebarOpen(false)}
               className={({ isActive }) =>
                 `flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium cursor-pointer transition-colors duration-200 ${

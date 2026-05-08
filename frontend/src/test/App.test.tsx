@@ -19,13 +19,14 @@ vi.mock("../context/AuthContext", () => ({
 import App from "../App";
 
 describe("App", () => {
-  it("redirects to login when not authenticated", () => {
+  it("renders public home page at /", () => {
     render(
       <MemoryRouter initialEntries={["/"]}>
         <App />
       </MemoryRouter>
     );
-    expect(screen.getByText("Secure Sign In")).toBeInTheDocument();
+    expect(screen.getByText(/Insurance Management/)).toBeInTheDocument();
+    expect(screen.getByText("Get Started")).toBeInTheDocument();
   });
 
   it("renders login page at /login", () => {
@@ -34,7 +35,7 @@ describe("App", () => {
         <App />
       </MemoryRouter>
     );
-    expect(screen.getAllByText("SecureBroker").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText("Secure Sign In")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("you@company.com")).toBeInTheDocument();
   });
 

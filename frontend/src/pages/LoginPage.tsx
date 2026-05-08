@@ -34,7 +34,7 @@ export function LoginPage() {
       setError(result.error.message);
       setLoading(false);
     } else {
-      navigate("/");
+      navigate("/dashboard");
     }
   };
 
