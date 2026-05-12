@@ -1,7 +1,9 @@
 import { useEffect, useState, useMemo } from "react";
-import { Search, UserPlus, Mail, Phone, FileText } from "lucide-react";
+import { Search, UserPlus, Mail, Phone, FileText, X } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { supabase } from "../lib/supabase";
+import { DEMO_CLIENT_ROWS } from "../lib/demoClients";
+import toast from "react-hot-toast";
 
 interface Client {
   id: string;
@@ -14,19 +16,12 @@ interface Client {
   joinedAt: string;
 }
 
-const mockClients: Client[] = [
-  { id: "1", name: "Marie Dupont", email: "marie@email.com", phone: "+230 5729 1234", policies: 3, documents: 12, status: "active", joinedAt: "2024-03-15" },
-  { id: "2", name: "Jean-Pierre Ramgoolam", email: "jp@email.com", phone: "+230 5834 5678", policies: 2, documents: 8, status: "active", joinedAt: "2024-05-22" },
-  { id: "3", name: "Priya Devi", email: "priya@email.com", phone: "+230 5912 3456", policies: 1, documents: 4, status: "pending", joinedAt: "2025-01-10" },
-  { id: "4", name: "Ahmed Boolell", email: "ahmed@email.com", phone: "+230 5748 9012", policies: 4, documents: 15, status: "active", joinedAt: "2023-11-08" },
-  { id: "5", name: "Sophie Chen", email: "sophie@email.com", phone: "+230 5863 7890", policies: 1, documents: 3, status: "inactive", joinedAt: "2024-08-30" },
-  { id: "6", name: "Ravi Patel", email: "ravi@email.com", phone: "+230 5921 4567", policies: 2, documents: 7, status: "active", joinedAt: "2024-06-12" },
-];
+const DEMO_EXTRA_CLIENTS_KEY = "sindicom_demo_extra_clients";
 
 const statusStyles: Record<string, string> = {
-  active: "bg-accent-50 text-accent-600",
-  inactive: "bg-muted text-muted-foreground",
-  pending: "bg-warning-50 text-warning-600",
+  active: "bg-accent-50 text-accent-600 dark:bg-accent-950/50 dark:text-accent-300",
+  inactive: "bg-muted text-muted-foreground dark:bg-muted/60 dark:text-surface-foreground/80",
+  pending: "bg-warning-50 text-warning-600 dark:bg-warning-950/40 dark:text-warning-300",
 };
 
 function deriveStatus(activePolicies: number, pendingPolicies: number): Client["status"] {
@@ -40,6 +35,23 @@ export function ClientsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [liveClients, setLiveClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(false);
+  const [addOpen, setAddOpen] = useState(false);
+  const [extraDemoClients, setExtraDemoClients] = useState<Client[]>([]);
+  const [newName, setNewName] = useState("");
+  const [newEmail, setNewEmail] = useState("");
+  const [newPhone, setNewPhone] = useState("");
+
+  useEffect(() => {
+    if (!demoAuthActive) return;
+    try {
+      const raw = sessionStorage.getItem(DEMO_EXTRA_CLIENTS_KEY);
+      if (!raw) return;
+      const parsed = JSON.parse(raw) as Client[];
+      if (Array.isArray(parsed)) setExtraDemoClients(parsed);
+    } catch {
+      /* ignore */
+    }
+  }, [demoAuthActive]);
 
   useEffect(() => {
     if (demoAuthActive) {
@@ -101,7 +113,51 @@ export function ClientsPage() {
     };
   }, [demoAuthActive]);
 
-  const rows = demoAuthActive ? mockClients : liveClients;
+  const rows = useMemo(
+    () => (demoAuthActive ? [...DEMO_CLIENT_ROWS, ...extraDemoClients] : liveClients),
+    [demoAuthActive, extraDemoClients, liveClients],
+  );
+
+  const persistExtraDemo = (next: Client[]) => {
+    setExtraDemoClients(next);
+    try {
+      sessionStorage.setItem(DEMO_EXTRA_CLIENTS_KEY, JSON.stringify(next));
+    } catch {
+      /* ignore */
+    }
+  };
+
+  const handleAddDemoClient = (e: React.FormEvent) => {
+    e.preventDefault();
+    const name = newName.trim();
+    const email = newEmail.trim().toLowerCase();
+    const phone = newPhone.trim() || "—";
+    if (!name || !email) {
+      toast.error("Name and email are required.");
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      toast.error("Enter a valid email address.");
+      return;
+    }
+    const id = `demo-${Date.now()}`;
+    const row: Client = {
+      id,
+      name,
+      email,
+      phone,
+      policies: 0,
+      documents: 0,
+      status: "pending",
+      joinedAt: new Date().toISOString().slice(0, 10),
+    };
+    persistExtraDemo([...extraDemoClients, row]);
+    setNewName("");
+    setNewEmail("");
+    setNewPhone("");
+    setAddOpen(false);
+    toast.success("Client added to demo list (session only).");
+  };
 
   const filtered = useMemo(
     () =>
@@ -124,6 +180,7 @@ export function ClientsPage() {
         </div>
         <button
           type="button"
+          onClick={() => setAddOpen(true)}
           className="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-700 cursor-pointer transition-colors duration-200"
         >
           <UserPlus className="h-4 w-4" />
@@ -146,7 +203,7 @@ export function ClientsPage() {
         {filtered.map((client) => (
           <div
             key={client.id}
-            className="rounded-xl border border-border bg-surface p-6 hover:shadow-md hover:border-primary-200 cursor-pointer transition-all duration-200"
+            className="rounded-xl border border-border bg-surface p-6 hover:shadow-md hover:border-primary-200 cursor-pointer transition-all duration-200 dark:hover:border-primary-700"
           >
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-3">
@@ -192,6 +249,97 @@ export function ClientsPage() {
       {filtered.length === 0 && (
         <div className="rounded-xl border border-border bg-surface py-12 text-center text-muted-foreground">
           {searchTerm ? <>No clients found matching &quot;{searchTerm}&quot;.</> : <>No clients in the database yet.</>}
+        </div>
+      )}
+
+      {addOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 p-4 sm:items-center"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="add-client-title"
+        >
+          <div className="w-full max-w-md rounded-2xl border border-border bg-surface p-6 shadow-xl">
+            <div className="flex items-start justify-between gap-3">
+              <h3 id="add-client-title" className="text-lg font-semibold text-surface-foreground">
+                Add client
+              </h3>
+              <button
+                type="button"
+                onClick={() => setAddOpen(false)}
+                className="rounded-lg p-1 text-muted-foreground hover:bg-muted cursor-pointer"
+                aria-label="Close"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            {demoAuthActive ? (
+              <form onSubmit={handleAddDemoClient} className="mt-4 space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  Adds a row to the demo client grid for this browser session only. Production onboarding uses Supabase Auth invites; see{" "}
+                  <span className="font-medium text-surface-foreground">PHASES.md</span> in the repository root for the rollout checklist.
+                </p>
+                <div>
+                  <label className="block text-sm font-medium text-surface-foreground mb-1">Full name</label>
+                  <input
+                    value={newName}
+                    onChange={(e) => setNewName(e.target.value)}
+                    className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-surface-foreground focus:border-primary-500 focus:ring-2 focus:ring-ring/20 focus:outline-none"
+                    autoComplete="name"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-surface-foreground mb-1">Email</label>
+                  <input
+                    type="email"
+                    value={newEmail}
+                    onChange={(e) => setNewEmail(e.target.value)}
+                    className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-surface-foreground focus:border-primary-500 focus:ring-2 focus:ring-ring/20 focus:outline-none"
+                    autoComplete="email"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-surface-foreground mb-1">Phone (optional)</label>
+                  <input
+                    value={newPhone}
+                    onChange={(e) => setNewPhone(e.target.value)}
+                    className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-surface-foreground focus:border-primary-500 focus:ring-2 focus:ring-ring/20 focus:outline-none"
+                    autoComplete="tel"
+                  />
+                </div>
+                <div className="flex gap-2 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setAddOpen(false)}
+                    className="flex-1 rounded-lg border border-border py-2.5 text-sm font-medium text-surface-foreground hover:bg-muted cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex-1 rounded-lg bg-primary-600 py-2.5 text-sm font-semibold text-white hover:bg-primary-700 cursor-pointer"
+                  >
+                    Save
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <div className="mt-4 space-y-3 text-sm text-muted-foreground">
+                <p>
+                  With a live Supabase project, create client users in <strong className="text-surface-foreground">Authentication</strong> and ensure the{" "}
+                  <code className="rounded bg-muted px-1 py-0.5 text-xs">profiles</code> trigger sets <code className="rounded bg-muted px-1 py-0.5 text-xs">role</code> to{" "}
+                  <code className="rounded bg-muted px-1 py-0.5 text-xs">client</code>. They will then appear in this list automatically.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setAddOpen(false)}
+                  className="w-full rounded-lg border border-border py-2.5 text-sm font-medium text-surface-foreground hover:bg-muted cursor-pointer"
+                >
+                  Close
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>

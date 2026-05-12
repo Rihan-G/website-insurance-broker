@@ -2,9 +2,11 @@ import { useState } from "react";
 import { Save, Bell, Lock, Globe, Palette } from "lucide-react";
 import { useTheme, type ThemePreference } from "../context/ThemeContext";
 import { COMPANY_NAME } from "../lib/branding";
+import { useCurrency, type CurrencyCode } from "../context/CurrencyContext";
 
 export function SettingsPage() {
   const { preference, setPreference } = useTheme();
+  const { currency, setCurrency, allCurrencies } = useCurrency();
   const [notifications, setNotifications] = useState({
     email: true,
     sms: false,
@@ -58,10 +60,14 @@ export function SettingsPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-surface-foreground">Currency</label>
-                  <select className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-surface-foreground focus:border-primary-500 focus:outline-none cursor-pointer transition-colors duration-200">
-                    <option>MUR (₨)</option>
-                    <option>USD ($)</option>
-                    <option>EUR (€)</option>
+                  <select
+                    value={currency.code}
+                    onChange={(e) => setCurrency(e.target.value as CurrencyCode)}
+                    className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-surface-foreground focus:border-primary-500 focus:outline-none cursor-pointer transition-colors duration-200"
+                  >
+                    {allCurrencies.map((c) => (
+                      <option key={c.code} value={c.code}>{c.code} ({c.symbol})</option>
+                    ))}
                   </select>
                 </div>
               </div>

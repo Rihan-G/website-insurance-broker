@@ -22,11 +22,11 @@ interface ReviewDoc {
 }
 
 const statusColors: Record<string, string> = {
-  uploaded: "bg-primary-100 text-primary-700",
-  processing: "bg-warning-50 text-warning-600",
-  reviewed: "bg-purple-100 text-purple-700",
-  approved: "bg-accent-50 text-accent-600",
-  rejected: "bg-danger-50 text-danger-600",
+  uploaded: "bg-primary-100 text-primary-700 dark:bg-primary-950/55 dark:text-primary-200",
+  processing: "bg-warning-50 text-warning-600 dark:bg-warning-950/35 dark:text-warning-300",
+  reviewed: "bg-purple-100 text-purple-700 dark:bg-purple-950/45 dark:text-purple-200",
+  approved: "bg-accent-50 text-accent-600 dark:bg-accent-950/40 dark:text-accent-300",
+  rejected: "bg-danger-50 text-danger-600 dark:bg-danger-950/35 dark:text-danger-300",
 };
 
 export function ReviewPage() {
@@ -136,7 +136,7 @@ export function ReviewPage() {
             className={`rounded-full px-3 py-1 text-xs font-medium capitalize cursor-pointer transition-colors duration-200 ${
               statusFilter === s
                 ? "bg-primary-600 text-white"
-                : "bg-muted text-muted-foreground hover:bg-primary-100 hover:text-primary-700"
+                : "bg-muted text-muted-foreground hover:bg-primary-100 hover:text-primary-700 dark:hover:bg-primary-950/55 dark:hover:text-primary-200"
             }`}
           >
             {s}
@@ -165,11 +165,11 @@ export function ReviewPage() {
               </thead>
               <tbody className="divide-y divide-border">
                 {docs.map((doc) => (
-                  <tr key={doc.id} className="hover:bg-primary-50/50 transition-colors duration-150">
+                  <tr key={doc.id} className="hover:bg-primary-50/50 dark:hover:bg-muted/40 transition-colors duration-150">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="rounded-lg bg-primary-50 p-2 shrink-0">
-                          <FileText className="h-4 w-4 text-primary-600" />
+                        <div className="rounded-lg bg-primary-50 p-2 shrink-0 dark:bg-primary-950/50">
+                          <FileText className="h-4 w-4 text-primary-600 dark:text-primary-400" />
                         </div>
                         <div>
                           <p className="font-medium text-surface-foreground">{doc.file_name}</p>
@@ -212,7 +212,7 @@ export function ReviewPage() {
                     <td className="px-6 py-4">
                       <button
                         onClick={() => setSelectedDoc(doc)}
-                        className="inline-flex items-center gap-1.5 rounded-lg bg-primary-50 px-3 py-1.5 text-xs font-medium text-primary-700 hover:bg-primary-100 cursor-pointer transition-colors duration-200"
+                        className="inline-flex items-center gap-1.5 rounded-lg bg-primary-50 px-3 py-1.5 text-xs font-medium text-primary-700 hover:bg-primary-100 cursor-pointer transition-colors duration-200 dark:bg-primary-950/50 dark:text-primary-200 dark:hover:bg-primary-900/60"
                       >
                         <Eye className="h-3.5 w-3.5" />
                         Review

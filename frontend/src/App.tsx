@@ -32,6 +32,7 @@ import { MidTermPage } from "./pages/MidTermPage";
 import { CapacityPage } from "./pages/CapacityPage";
 import { HolidayCalendarPage } from "./pages/HolidayCalendarPage";
 import { CommissionPage } from "./pages/CommissionPage";
+import { NotFoundPage } from "./pages/NotFoundPage";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -148,8 +149,9 @@ export default function App() {
             </RoleGuard>
           }
         />
+        <Route path="*" element={<NotFoundPage />} />
       </Route>
-      <Route path="*" element={<Navigate to="/" />} />
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 }

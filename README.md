@@ -1,4 +1,4 @@
-# SecureBroker – Insurance Broker Portal
+# Sindicom Brokers Ltd – Insurance Broker Portal
 
 A modern insurance broker management platform built with React, TypeScript, and Supabase.
 
@@ -125,3 +125,17 @@ This project follows a phased rollout:
 5. **Phase 5** – Service pages, branding, mobile-friendly design
 6. **Phase 6** – Calculators, multi-language, compliance, analytics
 7. **Phase 7** – Document monitoring, WhatsApp integration, e-ID verification
+
+Implementation checklists, Supabase migration order, and “what’s still mock vs live” notes live in **[PHASES.md](PHASES.md)**.
+
+### What the UI already covers (high level)
+
+| Area | Where in the app |
+|------|------------------|
+| Upload & OCR simulation | **Upload** — staff can pick a **client folder** (demo list or live `profiles` with role `client`); files go under `documents/<client_id>/…` |
+| 2FA setup | **Two-Factor Auth** — real **QR code** (`qrcode.react`) for authenticator apps; enable/disable still expects Supabase `profiles` columns |
+| Compliance & AML | **Compliance** — KYC/AML table, CSV export, **AML name match** (local fuzzy demo), **e-ID** panel + demo “Run e-ID Check” in the client drawer |
+| Calculators & currencies | **Quote calculator** & home quick quote — **MUR, USD, GBP, EUR** with custom amounts |
+| Multi-language | Sidebar **EN / FR / KR** (Mauritian Kreol) via `react-i18next` |
+| Clients | **Clients** — **Add client** modal (demo: session-only list; live: onboarding instructions) |
+| Phases 3–4 (payments, PDFs, etc.) | **Payments**, **Documents**, **Settings** — present in the nav; some flows still use mock data until you wire your Supabase project (see PHASES.md). |

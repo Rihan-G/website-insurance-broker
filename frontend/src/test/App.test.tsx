@@ -2,6 +2,7 @@ import { render, screen, act } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { describe, it, expect, vi } from "vitest";
 import { ThemeProvider } from "../context/ThemeContext";
+import { CurrencyProvider } from "../context/CurrencyContext";
 
 vi.mock("../context/AuthContext", () => ({
   useAuth: () => ({
@@ -25,7 +26,9 @@ function renderApp(path: string) {
   return render(
     <MemoryRouter initialEntries={[path]}>
       <ThemeProvider>
-        <App />
+        <CurrencyProvider>
+          <App />
+        </CurrencyProvider>
       </ThemeProvider>
     </MemoryRouter>,
   );
@@ -59,5 +62,12 @@ describe("App", () => {
     renderApp("/admin/login");
     expect(screen.getByText(/Administrator access/)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Sign in as administrator/ })).toBeInTheDocument();
+  });
+
+  it("renders a helpful 404 for unknown public URLs", () => {
+    renderApp("/this-route-does-not-exist");
+    expect(screen.getByRole("heading", { name: /could not find that page/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /home/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /sign in/i })).toBeInTheDocument();
   });
 });

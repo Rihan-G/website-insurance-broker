@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Shield, CheckCircle, AlertTriangle, Clock, FileText, Fingerprint, Search, Download, ChevronRight, UserSearch } from "lucide-react";
 import { exportToCsv } from "../lib/exportService";
 import toast from "react-hot-toast";
@@ -16,7 +17,7 @@ interface ComplianceRecord {
   riskLevel: "low" | "medium" | "high";
 }
 
-const mockRecords: ComplianceRecord[] = [
+const INITIAL_COMPLIANCE_ROWS: ComplianceRecord[] = [
   { id: "1", clientName: "Marie Dupont", email: "marie@email.com", kycStatus: "verified", amlStatus: "clear", idVerified: true, dataConsentDate: "2024-03-15", dataRetentionDue: "2031-03-15", riskLevel: "low" },
   { id: "2", clientName: "Jean-Pierre Ramgoolam", email: "jp@email.com", kycStatus: "pending", amlStatus: "pending", idVerified: false, dataConsentDate: "2024-05-22", dataRetentionDue: "2031-05-22", riskLevel: "medium" },
   { id: "3", clientName: "Priya Devi", email: "priya@email.com", kycStatus: "verified", amlStatus: "flagged", idVerified: true, dataConsentDate: "2025-01-10", dataRetentionDue: "2032-01-10", riskLevel: "high" },
@@ -50,33 +51,34 @@ const amlVerdictStyles: Record<AmlNameVerdict, string> = {
 };
 
 export function CompliancePage() {
+  const [records, setRecords] = useState(INITIAL_COMPLIANCE_ROWS);
   const [search, setSearch] = useState("");
   const [kycFilter, setKycFilter] = useState("all");
   const [selected, setSelected] = useState<ComplianceRecord | null>(null);
-  const [amlClientId, setAmlClientId] = useState(mockRecords[0]?.id ?? "");
+  const [amlClientId, setAmlClientId] = useState(INITIAL_COMPLIANCE_ROWS[0]?.id ?? "");
   const [amlSuppliedName, setAmlSuppliedName] = useState("");
   const [amlResult, setAmlResult] = useState<ReturnType<typeof matchPersonName> | null>(null);
 
-  const filtered = mockRecords.filter((r) => {
+  const filtered = records.filter((r) => {
     const matchSearch = r.clientName.toLowerCase().includes(search.toLowerCase()) || r.email.toLowerCase().includes(search.toLowerCase());
     const matchKyc = kycFilter === "all" || r.kycStatus === kycFilter;
     return matchSearch && matchKyc;
   });
 
   const stats = {
-    verified: mockRecords.filter((r) => r.kycStatus === "verified").length,
-    pending: mockRecords.filter((r) => r.kycStatus === "pending").length,
-    flagged: mockRecords.filter((r) => r.amlStatus === "flagged").length,
-    highRisk: mockRecords.filter((r) => r.riskLevel === "high").length,
+    verified: records.filter((r) => r.kycStatus === "verified").length,
+    pending: records.filter((r) => r.kycStatus === "pending").length,
+    flagged: records.filter((r) => r.amlStatus === "flagged").length,
+    highRisk: records.filter((r) => r.riskLevel === "high").length,
   };
 
   const handleExport = () => {
-    exportToCsv(mockRecords.map((r) => ({ ...r })), "compliance_report");
+    exportToCsv(records.map((r) => ({ ...r })), "compliance_report");
     toast.success("Compliance report exported.");
   };
 
   const runAmlNameCheck = () => {
-    const rec = mockRecords.find((r) => r.id === amlClientId);
+    const rec = records.find((r) => r.id === amlClientId);
     if (!rec) {
       toast.error("Select a client record.");
       return;
@@ -126,7 +128,7 @@ export function CompliancePage() {
               }}
               className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm focus:border-primary-500 focus:outline-none cursor-pointer"
             >
-              {mockRecords.map((r) => (
+              {records.map((r) => (
                 <option key={r.id} value={r.id}>
                   {r.clientName}
                 </option>
@@ -173,6 +175,29 @@ export function CompliancePage() {
         )}
       </div>
 
+      {/* e-ID & document monitoring (demo — Phase 7 roadmap) */}
+      <div className="rounded-xl border border-border bg-surface p-6 space-y-3">
+        <div className="flex items-start gap-3">
+          <div className="rounded-lg bg-primary-50 p-2 dark:bg-primary-950/50">
+            <FileText className="h-5 w-5 text-primary-600 dark:text-primary-400" />
+          </div>
+          <div className="min-w-0">
+            <h3 className="font-semibold text-surface-foreground">Electronic ID & document monitoring</h3>
+            <p className="text-sm text-muted-foreground mt-0.5">
+              Production would connect a national e-ID or trusted OCR provider and reconcile identity documents in private Storage. Upload supporting IDs from{" "}
+              <strong className="text-surface-foreground">Documents</strong>, then mark verification from a client row or use{" "}
+              <strong className="text-surface-foreground">Run e-ID Check</strong> in the detail drawer (demo).
+            </p>
+            <Link
+              to="/dashboard/documents"
+              className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary-600 hover:underline dark:text-primary-400"
+            >
+              Open documents <ChevronRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </div>
+      </div>
+
       {/* Stats */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[
@@ -200,13 +225,13 @@ export function CompliancePage() {
         ].map((f) => (
           <div key={f.title} className="rounded-xl border border-border bg-surface p-5">
             <div className="flex items-start gap-3">
-              <div className="rounded-lg bg-primary-50 p-2">
-                <f.icon className="h-5 w-5 text-primary-600" />
+              <div className="rounded-lg bg-primary-50 p-2 dark:bg-primary-950/50">
+                <f.icon className="h-5 w-5 text-primary-600 dark:text-primary-400" />
               </div>
               <div>
                 <p className="font-semibold text-surface-foreground">{f.title}</p>
                 <p className="text-xs text-muted-foreground mt-0.5">{f.desc}</p>
-                <span className="mt-2 inline-block rounded-full bg-accent-50 text-accent-600 px-2 py-0.5 text-xs font-medium">{f.status}</span>
+                <span className="mt-2 inline-block rounded-full bg-accent-50 text-accent-600 px-2 py-0.5 text-xs font-medium dark:bg-accent-950/50 dark:text-accent-300">{f.status}</span>
               </div>
             </div>
           </div>
@@ -258,8 +283,8 @@ export function CompliancePage() {
                   </td>
                   <td className="px-6 py-4">
                     {r.idVerified
-                      ? <span className="inline-flex items-center gap-1 text-accent-600 text-xs font-medium"><CheckCircle className="h-3.5 w-3.5" />Verified</span>
-                      : <span className="inline-flex items-center gap-1 text-muted-foreground text-xs"><Fingerprint className="h-3.5 w-3.5" />Pending</span>
+                      ? <span className="inline-flex items-center gap-1 text-accent-600 text-xs font-medium dark:text-accent-400"><CheckCircle className="h-3.5 w-3.5" />Verified</span>
+                      : <span className="inline-flex items-center gap-1 text-muted-foreground text-xs dark:text-muted-foreground/90"><Fingerprint className="h-3.5 w-3.5" />Pending</span>
                     }
                   </td>
                   <td className="px-6 py-4">
@@ -267,7 +292,7 @@ export function CompliancePage() {
                   </td>
                   <td className="px-6 py-4 text-muted-foreground text-xs">{r.dataRetentionDue}</td>
                   <td className="px-6 py-4">
-                    <button onClick={() => setSelected(r)} className="inline-flex items-center gap-1 text-xs text-primary-600 hover:underline cursor-pointer">
+                    <button onClick={() => setSelected(r)} className="inline-flex items-center gap-1 text-xs text-primary-600 hover:underline cursor-pointer dark:text-primary-400">
                       View <ChevronRight className="h-3 w-3" />
                     </button>
                   </td>
@@ -292,7 +317,7 @@ export function CompliancePage() {
                 { label: "KYC Status", value: selected.kycStatus.replace("_", " "), style: kycStyles[selected.kycStatus] },
                 { label: "AML Status", value: selected.amlStatus, style: amlStyles[selected.amlStatus] },
                 { label: "Risk Level", value: selected.riskLevel, style: riskStyles[selected.riskLevel] },
-                { label: "e-ID Verified", value: selected.idVerified ? "Yes" : "No", style: selected.idVerified ? "bg-accent-50 text-accent-600" : "bg-muted text-muted-foreground" },
+                { label: "e-ID Verified", value: selected.idVerified ? "Yes" : "No", style: selected.idVerified ? "bg-accent-50 text-accent-600 dark:bg-accent-950/50 dark:text-accent-300" : "bg-muted text-muted-foreground dark:bg-muted/60" },
               ].map((item) => (
                 <div key={item.label} className="rounded-lg bg-muted/50 p-3">
                   <p className="text-xs text-muted-foreground mb-1">{item.label}</p>
@@ -314,7 +339,26 @@ export function CompliancePage() {
 
             <div className="flex gap-3 pt-2">
               {!selected.idVerified && (
-                <button className="flex-1 inline-flex items-center justify-center gap-2 rounded-lg bg-primary-600 py-2.5 text-sm font-semibold text-white hover:bg-primary-700 cursor-pointer">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const id = selected.id;
+                    setRecords((prev) =>
+                      prev.map((r) =>
+                        r.id === id
+                          ? {
+                              ...r,
+                              idVerified: true,
+                              kycStatus: r.kycStatus === "not_started" ? "pending" : r.kycStatus,
+                            }
+                          : r,
+                      ),
+                    );
+                    setSelected((s) => (s && s.id === id ? { ...s, idVerified: true, kycStatus: s.kycStatus === "not_started" ? "pending" : s.kycStatus } : s));
+                    toast.success("e-ID verification recorded (demo — connect a real provider in production).");
+                  }}
+                  className="flex-1 inline-flex items-center justify-center gap-2 rounded-lg bg-primary-600 py-2.5 text-sm font-semibold text-white hover:bg-primary-700 cursor-pointer"
+                >
                   <Fingerprint className="h-4 w-4" />
                   Run e-ID Check
                 </button>

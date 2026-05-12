@@ -185,7 +185,7 @@ export function VoiceUploadPage() {
             </div>
           )}
 
-          <div className="rounded-lg bg-primary-50 border border-primary-200 p-4 text-sm text-primary-800">
+          <div className="rounded-lg bg-primary-50 border border-primary-200 p-4 text-sm text-primary-800 dark:bg-primary-950/55 dark:border-primary-700/50 dark:text-primary-100">
             <strong>Powered by Speech-to-Text AI</strong> — Supports Kreol Morisien (Mauritian Creole), English, and French transcription via Gemini Flash Lite.
           </div>
         </div>

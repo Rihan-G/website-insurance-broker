@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { QRCodeSVG } from "qrcode.react";
 import { ShieldCheck, Copy, CheckCircle, KeyRound, AlertTriangle } from "lucide-react";
 import { db } from "../lib/db";
 import { useAuth } from "../context/AuthContext";
@@ -90,8 +91,8 @@ export function TwoFactorPage() {
       <div className="max-w-xl rounded-xl border border-border bg-surface p-8">
         {step === "intro" && (
           <div className="space-y-6">
-            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary-100">
-              <ShieldCheck className="h-7 w-7 text-primary-600" />
+            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary-100 dark:bg-primary-950/50">
+              <ShieldCheck className="h-7 w-7 text-primary-600 dark:text-primary-400" />
             </div>
             <div>
               <h3 className="text-lg font-semibold text-surface-foreground">Protect your account</h3>
@@ -99,7 +100,7 @@ export function TwoFactorPage() {
                 Two-factor authentication (2FA) adds a second verification step when logging in, protecting your account even if your password is compromised.
               </p>
             </div>
-            <div className="rounded-lg bg-primary-50 border border-primary-200 p-4 text-sm text-primary-800">
+            <div className="rounded-lg bg-primary-50 border border-primary-200 p-4 text-sm text-primary-800 dark:bg-primary-950/60 dark:border-primary-700/50 dark:text-primary-100">
               You will need an authenticator app such as <strong>Google Authenticator</strong>, <strong>Authy</strong>, or <strong>Microsoft Authenticator</strong>.
             </div>
             <button
@@ -119,20 +120,13 @@ export function TwoFactorPage() {
               Open your authenticator app and scan the QR code or manually enter the secret below.
             </p>
 
-            {/* QR code placeholder — in production use qrcode.react with otpauthUrl */}
-            <div className="flex items-center justify-center rounded-xl border-2 border-dashed border-border bg-muted p-8">
-              <div className="text-center">
-                <div className="mx-auto mb-3 grid grid-cols-8 gap-0.5 w-32">
-                  {Array.from({ length: 64 }).map((_, i) => (
-                    <div
-                      key={i}
-                      className={`h-4 w-4 rounded-sm ${Math.random() > 0.5 ? "bg-surface-foreground" : "bg-surface"}`}
-                    />
-                  ))}
-                </div>
-                <p className="text-xs text-muted-foreground">QR Code</p>
-                <p className="mt-1 text-xs text-muted-foreground break-all max-w-48">{otpauthUrl.slice(0, 60)}…</p>
+            <div className="flex flex-col items-center justify-center rounded-xl border border-border bg-muted/40 p-6 dark:bg-muted/20">
+              <div className="rounded-lg bg-white p-3 shadow-sm">
+                <QRCodeSVG value={otpauthUrl} size={200} level="M" includeMargin={false} />
               </div>
+              <p className="mt-3 text-xs text-muted-foreground text-center max-w-sm">
+                Scan with your authenticator app. For manual setup, use the secret below.
+              </p>
             </div>
 
             <div>
@@ -201,9 +195,9 @@ export function TwoFactorPage() {
                 Your account is protected with two-factor authentication. You will be prompted for a code on each login.
               </p>
             </div>
-            <div className="rounded-lg bg-warning-50 border border-warning-200 p-4 flex gap-3">
-              <AlertTriangle className="h-5 w-5 text-warning-600 shrink-0 mt-0.5" />
-              <p className="text-sm text-warning-800">
+            <div className="rounded-lg bg-warning-50 border border-warning-200 p-4 flex gap-3 dark:bg-warning-950/35 dark:border-warning-700/40">
+              <AlertTriangle className="h-5 w-5 text-warning-600 shrink-0 mt-0.5 dark:text-warning-400" />
+              <p className="text-sm text-warning-800 dark:text-warning-200">
                 If you lose access to your authenticator app, contact your admin to reset 2FA.
               </p>
             </div>

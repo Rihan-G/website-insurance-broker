@@ -113,9 +113,9 @@ export function MidTermPage() {
       </div>
 
       {/* Info banner */}
-      <div className="rounded-xl border border-primary-200 bg-primary-50 p-5 flex gap-3">
-        <AlertTriangle className="h-5 w-5 text-primary-600 mt-0.5 shrink-0" />
-        <div className="text-sm text-primary-800">
+      <div className="rounded-xl border border-primary-200 bg-primary-50 p-5 flex gap-3 dark:border-primary-700/50 dark:bg-primary-950/45">
+        <AlertTriangle className="h-5 w-5 text-primary-600 dark:text-primary-400 mt-0.5 shrink-0" />
+        <div className="text-sm text-primary-800 dark:text-primary-100">
           <p className="font-semibold">What is a mid-term adjustment?</p>
           <p className="mt-1">A mid-term adjustment (MTA) is any change made to an active policy between the start and renewal date — such as adding a driver, changing your address, or updating your vehicle details. Premium adjustments may apply.</p>
         </div>

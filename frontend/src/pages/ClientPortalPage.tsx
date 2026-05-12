@@ -103,10 +103,10 @@ export function ClientPortalPage() {
       {/* Quick stats */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[
-          { label: "Active Policies", value: activePolicies.length, icon: FileText, color: "bg-primary-100 text-primary-600" },
-          { label: "Expiring Soon", value: expiringSoon.length, icon: AlertTriangle, color: expiringSoon.length > 0 ? "bg-warning-50 text-warning-600" : "bg-muted text-muted-foreground" },
-          { label: "Unread Messages", value: unreadMessages, icon: MessageSquare, color: unreadMessages > 0 ? "bg-primary-50 text-primary-600" : "bg-muted text-muted-foreground" },
-          { label: "Total Premium", value: `MUR ${activePolicies.reduce((s, p) => s + p.premium, 0).toLocaleString()}`, icon: CreditCard, color: "bg-accent-50 text-accent-600" },
+          { label: "Active Policies", value: activePolicies.length, icon: FileText, color: "bg-primary-100 text-primary-600 dark:bg-primary-950/55 dark:text-primary-300" },
+          { label: "Expiring Soon", value: expiringSoon.length, icon: AlertTriangle, color: expiringSoon.length > 0 ? "bg-warning-50 text-warning-600 dark:bg-warning-950/35 dark:text-warning-300" : "bg-muted text-muted-foreground dark:bg-muted/60" },
+          { label: "Unread Messages", value: unreadMessages, icon: MessageSquare, color: unreadMessages > 0 ? "bg-primary-50 text-primary-600 dark:bg-primary-950/40 dark:text-primary-300" : "bg-muted text-muted-foreground dark:bg-muted/60" },
+          { label: "Total Premium", value: `MUR ${activePolicies.reduce((s, p) => s + p.premium, 0).toLocaleString()}`, icon: CreditCard, color: "bg-accent-50 text-accent-600 dark:bg-accent-950/45 dark:text-accent-300" },
         ].map((s) => (
           <div key={s.label} className="rounded-xl border border-border bg-surface p-5">
             <div className={`inline-flex rounded-lg p-2 mb-3 ${s.color}`}>
@@ -120,23 +120,23 @@ export function ClientPortalPage() {
 
       {/* Expiry alerts */}
       {expiringSoon.length > 0 && (
-        <div className="rounded-xl border-2 border-warning-200 bg-warning-50 p-5">
+        <div className="rounded-xl border-2 border-warning-200 bg-warning-50 p-5 dark:border-warning-700/45 dark:bg-warning-950/30">
           <div className="flex items-center gap-2 mb-3">
-            <AlertTriangle className="h-5 w-5 text-warning-600" />
-            <h3 className="font-semibold text-warning-800">{expiringSoon.length} polic{expiringSoon.length === 1 ? "y" : "ies"} expiring within 30 days</h3>
+            <AlertTriangle className="h-5 w-5 text-warning-600 dark:text-warning-400" />
+            <h3 className="font-semibold text-warning-800 dark:text-warning-200">{expiringSoon.length} polic{expiringSoon.length === 1 ? "y" : "ies"} expiring within 30 days</h3>
           </div>
           <div className="space-y-2">
             {expiringSoon.map((p) => {
               const daysLeft = differenceInDays(new Date(p.end_date), now);
               return (
-                <div key={p.id} className="flex items-center justify-between rounded-lg bg-white/70 px-4 py-3">
+                <div key={p.id} className="flex items-center justify-between rounded-lg bg-white/70 dark:bg-surface/90 px-4 py-3 border border-warning-100/80 dark:border-warning-800/30">
                   <div>
                     <p className="text-sm font-medium text-surface-foreground">{p.product_type} · {p.policy_number}</p>
                     <p className="text-xs text-muted-foreground">Expires {format(new Date(p.end_date), "dd MMM yyyy")}</p>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="text-sm font-bold text-warning-700">{daysLeft}d left</span>
-                    <Link to="/dashboard/inbox" className="text-xs text-primary-600 hover:underline">Contact broker</Link>
+                    <span className="text-sm font-bold text-warning-700 dark:text-warning-300">{daysLeft}d left</span>
+                    <Link to="/dashboard/inbox" className="text-xs text-primary-600 hover:underline dark:text-primary-400">Contact broker</Link>
                   </div>
                 </div>
               );
