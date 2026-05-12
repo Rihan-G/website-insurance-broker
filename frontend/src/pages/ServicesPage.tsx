@@ -141,14 +141,16 @@ export function ServicesPage() {
               key={p.id}
               onClick={() => setSelectedProduct(selectedProduct === p.id ? null : p.id)}
               className={`text-left rounded-2xl border-2 p-6 cursor-pointer transition-all duration-200 hover:shadow-lg ${
-                selectedProduct === p.id ? `${p.border} ${p.bg}` : "border-border hover:border-primary-200"
+                selectedProduct === p.id
+                  ? `${p.border} ${p.bg} dark:border-slate-600 dark:bg-slate-900/70`
+                  : "border-border hover:border-primary-200 dark:hover:border-primary-600"
               }`}
             >
               <div className={`inline-flex rounded-xl bg-gradient-to-br ${p.color} p-3 mb-4`}>
                 <p.icon className="h-6 w-6 text-white" />
               </div>
               <h3 className="font-bold text-surface-foreground text-lg">{p.title}</h3>
-              <p className={`text-sm font-medium ${p.text}`}>{p.subtitle}</p>
+              <p className={`text-sm font-medium ${p.text} dark:opacity-95 dark:brightness-125`}>{p.subtitle}</p>
               <p className="mt-2 text-sm text-muted-foreground line-clamp-2">{p.description}</p>
               <p className="mt-3 text-xs text-muted-foreground">From <span className="font-semibold text-surface-foreground">{p.startingFrom}</span></p>
             </button>
@@ -157,14 +159,14 @@ export function ServicesPage() {
 
         {/* Expanded product detail */}
         {selected && (
-          <div className={`mt-6 rounded-2xl border-2 ${selected.border} ${selected.bg} p-8`}>
+          <div className={`mt-6 rounded-2xl border-2 ${selected.border} ${selected.bg} p-8 dark:border-slate-600 dark:bg-slate-900/70`}>
             <div className="grid gap-8 lg:grid-cols-2">
               <div>
                 <div className={`inline-flex rounded-xl bg-gradient-to-br ${selected.color} p-3 mb-4`}>
                   <selected.icon className="h-8 w-8 text-white" />
                 </div>
                 <h3 className="text-2xl font-bold text-surface-foreground">{selected.title}</h3>
-                <p className={`font-medium ${selected.text} mb-3`}>{selected.subtitle}</p>
+                <p className={`font-medium ${selected.text} mb-3 dark:opacity-95 dark:brightness-125`}>{selected.subtitle}</p>
                 <p className="text-surface-foreground leading-relaxed">{selected.description}</p>
                 <p className="mt-4 text-sm text-muted-foreground">Starting from <span className="text-lg font-bold text-surface-foreground">{selected.startingFrom}</span></p>
                 <div className="mt-6 flex gap-3">
@@ -194,7 +196,7 @@ export function ServicesPage() {
       </div>
 
       {/* Certifications */}
-      <div className="bg-primary-50 border-y border-border py-12 px-6">
+      <div className="bg-primary-50 border-y border-border py-12 px-6 dark:bg-primary-950/25 dark:border-border">
         <div className="mx-auto max-w-4xl">
           <div className="text-center mb-8">
             <h2 className="text-2xl font-bold text-surface-foreground">Certified & Compliant</h2>
@@ -203,8 +205,8 @@ export function ServicesPage() {
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {certifications.map((c) => (
               <div key={c.name} className="flex items-center gap-3 rounded-xl border border-border bg-surface p-4">
-                <div className="rounded-lg bg-accent-50 p-2">
-                  <Award className="h-5 w-5 text-accent-600" />
+                <div className="rounded-lg bg-accent-50 p-2 dark:bg-accent-950/50">
+                  <Award className="h-5 w-5 text-accent-600 dark:text-accent-400" />
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-surface-foreground">{c.name}</p>

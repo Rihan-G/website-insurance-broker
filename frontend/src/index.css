@@ -76,13 +76,18 @@ body {
   --color-surface: #121a28;
   --color-surface-foreground: #e8f0f7;
   --color-muted: #1e293b;
-  --color-muted-foreground: #94a3b8;
-  --color-border: #334155;
+  /* Brighter body copy on navy surfaces (readability vs muted slate) */
+  --color-muted-foreground: #b8c7d9;
+  --color-border: #3d4f66;
   --color-ring: #38bdf8;
 
   --color-primary-50: #0f1729;
   --color-primary-100: #152238;
   --color-primary-200: #1e3a5f;
+  --color-primary-300: #5ab0e6;
+  --color-primary-400: #7cc4f0;
+  --color-primary-500: #38bdf8;
+  --color-primary-600: #0ea5e9;
   --color-primary-700: #7dd3fc;
   --color-primary-900: #e0f2fe;
 
