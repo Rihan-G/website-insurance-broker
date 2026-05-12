@@ -103,6 +103,13 @@ body {
   background: var(--color-surface);
 }
 
+/* Forms: placeholders were easy to lose on dark surfaces */
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: var(--color-muted-foreground);
+  opacity: 0.72;
+}
+
 /* Transitions: avoid `all` — specify properties (faster, clearer paint boundaries) */
 button, a, input, select, textarea {
   transition:

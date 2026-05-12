@@ -245,7 +245,7 @@ export function WhatsAppPage() {
         <div className="max-w-2xl space-y-6">
           <div className="rounded-xl border border-border bg-surface p-6 space-y-5">
             <h3 className="font-semibold text-surface-foreground">WhatsApp Business API Configuration</h3>
-            <div className="rounded-lg bg-primary-50 border border-primary-200 p-4 text-sm text-primary-800">
+            <div className="rounded-lg bg-primary-50 border border-primary-200 p-4 text-sm text-primary-800 dark:bg-primary-950/55 dark:border-primary-700/50 dark:text-primary-100">
               <Zap className="inline h-4 w-4 mr-1" />
               Connect via the official <strong>WhatsApp Business API</strong> or a BSP partner (e.g. Twilio, 360dialog, Vonage).
             </div>

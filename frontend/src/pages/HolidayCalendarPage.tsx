@@ -37,9 +37,9 @@ const MAURITIUS_HOLIDAYS_2026: Holiday[] = [
 ];
 
 const typeStyles: Record<string, string> = {
-  public: "bg-primary-100 text-primary-700 border-primary-200",
-  optional: "bg-amber-50 text-amber-700 border-amber-200",
-  religious: "bg-purple-50 text-purple-700 border-purple-200",
+  public: "bg-primary-100 text-primary-700 border-primary-200 dark:bg-primary-950/50 dark:text-primary-200 dark:border-primary-700/50",
+  optional: "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/35 dark:text-amber-200 dark:border-amber-700/40",
+  religious: "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950/40 dark:text-purple-200 dark:border-purple-700/40",
 };
 
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -72,7 +72,7 @@ export function HolidayCalendarPage() {
         </div>
         <div className="flex gap-2">
           {(["en", "fr", "kr"] as const).map((l) => (
-            <button key={l} onClick={() => setLang(l)} className={`px-3 py-1.5 rounded-lg text-sm font-medium cursor-pointer transition-colors ${lang === l ? "bg-primary-600 text-white" : "border border-border text-muted-foreground hover:bg-muted"}`}>
+            <button key={l} onClick={() => setLang(l)} className={`px-3 py-1.5 rounded-lg text-sm font-medium cursor-pointer transition-colors ${lang === l ? "bg-primary-600 text-white border border-transparent" : "border border-border text-muted-foreground hover:bg-muted dark:hover:bg-muted/80"}`}>
               {l === "en" ? "EN" : l === "fr" ? "FR" : "Kreol"}
             </button>
           ))}
@@ -80,9 +80,9 @@ export function HolidayCalendarPage() {
       </div>
 
       {/* Info banner */}
-      <div className="rounded-xl border border-primary-200 bg-primary-50 p-4 flex gap-3">
-        <Info className="h-4 w-4 text-primary-600 mt-0.5 shrink-0" />
-        <div className="text-sm text-primary-800">
+      <div className="rounded-xl border border-primary-200 bg-primary-50 p-4 flex gap-3 dark:border-primary-700/50 dark:bg-primary-950/45">
+        <Info className="h-4 w-4 text-primary-600 dark:text-primary-400 mt-0.5 shrink-0" />
+        <div className="text-sm text-primary-800 dark:text-primary-100">
           <span className="font-medium">Important for clients:</span> Payment links may take longer to process during public holidays.
           Date-sensitive policy renewals are scheduled to the next business day if they fall on a holiday.
         </div>
@@ -116,15 +116,15 @@ export function HolidayCalendarPage() {
                 key={day.toISOString()}
                 title={holiday ? getName(holiday) : undefined}
                 className={`relative rounded-lg p-2 min-h-[48px] text-center text-sm transition-colors cursor-default
-                  ${isToday ? "ring-2 ring-primary-500 ring-offset-1" : ""}
-                  ${holiday ? (holiday.type === "public" ? "bg-primary-100" : "bg-amber-50") : isWeekend ? "bg-muted/50" : "hover:bg-muted/30"}
+                  ${isToday ? "ring-2 ring-primary-500 ring-offset-1 dark:ring-offset-surface" : ""}
+                  ${holiday ? (holiday.type === "public" ? "bg-primary-100 dark:bg-primary-950/45" : "bg-amber-50 dark:bg-amber-950/25") : isWeekend ? "bg-muted/50 dark:bg-muted/30" : "hover:bg-muted/30 dark:hover:bg-muted/25"}
                 `}
               >
-                <span className={`font-medium ${isToday ? "text-primary-700" : holiday ? "text-primary-800" : isWeekend ? "text-muted-foreground" : "text-surface-foreground"}`}>
+                <span className={`font-medium ${isToday ? "text-primary-700 dark:text-primary-200" : holiday ? "text-primary-800 dark:text-primary-100" : isWeekend ? "text-muted-foreground" : "text-surface-foreground"}`}>
                   {format(day, "d")}
                 </span>
                 {holiday && (
-                  <div className="mt-0.5 truncate text-[9px] leading-tight text-primary-700 font-medium">
+                  <div className="mt-0.5 truncate text-[9px] leading-tight text-primary-700 dark:text-primary-200 font-medium">
                     {getName(holiday).split(" ").slice(0, 2).join(" ")}
                   </div>
                 )}
@@ -135,8 +135,8 @@ export function HolidayCalendarPage() {
 
         {/* Legend */}
         <div className="mt-4 flex flex-wrap gap-4 text-xs text-muted-foreground">
-          <div className="flex items-center gap-1.5"><div className="h-3 w-3 rounded bg-primary-100" /> Public Holiday</div>
-          <div className="flex items-center gap-1.5"><div className="h-3 w-3 rounded bg-amber-50 border border-amber-200" /> Optional / Religious</div>
+          <div className="flex items-center gap-1.5"><div className="h-3 w-3 rounded bg-primary-100 dark:bg-primary-900/50" /> Public Holiday</div>
+          <div className="flex items-center gap-1.5"><div className="h-3 w-3 rounded bg-amber-50 border border-amber-200 dark:bg-amber-950/30 dark:border-amber-700/40" /> Optional / Religious</div>
           <div className="flex items-center gap-1.5"><div className="h-3 w-3 rounded ring-2 ring-primary-500" /> Today</div>
         </div>
       </div>

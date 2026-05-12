@@ -184,8 +184,8 @@ export function CapacityPage() {
                 const workloadPct = Math.min(100, (b.policy_count / maxPolicies) * 100);
                 return (
               <div key={b.id} className="flex items-center gap-4 px-6 py-4">
-                <div className="h-9 w-9 rounded-full bg-primary-100 flex items-center justify-center shrink-0">
-                  <span className="text-sm font-semibold text-primary-700">{b.full_name.charAt(0).toUpperCase()}</span>
+                <div className="h-9 w-9 rounded-full bg-primary-100 dark:bg-primary-950/60 flex items-center justify-center shrink-0">
+                  <span className="text-sm font-semibold text-primary-700 dark:text-primary-300">{b.full_name.charAt(0).toUpperCase()}</span>
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-surface-foreground">{b.full_name}</p>

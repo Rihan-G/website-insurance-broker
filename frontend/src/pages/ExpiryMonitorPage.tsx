@@ -142,9 +142,9 @@ export function ExpiryMonitorPage() {
       {/* Summary cards */}
       <div className="grid gap-4 sm:grid-cols-3">
         {[
-          { label: "Critical (≤7 days)", count: alerts.filter((a) => differenceInDays(new Date(a.expires_at), now) <= 7).length, color: "border-danger-200 bg-danger-50 text-danger-700" },
-          { label: "Soon (8–30 days)", count: alerts.filter((a) => { const d = differenceInDays(new Date(a.expires_at), now); return d > 7 && d <= 30; }).length, color: "border-warning-200 bg-warning-50 text-warning-700" },
-          { label: "Upcoming (30+ days)", count: alerts.filter((a) => differenceInDays(new Date(a.expires_at), now) > 30).length, color: "border-accent-200 bg-accent-50 text-accent-700" },
+          { label: "Critical (≤7 days)", count: alerts.filter((a) => differenceInDays(new Date(a.expires_at), now) <= 7).length, color: "border-danger-200 bg-danger-50 text-danger-700 dark:border-danger-700/40 dark:bg-danger-950/35 dark:text-danger-200" },
+          { label: "Soon (8–30 days)", count: alerts.filter((a) => { const d = differenceInDays(new Date(a.expires_at), now); return d > 7 && d <= 30; }).length, color: "border-warning-200 bg-warning-50 text-warning-700 dark:border-warning-700/40 dark:bg-warning-950/35 dark:text-warning-200" },
+          { label: "Upcoming (30+ days)", count: alerts.filter((a) => differenceInDays(new Date(a.expires_at), now) > 30).length, color: "border-accent-200 bg-accent-50 text-accent-700 dark:border-accent-700/35 dark:bg-accent-950/30 dark:text-accent-200" },
         ].map((s) => (
           <div key={s.label} className={`rounded-xl border p-5 ${s.color}`}>
             <p className="text-3xl font-bold">{s.count}</p>
@@ -160,7 +160,7 @@ export function ExpiryMonitorPage() {
             key={f}
             onClick={() => setFilter(f)}
             className={`rounded-full px-3 py-1 text-xs font-medium capitalize cursor-pointer transition-colors duration-200 ${
-              filter === f ? "bg-primary-600 text-white" : "bg-muted text-muted-foreground hover:bg-primary-100 hover:text-primary-700"
+              filter === f ? "bg-primary-600 text-white" : "bg-muted text-muted-foreground hover:bg-primary-100 hover:text-primary-700 dark:hover:bg-primary-950/55 dark:hover:text-primary-200"
             }`}
           >
             {f}

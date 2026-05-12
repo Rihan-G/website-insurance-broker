@@ -91,8 +91,8 @@ export function TwoFactorPage() {
       <div className="max-w-xl rounded-xl border border-border bg-surface p-8">
         {step === "intro" && (
           <div className="space-y-6">
-            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary-100">
-              <ShieldCheck className="h-7 w-7 text-primary-600" />
+            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary-100 dark:bg-primary-950/50">
+              <ShieldCheck className="h-7 w-7 text-primary-600 dark:text-primary-400" />
             </div>
             <div>
               <h3 className="text-lg font-semibold text-surface-foreground">Protect your account</h3>
