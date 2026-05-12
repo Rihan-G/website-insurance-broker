@@ -4,6 +4,7 @@ import { ShieldCheck, Eye, EyeOff, Lock } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { ThemeToggle } from "../components/ThemeToggle";
 import { DEMO_ACCOUNTS } from "../lib/demoAuth";
+import { COMPANY_NAME_SHORT } from "../lib/branding";
 
 const adminDemo = DEMO_ACCOUNTS[0];
 
@@ -55,7 +56,7 @@ export function AdminLoginPage() {
             <ShieldCheck className="h-12 w-12 text-accent-400" />
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-white">Administrator access</h1>
-          <p className="mt-2 text-sm text-primary-200">SecureBroker — staff and operations</p>
+          <p className="mt-2 text-sm text-primary-200">{COMPANY_NAME_SHORT} — staff and operations</p>
         </div>
 
         <div className="glass-dark rounded-2xl border border-white/10 p-8 shadow-2xl">

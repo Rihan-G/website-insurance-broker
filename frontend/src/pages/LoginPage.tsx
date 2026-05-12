@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { ShieldCheck, Eye, EyeOff, Lock, CheckCircle, Sparkles } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { DEMO_ACCOUNTS } from "../lib/demoAuth";
+import { COMPANY_NAME_SHORT } from "../lib/branding";
 import { ParticleField } from "../components/ParticleField";
 import { ThemeToggle } from "../components/ThemeToggle";
 
@@ -65,7 +66,7 @@ export function LoginPage() {
               <ShieldCheck className="h-8 w-8 text-accent-400" />
             </div>
             <div>
-              <span className="text-2xl font-bold text-white tracking-tight">SecureBroker</span>
+              <span className="text-2xl font-bold text-white tracking-tight">{COMPANY_NAME_SHORT}</span>
               <p className="text-xs text-primary-300 font-medium">Insurance Portal</p>
             </div>
           </div>
@@ -128,7 +129,7 @@ export function LoginPage() {
             <div className="inline-flex rounded-2xl bg-primary-100 dark:bg-primary-900/35 p-4 mb-4">
               <ShieldCheck className="h-12 w-12 text-primary-600 dark:text-primary-400" />
             </div>
-            <h1 className="text-2xl font-bold text-primary-900 dark:text-primary-50">SecureBroker</h1>
+            <h1 className="text-2xl font-bold text-primary-900 dark:text-primary-50">{COMPANY_NAME_SHORT}</h1>
             <p className="text-sm text-muted-foreground mt-1">Insurance Portal</p>
           </div>
 

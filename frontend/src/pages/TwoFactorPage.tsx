@@ -4,6 +4,7 @@ import { db } from "../lib/db";
 import { useAuth } from "../context/AuthContext";
 import { logAudit } from "../lib/auditService";
 import toast from "react-hot-toast";
+import { COMPANY_NAME_SHORT } from "../lib/branding";
 
 type Step = "intro" | "setup" | "verify" | "done";
 
@@ -25,7 +26,7 @@ export function TwoFactorPage() {
   const [loading, setLoading] = useState(false);
   const [disabling, setDisabling] = useState(false);
 
-  const otpauthUrl = `otpauth://totp/SecureBroker:${user?.email ?? "user"}?secret=${secret}&issuer=SecureBroker`;
+  const otpauthUrl = `otpauth://totp/${encodeURIComponent(COMPANY_NAME_SHORT)}:${user?.email ?? "user"}?secret=${secret}&issuer=${encodeURIComponent(COMPANY_NAME_SHORT)}`;
 
   const copySecret = () => {
     navigator.clipboard.writeText(secret);

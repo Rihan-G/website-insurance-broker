@@ -34,7 +34,7 @@ function renderApp(path: string) {
 describe("App", () => {
   it("renders public home page at /", () => {
     renderApp("/");
-    expect(screen.getByRole("navigation")).toHaveTextContent("SecureBroker");
+    expect(screen.getByRole("navigation")).toHaveTextContent("Sindicom");
     expect(screen.getAllByText(/Licensed Insurance Broker/).length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText(/Get a Quote/).length).toBeGreaterThanOrEqual(1);
   });

@@ -1,5 +1,6 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { COMPANY_NAME, CONTACT_EMAIL } from "./branding";
 
 interface ReceiptData {
   receiptNumber: string;
@@ -35,7 +36,7 @@ function addHeader(doc: jsPDF, title: string) {
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(16);
   doc.setFont("helvetica", "bold");
-  doc.text("SecureBroker Insurance Ltd", 14, 12);
+  doc.text(COMPANY_NAME, 14, 12);
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
   doc.text("Licensed Insurance Broker · Mauritius", 14, 20);
@@ -52,7 +53,7 @@ function addFooter(doc: jsPDF) {
     doc.setFontSize(8);
     doc.setTextColor(120, 120, 120);
     doc.text(
-      "SecureBroker Insurance Ltd · Tel: +230 XXXX XXXX · Email: info@securebroker.mu",
+      `${COMPANY_NAME} · Tel: +230 XXXX XXXX · Email: ${CONTACT_EMAIL}`,
       105,
       287,
       { align: "center" }

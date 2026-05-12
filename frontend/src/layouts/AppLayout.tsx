@@ -11,6 +11,7 @@ import { useAutoLogout } from "../hooks/useAutoLogout";
 import { useTranslation } from "react-i18next";
 import { ParticleField } from "../components/ParticleField";
 import { ThemeToggle } from "../components/ThemeToggle";
+import { COMPANY_NAME_SHORT, PORTAL_HEADING } from "../lib/branding";
 import "../lib/i18n";
 
 interface NavItem {
@@ -155,7 +156,7 @@ export function AppLayout() {
             <ShieldCheck className="h-5 w-5 text-accent-400" />
           </div>
           <div className="min-w-0">
-            <span className="text-sm font-bold tracking-tight text-white">SecureBroker</span>
+            <span className="text-sm font-bold tracking-tight text-white">{COMPANY_NAME_SHORT}</span>
             <p className="text-xs text-primary-400 truncate">Insurance Portal</p>
           </div>
         </div>
@@ -247,7 +248,7 @@ export function AppLayout() {
           </button>
           <div className="flex items-center gap-2">
             <ShieldCheck className="h-5 w-5 text-primary-500 hidden sm:block" />
-            <h1 className="text-base font-bold text-surface-foreground">SecureBroker Portal</h1>
+            <h1 className="text-base font-bold text-surface-foreground">{PORTAL_HEADING}</h1>
           </div>
           <div className="ml-auto flex items-center gap-3">
             <ThemeToggle />

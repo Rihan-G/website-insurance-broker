@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Save, Bell, Lock, Globe, Palette } from "lucide-react";
 import { useTheme, type ThemePreference } from "../context/ThemeContext";
+import { COMPANY_NAME } from "../lib/branding";
 
 export function SettingsPage() {
   const { preference, setPreference } = useTheme();
@@ -34,7 +35,7 @@ export function SettingsPage() {
                 <label className="block text-sm font-medium text-surface-foreground">Company Name</label>
                 <input
                   type="text"
-                  defaultValue="SecureBroker Insurance Ltd"
+                  defaultValue={COMPANY_NAME}
                   className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-surface-foreground focus:border-primary-500 focus:ring-2 focus:ring-ring/20 focus:outline-none transition-colors duration-200"
                 />
               </div>

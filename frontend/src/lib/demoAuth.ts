@@ -20,12 +20,12 @@ const now = () => new Date().toISOString();
 
 export const DEMO_ACCOUNTS = [
   {
-    email: (import.meta.env.VITE_DEMO_ADMIN_EMAIL as string | undefined) ?? "admin@demo.securebroker.local",
+    email: (import.meta.env.VITE_DEMO_ADMIN_EMAIL as string | undefined) ?? "admin@demo.sindicombrokers.local",
     password:
-      (import.meta.env.VITE_DEMO_ADMIN_PASSWORD as string | undefined) ?? "AdminDemo!SecureBroker",
+      (import.meta.env.VITE_DEMO_ADMIN_PASSWORD as string | undefined) ?? "AdminDemo!SindicomBrokers",
     profile: {
       id: ADMIN_ID,
-      email: (import.meta.env.VITE_DEMO_ADMIN_EMAIL as string | undefined) ?? "admin@demo.securebroker.local",
+      email: (import.meta.env.VITE_DEMO_ADMIN_EMAIL as string | undefined) ?? "admin@demo.sindicombrokers.local",
       full_name: "Demo Administrator",
       role: "admin" as const,
       phone: null,
@@ -40,13 +40,13 @@ export const DEMO_ACCOUNTS = [
     } satisfies Profile,
   },
   {
-    email: (import.meta.env.VITE_DEMO_BROKER_EMAIL as string | undefined) ?? "broker@demo.securebroker.local",
+    email: (import.meta.env.VITE_DEMO_BROKER_EMAIL as string | undefined) ?? "broker@demo.sindicombrokers.local",
     password:
-      (import.meta.env.VITE_DEMO_BROKER_PASSWORD as string | undefined) ?? "BrokerDemo!SecureBroker",
+      (import.meta.env.VITE_DEMO_BROKER_PASSWORD as string | undefined) ?? "BrokerDemo!SindicomBrokers",
     profile: {
       id: BROKER_ID,
       email:
-        (import.meta.env.VITE_DEMO_BROKER_EMAIL as string | undefined) ?? "broker@demo.securebroker.local",
+        (import.meta.env.VITE_DEMO_BROKER_EMAIL as string | undefined) ?? "broker@demo.sindicombrokers.local",
       full_name: "Demo Broker",
       role: "broker" as const,
       phone: null,
@@ -61,13 +61,13 @@ export const DEMO_ACCOUNTS = [
     } satisfies Profile,
   },
   {
-    email: (import.meta.env.VITE_DEMO_CLIENT_EMAIL as string | undefined) ?? "client@demo.securebroker.local",
+    email: (import.meta.env.VITE_DEMO_CLIENT_EMAIL as string | undefined) ?? "client@demo.sindicombrokers.local",
     password:
-      (import.meta.env.VITE_DEMO_CLIENT_PASSWORD as string | undefined) ?? "ClientDemo!SecureBroker",
+      (import.meta.env.VITE_DEMO_CLIENT_PASSWORD as string | undefined) ?? "ClientDemo!SindicomBrokers",
     profile: {
       id: CLIENT_ID,
       email:
-        (import.meta.env.VITE_DEMO_CLIENT_EMAIL as string | undefined) ?? "client@demo.securebroker.local",
+        (import.meta.env.VITE_DEMO_CLIENT_EMAIL as string | undefined) ?? "client@demo.sindicombrokers.local",
       full_name: "Demo Client",
       role: "client" as const,
       phone: null,
