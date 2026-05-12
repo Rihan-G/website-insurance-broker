@@ -33,6 +33,9 @@ import { WaveDivider } from "../components/WaveDivider";
 import { KineticHeading, Typewriter } from "../components/KineticHeading";
 import { useTheme } from "../context/ThemeContext";
 import { ThemeToggle } from "../components/ThemeToggle";
+import { ScrollProgress } from "../components/ScrollProgress";
+import { BackToTop } from "../components/BackToTop";
+import { CurrencySwitcher } from "../components/CurrencySwitcher";
 import { COMPANY_NAME_SHORT, CONTACT_EMAIL, WEBSITE_DOMAIN, COMPANY_NAME } from "../lib/branding";
 import {
   type QuoteCurrency,
@@ -202,7 +205,7 @@ function QuoteCalculator() {
           <label className="block text-sm font-medium text-surface-foreground mb-1.5">Currency</label>
           <div className="relative">
             <select
-              aria-label="Coverage currency"
+              aria-label="Select currency"
               value={currency}
               onChange={(e) => setCurrency(e.target.value as QuoteCurrency)}
               className="w-full appearance-none rounded-lg border border-border bg-surface px-4 py-3 text-sm text-surface-foreground focus:border-primary-500 focus:ring-2 focus:ring-ring/20 focus:outline-none cursor-pointer transition-colors duration-200"
@@ -264,6 +267,8 @@ export function HomePage() {
 
   return (
     <div className="min-h-screen bg-primary-50 dark:bg-background">
+      <ScrollProgress />
+      <BackToTop />
       {/* Sticky Navigation */}
       <nav className="fixed top-0 z-50 w-full border-b border-primary-100 dark:border-border bg-white/80 dark:bg-surface/90 backdrop-blur-lg">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
@@ -279,6 +284,7 @@ export function HomePage() {
             <a href="#contact" className="hover:text-primary-900 dark:hover:text-white cursor-pointer transition-colors duration-200">Contact</a>
           </div>
           <div className="flex items-center gap-3">
+            <CurrencySwitcher />
             <ThemeToggle />
             <Link to="/login" className="hidden rounded-lg px-4 py-2 text-sm font-semibold text-primary-700 dark:text-primary-200 hover:bg-primary-50 dark:hover:bg-muted cursor-pointer transition-colors duration-200 sm:block">
               Sign In
@@ -330,7 +336,6 @@ export function HomePage() {
               Licensed Insurance Broker — Mauritius
               <span className="h-2 w-2 rounded-full bg-accent-400 animate-pulse ring-2 ring-accent-400/40" />
             </div>
-
             {/* Kinetic heading */}
             <h1 className="text-4xl font-extrabold leading-tight text-white sm:text-5xl lg:text-6xl">
               <KineticHeading

@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import { ParticleField } from "../components/ParticleField";
 import { ThemeToggle } from "../components/ThemeToggle";
 import { CommandPalette } from "../components/CommandPalette";
+import { CurrencySwitcher } from "../components/CurrencySwitcher";
 import { COMPANY_NAME_SHORT, PORTAL_HEADING } from "../lib/branding";
 import "../lib/i18n";
 
@@ -279,6 +280,7 @@ export function AppLayout() {
               <span className="max-w-[8rem] truncate">Jump to…</span>
               <kbd className="hidden rounded border border-border bg-muted px-1 font-mono text-[10px] text-muted-foreground md:inline">{jumpShortcut}</kbd>
             </button>
+            <CurrencySwitcher />
             <ThemeToggle />
             <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-accent-50 border border-accent-200/60 px-3 py-1 text-xs font-semibold text-accent-700 dark:border-accent-600/40 dark:bg-accent-950/50 dark:text-accent-300">
               <span className="h-1.5 w-1.5 rounded-full bg-accent-500 animate-pulse" />
