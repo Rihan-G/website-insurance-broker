@@ -60,4 +60,11 @@ describe("App", () => {
     expect(screen.getByText(/Administrator access/)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Sign in as administrator/ })).toBeInTheDocument();
   });
+
+  it("renders a helpful 404 for unknown public URLs", () => {
+    renderApp("/this-route-does-not-exist");
+    expect(screen.getByRole("heading", { name: /could not find that page/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /home/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /sign in/i })).toBeInTheDocument();
+  });
 });
