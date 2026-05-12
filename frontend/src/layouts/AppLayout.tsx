@@ -11,6 +11,7 @@ import { useAutoLogout } from "../hooks/useAutoLogout";
 import { useTranslation } from "react-i18next";
 import { ParticleField } from "../components/ParticleField";
 import { ThemeToggle } from "../components/ThemeToggle";
+import { CurrencySwitcher } from "../components/CurrencySwitcher";
 import "../lib/i18n";
 
 interface NavItem {
@@ -250,6 +251,7 @@ export function AppLayout() {
             <h1 className="text-base font-bold text-surface-foreground">SecureBroker Portal</h1>
           </div>
           <div className="ml-auto flex items-center gap-3">
+            <CurrencySwitcher />
             <ThemeToggle />
             <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-accent-50 border border-accent-200/60 px-3 py-1 text-xs font-semibold text-accent-700 dark:border-accent-600/40 dark:bg-accent-950/50 dark:text-accent-300">
               <span className="h-1.5 w-1.5 rounded-full bg-accent-500 animate-pulse" />

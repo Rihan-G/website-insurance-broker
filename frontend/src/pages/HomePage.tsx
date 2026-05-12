@@ -33,6 +33,10 @@ import { WaveDivider } from "../components/WaveDivider";
 import { KineticHeading, Typewriter } from "../components/KineticHeading";
 import { useTheme } from "../context/ThemeContext";
 import { ThemeToggle } from "../components/ThemeToggle";
+import { ScrollProgress } from "../components/ScrollProgress";
+import { BackToTop } from "../components/BackToTop";
+import { CurrencySwitcher } from "../components/CurrencySwitcher";
+import { useCurrency } from "../context/CurrencyContext";
 
 function AnimatedSection({
   children,
@@ -113,15 +117,18 @@ const certifications = [
 function QuoteCalculator() {
   const [policyType, setPolicyType] = useState("motor");
   const [coverage, setCoverage] = useState("500000");
+  const { format } = useCurrency();
 
-  const premiumEstimate: Record<string, Record<string, string>> = {
-    motor: { "250000": "₨ 3,200", "500000": "₨ 5,400", "1000000": "₨ 8,700" },
-    home: { "250000": "₨ 2,100", "500000": "₨ 3,800", "1000000": "₨ 6,500" },
-    life: { "250000": "₨ 1,800", "500000": "₨ 3,200", "1000000": "₨ 5,900" },
-    health: { "250000": "₨ 2,800", "500000": "₨ 4,600", "1000000": "₨ 7,200" },
+  const premiumMUR: Record<string, Record<string, number>> = {
+    motor: { "250000": 3200, "500000": 5400, "1000000": 8700 },
+    home: { "250000": 2100, "500000": 3800, "1000000": 6500 },
+    life: { "250000": 1800, "500000": 3200, "1000000": 5900 },
+    health: { "250000": 2800, "500000": 4600, "1000000": 7200 },
   };
 
-  const estimate = premiumEstimate[policyType]?.[coverage] ?? "₨ 5,400";
+  const coverageOptions = [250000, 500000, 1000000];
+  const estimateValue = premiumMUR[policyType]?.[coverage] ?? 5400;
+  const estimate = format(estimateValue);
 
   return (
     <div className="neon-border rounded-2xl bg-surface p-8 shadow-xl">
@@ -150,7 +157,7 @@ function QuoteCalculator() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-surface-foreground mb-1.5">Coverage Amount (MUR)</label>
+          <label className="block text-sm font-medium text-surface-foreground mb-1.5">Coverage Amount</label>
           <div className="relative">
             <select
               aria-label="Select coverage amount"
@@ -158,9 +165,9 @@ function QuoteCalculator() {
               onChange={(e) => setCoverage(e.target.value)}
               className="w-full appearance-none rounded-lg border border-border bg-surface px-4 py-3 text-sm text-surface-foreground focus:border-primary-500 focus:ring-2 focus:ring-ring/20 focus:outline-none cursor-pointer transition-colors duration-200"
             >
-              <option value="250000">₨ 250,000</option>
-              <option value="500000">₨ 500,000</option>
-              <option value="1000000">₨ 1,000,000</option>
+              {coverageOptions.map((val) => (
+                <option key={val} value={String(val)}>{format(val)}</option>
+              ))}
             </select>
             <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
           </div>
@@ -197,6 +204,8 @@ export function HomePage() {
 
   return (
     <div className="min-h-screen bg-primary-50 dark:bg-background">
+      <ScrollProgress />
+      <BackToTop />
       {/* Sticky Navigation */}
       <nav className="fixed top-0 z-50 w-full border-b border-primary-100 dark:border-border bg-white/80 dark:bg-surface/90 backdrop-blur-lg">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
@@ -212,6 +221,7 @@ export function HomePage() {
             <a href="#contact" className="hover:text-primary-900 dark:hover:text-white cursor-pointer transition-colors duration-200">Contact</a>
           </div>
           <div className="flex items-center gap-3">
+            <CurrencySwitcher />
             <ThemeToggle />
             <Link to="/login" className="hidden rounded-lg px-4 py-2 text-sm font-semibold text-primary-700 dark:text-primary-200 hover:bg-primary-50 dark:hover:bg-muted cursor-pointer transition-colors duration-200 sm:block">
               Sign In
@@ -263,7 +273,6 @@ export function HomePage() {
               Licensed Insurance Broker — Mauritius
               <span className="h-2 w-2 rounded-full bg-accent-400 animate-pulse ring-2 ring-accent-400/40" />
             </div>
-
             {/* Kinetic heading */}
             <h1 className="text-4xl font-extrabold leading-tight text-white sm:text-5xl lg:text-6xl">
               <KineticHeading
