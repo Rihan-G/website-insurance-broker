@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { MessageCircle, Users, CheckCircle, ExternalLink, Zap } from "lucide-react";
 import toast from "react-hot-toast";
+import { COMPANY_NAME_SHORT } from "../lib/branding";
 
 const templates = [
   {
@@ -18,7 +19,7 @@ const templates = [
   {
     id: "welcome",
     name: "Welcome Message",
-    preview: "Welcome to SecureBroker, [Name]! Your policy [PolicyNo] is now active. Contact us: +230 XXXX XXXX",
+    preview: `Welcome to ${COMPANY_NAME_SHORT}, [Name]! Your policy [PolicyNo] is now active. Contact us: +230 XXXX XXXX`,
     variables: ["Name", "PolicyNo"],
   },
   {

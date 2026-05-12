@@ -33,6 +33,15 @@ import { WaveDivider } from "../components/WaveDivider";
 import { KineticHeading, Typewriter } from "../components/KineticHeading";
 import { useTheme } from "../context/ThemeContext";
 import { ThemeToggle } from "../components/ThemeToggle";
+import { COMPANY_NAME_SHORT, CONTACT_EMAIL, WEBSITE_DOMAIN, COMPANY_NAME } from "../lib/branding";
+import {
+  type QuoteCurrency,
+  QUOTE_CURRENCIES,
+  convertToMur,
+  convertFromMur,
+  formatInCurrency,
+  currencyHint,
+} from "../lib/currency";
 
 function AnimatedSection({
   children,
@@ -90,7 +99,7 @@ const policyTypes = [
 ];
 
 const testimonials = [
-  { name: "Marie Dupont", role: "Client, 3 years", text: "SecureBroker made managing my insurance policies effortless. The upload portal is incredibly easy to use and I always know the status of my documents.", rating: 5 },
+  { name: "Marie Dupont", role: "Client, 3 years", text: `${COMPANY_NAME_SHORT} made managing my insurance policies effortless. The upload portal is easy to use and I always know the status of my documents.`, rating: 5 },
   { name: "Jean-Pierre R.", role: "Business Client", text: "The dashboard gives me a clear overview of all my commercial policies. Outstanding service and technology. My accountant loves the CSV exports.", rating: 5 },
   { name: "Priya Devi", role: "New Client", text: "Setting up was quick and the WhatsApp notifications keep me informed about my policy renewals. Highly recommended for anyone in Mauritius.", rating: 5 },
 ];
@@ -110,34 +119,73 @@ const certifications = [
 
 /* ── Quote Calculator ── */
 
+type HomePolicy = "motor" | "home" | "life" | "health";
+
+const coverageAnchors: Record<HomePolicy, Array<{ covMur: number; monthlyMur: number }>> = {
+  motor: [
+    { covMur: 250_000, monthlyMur: 3200 },
+    { covMur: 500_000, monthlyMur: 5400 },
+    { covMur: 1_000_000, monthlyMur: 8700 },
+  ],
+  home: [
+    { covMur: 250_000, monthlyMur: 2100 },
+    { covMur: 500_000, monthlyMur: 3800 },
+    { covMur: 1_000_000, monthlyMur: 6500 },
+  ],
+  life: [
+    { covMur: 250_000, monthlyMur: 1800 },
+    { covMur: 500_000, monthlyMur: 3200 },
+    { covMur: 1_000_000, monthlyMur: 5900 },
+  ],
+  health: [
+    { covMur: 250_000, monthlyMur: 2800 },
+    { covMur: 500_000, monthlyMur: 4600 },
+    { covMur: 1_000_000, monthlyMur: 7200 },
+  ],
+};
+
+function interpolateMonthlyMur(policy: HomePolicy, coverageMur: number): number {
+  const pts = coverageAnchors[policy];
+  if (coverageMur <= 0) return 0;
+  if (coverageMur <= pts[0].covMur) return (pts[0].monthlyMur / pts[0].covMur) * coverageMur;
+  for (let i = 1; i < pts.length; i++) {
+    if (coverageMur <= pts[i].covMur) {
+      const a = pts[i - 1];
+      const b = pts[i];
+      return a.monthlyMur + ((coverageMur - a.covMur) / (b.covMur - a.covMur)) * (b.monthlyMur - a.monthlyMur);
+    }
+  }
+  const a = pts[pts.length - 2];
+  const b = pts[pts.length - 1];
+  const slope = (b.monthlyMur - a.monthlyMur) / (b.covMur - a.covMur);
+  return b.monthlyMur + (coverageMur - b.covMur) * slope;
+}
+
 function QuoteCalculator() {
-  const [policyType, setPolicyType] = useState("motor");
-  const [coverage, setCoverage] = useState("500000");
+  const [policyType, setPolicyType] = useState<HomePolicy>("motor");
+  const [currency, setCurrency] = useState<QuoteCurrency>("MUR");
+  const [coverageInput, setCoverageInput] = useState("500000");
 
-  const premiumEstimate: Record<string, Record<string, string>> = {
-    motor: { "250000": "₨ 3,200", "500000": "₨ 5,400", "1000000": "₨ 8,700" },
-    home: { "250000": "₨ 2,100", "500000": "₨ 3,800", "1000000": "₨ 6,500" },
-    life: { "250000": "₨ 1,800", "500000": "₨ 3,200", "1000000": "₨ 5,900" },
-    health: { "250000": "₨ 2,800", "500000": "₨ 4,600", "1000000": "₨ 7,200" },
-  };
-
-  const estimate = premiumEstimate[policyType]?.[coverage] ?? "₨ 5,400";
+  const coverageNum = parseFloat(coverageInput.replace(/,/g, "") || "0");
+  const coverageInMur = Number.isFinite(coverageNum) ? convertToMur(coverageNum, currency) : 0;
+  const monthlyMur = interpolateMonthlyMur(policyType, coverageInMur);
+  const monthlyDisplay = formatInCurrency(convertFromMur(monthlyMur, currency), currency);
 
   return (
-    <div className="neon-border rounded-2xl bg-surface p-8 shadow-xl">
+    <div className="neon-border rounded-2xl bg-surface p-8 shadow-xl dark:shadow-none">
       <div className="flex items-center gap-2 mb-6">
-        <Calculator className="h-6 w-6 text-primary-600 ring-pulse" />
-        <h3 className="text-xl font-bold text-surface-foreground">Quick Quote Estimate</h3>
+        <Calculator className="h-6 w-6 text-primary-600 dark:text-primary-400" />
+        <h3 className="text-xl font-bold text-surface-foreground">Quick quote estimate</h3>
       </div>
 
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-surface-foreground mb-1.5">Policy Type</label>
+          <label className="block text-sm font-medium text-surface-foreground mb-1.5">Policy type</label>
           <div className="relative">
             <select
               aria-label="Select policy type"
               value={policyType}
-              onChange={(e) => setPolicyType(e.target.value)}
+              onChange={(e) => setPolicyType(e.target.value as HomePolicy)}
               className="w-full appearance-none rounded-lg border border-border bg-surface px-4 py-3 text-sm text-surface-foreground focus:border-primary-500 focus:ring-2 focus:ring-ring/20 focus:outline-none cursor-pointer transition-colors duration-200"
             >
               <option value="motor">Motor Insurance</option>
@@ -150,33 +198,51 @@ function QuoteCalculator() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-surface-foreground mb-1.5">Coverage Amount (MUR)</label>
+          <label className="block text-sm font-medium text-surface-foreground mb-1.5">Currency</label>
           <div className="relative">
             <select
-              aria-label="Select coverage amount"
-              value={coverage}
-              onChange={(e) => setCoverage(e.target.value)}
+              aria-label="Coverage currency"
+              value={currency}
+              onChange={(e) => setCurrency(e.target.value as QuoteCurrency)}
               className="w-full appearance-none rounded-lg border border-border bg-surface px-4 py-3 text-sm text-surface-foreground focus:border-primary-500 focus:ring-2 focus:ring-ring/20 focus:outline-none cursor-pointer transition-colors duration-200"
             >
-              <option value="250000">₨ 250,000</option>
-              <option value="500000">₨ 500,000</option>
-              <option value="1000000">₨ 1,000,000</option>
+              {QUOTE_CURRENCIES.map((c) => (
+                <option key={c.code} value={c.code}>
+                  {c.code}
+                </option>
+              ))}
             </select>
             <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
           </div>
+          <p className="mt-1 text-xs text-muted-foreground">{currencyHint()}</p>
+        </div>
+
+        <div>
+          <label htmlFor="home-coverage-custom" className="block text-sm font-medium text-surface-foreground mb-1.5">
+            Coverage sum ({currency})
+          </label>
+          <input
+            id="home-coverage-custom"
+            type="text"
+            inputMode="decimal"
+            placeholder="e.g. 500000 or 12000"
+            value={coverageInput}
+            onChange={(e) => setCoverageInput(e.target.value)}
+            className="w-full rounded-lg border border-border bg-surface px-4 py-3 text-sm text-surface-foreground focus:border-primary-500 focus:ring-2 focus:ring-ring/20 focus:outline-none"
+          />
         </div>
 
         <div className="rounded-xl bg-primary-50 dark:bg-primary-950/40 border border-primary-200 dark:border-primary-800 p-5 text-center">
-          <p className="text-sm text-muted-foreground">Estimated Monthly Premium</p>
-          <p className="mt-1 text-3xl font-bold text-primary-700 dark:text-primary-300 transition-all duration-300">{estimate}</p>
+          <p className="text-sm text-muted-foreground">Estimated monthly premium</p>
+          <p className="mt-1 text-3xl font-bold text-primary-700 dark:text-primary-300 transition-[color,opacity] duration-300 ease-out">{monthlyDisplay}</p>
           <p className="mt-1 text-xs text-muted-foreground">per month *</p>
         </div>
 
         <Link
           to="/login"
-          className="flex w-full items-center justify-center gap-2 rounded-lg bg-accent-500 px-4 py-3 text-sm font-semibold text-white hover:bg-accent-600 cursor-pointer transition-colors duration-200"
+          className="flex w-full items-center justify-center gap-2 rounded-lg bg-accent-500 px-4 py-3 text-sm font-semibold text-white hover:bg-accent-600 cursor-pointer transition-colors duration-200 active:scale-[0.99]"
         >
-          Get Detailed Quote
+          Get detailed quote
           <ArrowRight className="h-4 w-4" />
         </Link>
 
@@ -202,7 +268,7 @@ export function HomePage() {
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
           <div className="flex items-center gap-2.5">
             <ShieldCheck className="h-7 w-7 text-accent-500" />
-            <span className="text-lg font-bold text-primary-900 dark:text-primary-50 tracking-tight">SecureBroker</span>
+            <span className="text-lg font-bold text-primary-900 dark:text-primary-50 tracking-tight">{COMPANY_NAME_SHORT}</span>
           </div>
           <div className="hidden items-center gap-8 text-sm font-medium text-primary-700 dark:text-primary-200 md:flex">
             <a href="#services" className="hover:text-primary-900 dark:hover:text-white cursor-pointer transition-colors duration-200">Services</a>
@@ -544,7 +610,7 @@ export function HomePage() {
               Ready to Protect What Matters?
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-primary-200">
-              Join 700+ clients across Mauritius who trust SecureBroker.
+              Join 700+ clients across Mauritius who trust {COMPANY_NAME_SHORT}.
               Get your free, no-obligation quote today.
             </p>
             <div className="mt-10 flex flex-wrap justify-center gap-4">
@@ -574,7 +640,7 @@ export function HomePage() {
             <div className="md:col-span-2">
               <div className="flex items-center gap-2.5">
                 <ShieldCheck className="h-7 w-7 text-accent-500" />
-                <span className="text-lg font-bold text-white tracking-tight">SecureBroker</span>
+                <span className="text-lg font-bold text-white tracking-tight">{COMPANY_NAME_SHORT}</span>
               </div>
               <p className="mt-4 max-w-md text-sm leading-relaxed">
                 Your trusted insurance broker portal. Managing policies, processing documents,
@@ -607,15 +673,15 @@ export function HomePage() {
               <h4 className="text-sm font-semibold text-white uppercase tracking-wider">Contact</h4>
               <div className="mt-4 space-y-3 text-sm">
                 <div className="flex items-center gap-2"><Phone className="h-4 w-4 shrink-0" /><span>+230 123 4567</span></div>
-                <div className="flex items-center gap-2"><Mail className="h-4 w-4 shrink-0" /><span>info@securebroker.mu</span></div>
+                <div className="flex items-center gap-2"><Mail className="h-4 w-4 shrink-0" /><span>{CONTACT_EMAIL}</span></div>
                 <div className="flex items-start gap-2"><MapPin className="h-4 w-4 shrink-0 mt-0.5" /><span>Port Louis, Mauritius</span></div>
-                <div className="flex items-center gap-2"><Globe className="h-4 w-4 shrink-0" /><span>securebroker.mu</span></div>
+                <div className="flex items-center gap-2"><Globe className="h-4 w-4 shrink-0" /><span>{WEBSITE_DOMAIN}</span></div>
               </div>
             </div>
           </div>
 
           <div className="mt-12 border-t border-primary-800 pt-8 text-center text-xs text-primary-400">
-            <p>&copy; 2025 SecureBroker Insurance Ltd. All rights reserved. Licensed Insurance Broker — Mauritius FSC.</p>
+            <p>&copy; {new Date().getFullYear()} {COMPANY_NAME}. All rights reserved. Licensed Insurance Broker — Mauritius FSC.</p>
           </div>
         </div>
       </footer>

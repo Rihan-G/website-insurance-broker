@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Shield, CheckCircle, AlertTriangle, Clock, FileText, Fingerprint, Search, Download, ChevronRight } from "lucide-react";
+import { Shield, CheckCircle, AlertTriangle, Clock, FileText, Fingerprint, Search, Download, ChevronRight, UserSearch } from "lucide-react";
 import { exportToCsv } from "../lib/exportService";
 import toast from "react-hot-toast";
+import { matchPersonName, type AmlNameVerdict } from "../lib/amlNameMatch";
 
 interface ComplianceRecord {
   id: string;
@@ -24,28 +25,37 @@ const mockRecords: ComplianceRecord[] = [
 ];
 
 const kycStyles: Record<string, string> = {
-  verified: "bg-accent-50 text-accent-600",
-  pending: "bg-warning-50 text-warning-600",
-  failed: "bg-danger-50 text-danger-600",
-  not_started: "bg-muted text-muted-foreground",
+  verified: "bg-accent-50 text-accent-600 dark:bg-accent-950/50 dark:text-accent-300",
+  pending: "bg-warning-50 text-warning-600 dark:bg-warning-950/40 dark:text-warning-300",
+  failed: "bg-danger-50 text-danger-600 dark:bg-danger-950/40 dark:text-danger-300",
+  not_started: "bg-muted text-muted-foreground dark:bg-muted/50",
 };
 
 const amlStyles: Record<string, string> = {
-  clear: "bg-accent-50 text-accent-600",
-  flagged: "bg-danger-50 text-danger-600",
-  pending: "bg-warning-50 text-warning-600",
+  clear: "bg-accent-50 text-accent-600 dark:bg-accent-950/50 dark:text-accent-300",
+  flagged: "bg-danger-50 text-danger-600 dark:bg-danger-950/40 dark:text-danger-300",
+  pending: "bg-warning-50 text-warning-600 dark:bg-warning-950/40 dark:text-warning-300",
 };
 
 const riskStyles: Record<string, string> = {
-  low: "bg-accent-50 text-accent-600",
-  medium: "bg-warning-50 text-warning-600",
-  high: "bg-danger-50 text-danger-600",
+  low: "bg-accent-50 text-accent-600 dark:bg-accent-950/50 dark:text-accent-300",
+  medium: "bg-warning-50 text-warning-600 dark:bg-warning-950/40 dark:text-warning-300",
+  high: "bg-danger-50 text-danger-600 dark:bg-danger-950/40 dark:text-danger-300",
+};
+
+const amlVerdictStyles: Record<AmlNameVerdict, string> = {
+  match: "bg-accent-50 text-accent-700 dark:bg-accent-950/50 dark:text-accent-300",
+  review: "bg-warning-50 text-warning-700 dark:bg-warning-950/40 dark:text-warning-300",
+  mismatch: "bg-danger-50 text-danger-700 dark:bg-danger-950/40 dark:text-danger-300",
 };
 
 export function CompliancePage() {
   const [search, setSearch] = useState("");
   const [kycFilter, setKycFilter] = useState("all");
   const [selected, setSelected] = useState<ComplianceRecord | null>(null);
+  const [amlClientId, setAmlClientId] = useState(mockRecords[0]?.id ?? "");
+  const [amlSuppliedName, setAmlSuppliedName] = useState("");
+  const [amlResult, setAmlResult] = useState<ReturnType<typeof matchPersonName> | null>(null);
 
   const filtered = mockRecords.filter((r) => {
     const matchSearch = r.clientName.toLowerCase().includes(search.toLowerCase()) || r.email.toLowerCase().includes(search.toLowerCase());
@@ -65,6 +75,19 @@ export function CompliancePage() {
     toast.success("Compliance report exported.");
   };
 
+  const runAmlNameCheck = () => {
+    const rec = mockRecords.find((r) => r.id === amlClientId);
+    if (!rec) {
+      toast.error("Select a client record.");
+      return;
+    }
+    if (!amlSuppliedName.trim()) {
+      toast.error("Enter the name to compare (e.g. as on ID or payment instruction).");
+      return;
+    }
+    setAmlResult(matchPersonName(rec.clientName, amlSuppliedName));
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -78,13 +101,85 @@ export function CompliancePage() {
         </button>
       </div>
 
+      {/* AML name match (demo — replace with vendor API in production) */}
+      <div className="rounded-xl border border-border bg-surface p-6 space-y-4 dark:border-border">
+        <div className="flex items-start gap-3">
+          <div className="rounded-lg bg-primary-50 dark:bg-primary-950/50 p-2">
+            <UserSearch className="h-5 w-5 text-primary-600 dark:text-primary-400" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <h3 className="font-semibold text-surface-foreground">AML name consistency</h3>
+            <p className="text-sm text-muted-foreground mt-0.5">
+              Compare a name from an ID, wire, or form against the client on file. This demo uses local fuzzy matching only; production should call your AML/KYC provider.
+            </p>
+          </div>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div>
+            <label className="block text-sm font-medium text-surface-foreground mb-1.5">Client on file</label>
+            <select
+              aria-label="Client for AML check"
+              value={amlClientId}
+              onChange={(e) => {
+                setAmlClientId(e.target.value);
+                setAmlResult(null);
+              }}
+              className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm focus:border-primary-500 focus:outline-none cursor-pointer"
+            >
+              {mockRecords.map((r) => (
+                <option key={r.id} value={r.id}>
+                  {r.clientName}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-surface-foreground mb-1.5">Name to verify</label>
+            <input
+              type="text"
+              value={amlSuppliedName}
+              onChange={(e) => {
+                setAmlSuppliedName(e.target.value);
+                setAmlResult(null);
+              }}
+              placeholder="e.g. Marie D. Dupont"
+              className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm focus:border-primary-500 focus:outline-none"
+            />
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={runAmlNameCheck}
+          className="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-700 cursor-pointer transition-colors duration-200 active:scale-[0.99]"
+        >
+          <Fingerprint className="h-4 w-4" />
+          Run name match
+        </button>
+        {amlResult && (
+          <div className="rounded-lg border border-border bg-muted/30 dark:bg-muted/20 p-4 space-y-2 text-sm">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-muted-foreground">Result:</span>
+              <span className={`rounded-full px-2.5 py-1 text-xs font-semibold capitalize ${amlVerdictStyles[amlResult.verdict]}`}>
+                {amlResult.verdict === "match" ? "Match" : amlResult.verdict === "review" ? "Manual review" : "No match"}
+              </span>
+              <span className="text-muted-foreground">Score {(amlResult.score * 100).toFixed(0)}%</span>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Normalized on file: <span className="font-mono text-surface-foreground">{amlResult.normalizedRecord || "—"}</span>
+              {" · "}
+              Supplied: <span className="font-mono text-surface-foreground">{amlResult.normalizedInput || "—"}</span>
+            </p>
+          </div>
+        )}
+      </div>
+
       {/* Stats */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[
-          { label: "KYC Verified", value: stats.verified, icon: CheckCircle, color: "text-accent-600 bg-accent-50" },
-          { label: "KYC Pending", value: stats.pending, icon: Clock, color: "text-warning-600 bg-warning-50" },
-          { label: "AML Flagged", value: stats.flagged, icon: AlertTriangle, color: "text-danger-600 bg-danger-50" },
-          { label: "High Risk", value: stats.highRisk, icon: Shield, color: "text-danger-600 bg-danger-50" },
+          { label: "KYC Verified", value: stats.verified, icon: CheckCircle, color: "text-accent-600 bg-accent-50 dark:text-accent-300 dark:bg-accent-950/40" },
+          { label: "KYC Pending", value: stats.pending, icon: Clock, color: "text-warning-600 bg-warning-50 dark:text-warning-300 dark:bg-warning-950/35" },
+          { label: "AML Flagged", value: stats.flagged, icon: AlertTriangle, color: "text-danger-600 bg-danger-50 dark:text-danger-300 dark:bg-danger-950/35" },
+          { label: "High Risk", value: stats.highRisk, icon: Shield, color: "text-danger-600 bg-danger-50 dark:text-danger-300 dark:bg-danger-950/35" },
         ].map((s) => (
           <div key={s.label} className="rounded-xl border border-border bg-surface p-5">
             <div className={`inline-flex rounded-lg p-2 mb-3 ${s.color}`}>
@@ -150,7 +245,7 @@ export function CompliancePage() {
             </thead>
             <tbody className="divide-y divide-border">
               {filtered.map((r) => (
-                <tr key={r.id} className="hover:bg-primary-50/50 transition-colors duration-150">
+                <tr key={r.id} className="hover:bg-primary-50/50 dark:hover:bg-muted/30 transition-colors duration-150">
                   <td className="px-6 py-4">
                     <p className="font-medium text-surface-foreground">{r.clientName}</p>
                     <p className="text-xs text-muted-foreground">{r.email}</p>

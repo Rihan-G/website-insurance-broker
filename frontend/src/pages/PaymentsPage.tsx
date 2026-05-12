@@ -5,6 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import { logAudit } from "../lib/auditService";
 import { generateReceipt } from "../lib/pdfService";
 import { exportToCsv, formatPaymentsForExport } from "../lib/exportService";
+import { COMPANY_NAME, PAYMENTS_BASE_URL } from "../lib/branding";
 import toast from "react-hot-toast";
 
 interface Payment {
@@ -109,7 +110,7 @@ export function PaymentsPage() {
       if (!clientData) { toast.error("Client not found."); setCreating(false); return; }
 
       const expiresAt = new Date(Date.now() + Number(form.expiryDays) * 86400000).toISOString();
-      const mockLink = `https://pay.securebroker.mu/${Math.random().toString(36).slice(2, 10)}`;
+      const mockLink = `${PAYMENTS_BASE_URL}/${Math.random().toString(36).slice(2, 10)}`;
 
       const { data: payment, error } = await db.payments().insert({
         client_id: (clientData as { id: string }).id,
@@ -155,7 +156,7 @@ export function PaymentsPage() {
       currency: p.currency,
       gateway: p.gateway,
       paidAt: p.paid_at ?? p.created_at,
-      brokerName: "SecureBroker Insurance Ltd",
+      brokerName: COMPANY_NAME,
       brokerPhone: "+230 XXXX XXXX",
     });
     toast.success("Receipt downloaded.");
@@ -304,7 +305,7 @@ export function PaymentsPage() {
               <div>
                 <label className="block text-sm font-medium text-surface-foreground mb-1.5">Currency</label>
                 <select aria-label="Select currency" value={form.currency} onChange={(e) => setForm((p) => ({ ...p, currency: e.target.value }))} className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm focus:outline-none">
-                  <option>MUR</option><option>USD</option><option>EUR</option>
+                  <option>MUR</option><option>USD</option><option>GBP</option><option>EUR</option>
                 </select>
               </div>
               <div>

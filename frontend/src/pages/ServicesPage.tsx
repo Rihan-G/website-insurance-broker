@@ -5,6 +5,7 @@ import {
   CheckCircle, Phone, MessageCircle, Mail, MapPin,
   Award, ShieldCheck, Star, ChevronRight, ArrowRight,
 } from "lucide-react";
+import { COMPANY_NAME, COMPANY_NAME_SHORT, CONTACT_EMAIL } from "../lib/branding";
 
 const products = [
   {
@@ -88,9 +89,9 @@ const products = [
 ];
 
 const testimonials = [
-  { name: "Marie Dupont", role: "Motor Insurance client", rating: 5, text: "Excellent service! My claim was processed within 48 hours. Highly recommend SecureBroker." },
+  { name: "Marie Dupont", role: "Motor Insurance client", rating: 5, text: `Excellent service! My claim was processed within 48 hours. Highly recommend ${COMPANY_NAME_SHORT}.` },
   { name: "Jean-Pierre Ramgoolam", role: "Home & Motor client", rating: 5, text: "The team found me the best cover at a great price. Professional and always available on WhatsApp." },
-  { name: "Priya Devi", role: "Health Insurance client", rating: 5, text: "SecureBroker made finding health insurance easy. The online portal is very convenient." },
+  { name: "Priya Devi", role: "Health Insurance client", rating: 5, text: `${COMPANY_NAME_SHORT} made finding health insurance easy. The online portal is very convenient.` },
 ];
 
 const certifications = [
@@ -249,7 +250,7 @@ export function ServicesPage() {
             {[
               { icon: Phone, label: "Call Us", value: "+230 XXXX XXXX", href: "tel:+230XXXXXXXX" },
               { icon: MessageCircle, label: "WhatsApp", value: "+230 XXXX XXXX", href: "https://wa.me/230XXXXXXXX" },
-              { icon: Mail, label: "Email", value: "info@securebroker.mu", href: "mailto:info@securebroker.mu" },
+              { icon: Mail, label: "Email", value: CONTACT_EMAIL, href: `mailto:${CONTACT_EMAIL}` },
               { icon: MapPin, label: "Office", value: "Port Louis, Mauritius", href: "#" },
             ].map((c) => (
               <a key={c.label} href={c.href} className="flex flex-col items-center rounded-xl bg-white/10 border border-white/20 p-5 hover:bg-white/20 transition-colors duration-200 text-center">
@@ -262,7 +263,7 @@ export function ServicesPage() {
             ))}
           </div>
           <p className="mt-10 text-center text-xs text-primary-400">
-            SecureBroker Insurance Ltd · Licensed by the Financial Services Commission, Mauritius
+            {COMPANY_NAME} · Licensed by the Financial Services Commission, Mauritius
             <br />
             Mon–Fri 8:30 AM – 5:00 PM · Saturday 9:00 AM – 12:00 PM
           </p>
