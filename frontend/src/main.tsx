@@ -8,10 +8,17 @@ import App from "./App";
 import "./lib/i18n";
 import "./index.css";
 
+/** GitHub Pages serves the app under /<repo>/; Vite sets import.meta.env.BASE_URL with a trailing slash. */
+function routerBasename(): string | undefined {
+  const b = import.meta.env.BASE_URL;
+  if (!b || b === "/") return undefined;
+  return b.endsWith("/") ? b.slice(0, -1) : b;
+}
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ThemeProvider>
-      <BrowserRouter>
+      <BrowserRouter basename={routerBasename()}>
         <AuthProvider>
           <App />
           <Toaster

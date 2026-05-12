@@ -62,7 +62,8 @@ export function ClientsPage() {
       }
 
       const polByClient = new Map<string, { active: number; pending: number; total: number }>();
-      for (const row of polRes.data ?? []) {
+      const polRows = (polRes.data ?? []) as Array<{ client_id: string; status: string }>;
+      for (const row of polRows) {
         const cid = row.client_id;
         const prev = polByClient.get(cid) ?? { active: 0, pending: 0, total: 0 };
         prev.total += 1;
@@ -72,12 +73,13 @@ export function ClientsPage() {
       }
 
       const docByClient = new Map<string, number>();
-      for (const row of docRes.data ?? []) {
+      const docRows = (docRes.data ?? []) as Array<{ client_id: string }>;
+      for (const row of docRows) {
         docByClient.set(row.client_id, (docByClient.get(row.client_id) ?? 0) + 1);
       }
 
       setLiveClients(
-        profiles.map((p) => {
+        (profiles as Array<{ id: string; full_name: string; email: string; phone: string | null; created_at: string }>).map((p) => {
           const pc = polByClient.get(p.id) ?? { active: 0, pending: 0, total: 0 };
           return {
             id: p.id,

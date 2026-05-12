@@ -147,18 +147,19 @@ const coverageAnchors: Record<HomePolicy, Array<{ covMur: number; monthlyMur: nu
 function interpolateMonthlyMur(policy: HomePolicy, coverageMur: number): number {
   const pts = coverageAnchors[policy];
   if (coverageMur <= 0) return 0;
-  if (coverageMur <= pts[0].covMur) return (pts[0].monthlyMur / pts[0].covMur) * coverageMur;
+  const first = pts[0]!;
+  if (coverageMur <= first.covMur) return (first.monthlyMur / first.covMur) * coverageMur;
   for (let i = 1; i < pts.length; i++) {
-    if (coverageMur <= pts[i].covMur) {
-      const a = pts[i - 1];
-      const b = pts[i];
-      return a.monthlyMur + ((coverageMur - a.covMur) / (b.covMur - a.covMur)) * (b.monthlyMur - a.monthlyMur);
+    const cur = pts[i]!;
+    if (coverageMur <= cur.covMur) {
+      const prev = pts[i - 1]!;
+      return prev.monthlyMur + ((coverageMur - prev.covMur) / (cur.covMur - prev.covMur)) * (cur.monthlyMur - prev.monthlyMur);
     }
   }
-  const a = pts[pts.length - 2];
-  const b = pts[pts.length - 1];
-  const slope = (b.monthlyMur - a.monthlyMur) / (b.covMur - a.covMur);
-  return b.monthlyMur + (coverageMur - b.covMur) * slope;
+  const penultimate = pts[pts.length - 2]!;
+  const last = pts[pts.length - 1]!;
+  const slope = (last.monthlyMur - penultimate.monthlyMur) / (last.covMur - penultimate.covMur);
+  return last.monthlyMur + (coverageMur - last.covMur) * slope;
 }
 
 function QuoteCalculator() {
