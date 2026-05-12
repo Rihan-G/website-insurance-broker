@@ -5,6 +5,9 @@
 #
 # Live URL (after first successful run):
 #   https://<your-username>.github.io/website-insurance-broker/
+#
+# VITE_ALLOW_DEMO_LOGIN enables the same in-browser demo accounts as local dev
+# (no real Supabase required to try the portal on Pages).
 name: Deploy GitHub Pages
 
 on:
@@ -42,6 +45,7 @@ jobs:
       - name: Build for GitHub Pages
         env:
           VITE_GH_PAGES_BASE: /website-insurance-broker
+          VITE_ALLOW_DEMO_LOGIN: "true"
         run: pnpm build
 
       - name: SPA fallback + Jekyll bypass

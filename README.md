@@ -14,17 +14,40 @@ https://github.com/user-attachments/assets/dashboard_walkthrough.mp4
 |:---:|:---:|:---:|
 | ![Upload](docs/demo/upload_page.webp) | ![Clients](docs/demo/clients_page.webp) | ![Settings](docs/demo/settings_page.webp) |
 
-## Live site (browser, including iPhone)
+## Live site (GitHub Pages + iPhone)
 
-The repo includes a **GitHub Actions** workflow that builds the Vite app and deploys it to **GitHub Pages** whenever `main` is updated.
+This repo deploys the **static frontend** to **GitHub Pages** on every push to `main` (workflow: **Deploy GitHub Pages**).
 
-1. In GitHub: **Settings → Pages → Build and deployment**, set **Source** to **GitHub Actions** (not “Deploy from a branch”).
-2. Open the **Actions** tab and confirm the **Deploy GitHub Pages** workflow completes (or push to `main` to trigger it).
-3. Your app will be at:
+### One-time setup in GitHub
 
-**https://rihan-g.github.io/website-insurance-broker/**
+1. Open the repo on GitHub → **Settings** (repo settings, not your global account).
+2. In the left sidebar, click **Pages**.
+3. Under **Build and deployment**, set **Source** to **GitHub Actions** (not “Deploy from a branch”).
+4. Go to the **Actions** tab → select **Deploy GitHub Pages** → **Run workflow** (or push a commit to `main`).
+5. The first deploy may pause for **environment approval**: open the workflow run, click **Review deployments**, approve **github-pages** if GitHub asks.
+6. When the job is green, **Pages** will show your URL (refresh the Pages settings page if needed).
 
-Use your real GitHub username if it differs (`https://<user>.github.io/website-insurance-broker/`). Client-side routes work because the workflow copies `index.html` to `404.html` for SPA fallback.
+**Site URL** (replace `<user>` with your GitHub username, lowercase in the host):
+
+`https://<user>.github.io/website-insurance-broker/`
+
+Example: `https://rihan-g.github.io/website-insurance-broker/`
+
+### Demo login on Pages (no Supabase required)
+
+The Pages build sets **`VITE_ALLOW_DEMO_LOGIN=true`**, so you can sign in with the **local demo accounts** shown on the login page (same emails/passwords as in `frontend/src/lib/demoAuth.ts`), for example:
+
+- **Broker:** `broker@demo.sindicombrokers.local` / `BrokerDemo!SindicomBrokers`
+- **Client:** `client@demo.sindicombrokers.local` / `ClientDemo!SindicomBrokers`
+- **Admin:** `admin@demo.sindicombrokers.local` / `AdminDemo!SindicomBrokers`
+
+Many screens use **mock data** when demo mode is active; any feature that still calls Supabase with real IDs may show empty data or errors until you add a real project and rebuild with `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`.
+
+### If something fails
+
+- **404 on refresh:** the workflow copies `index.html` → `404.html`; redeploy from `main`.
+- **Blank page or wrong assets:** confirm `VITE_GH_PAGES_BASE` matches the repo name (`/website-insurance-broker` for this repository).
+- **Workflow not listed:** ensure `.github/workflows/deploy-github-pages.yml` exists on the default branch you push.
 
 ## Tech Stack
 
