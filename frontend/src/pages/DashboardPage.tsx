@@ -98,8 +98,8 @@ function StatCard({
 }
 
 export function DashboardPage() {
-  const { user, profile, session, demoAuthActive } = useAuth();
   const { format } = useCurrency();
+  const { user, profile, session, demoAuthActive } = useAuth();
   const [stats, setStats] = useState<DashboardStats | null>(demoAuthActive ? demoStats : null);
   const [pipeline, setPipeline] = useState<PipelineItem[]>(demoAuthActive ? demoPipeline : []);
   const [loading, setLoading] = useState(!demoAuthActive && Boolean(session && user));
