@@ -16,12 +16,19 @@ import {
   MessagesSquare,
   BellRing,
   ListTodo,
+  Sparkles,
+  Inbox,
+  CreditCard,
+  Settings,
+  Upload,
+  CircleAlert,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { DOCUMENT_STATUS_BADGE_CLASS, labelFromMime } from "../lib/documentsDisplay";
 import { supabase } from "../lib/supabase";
 import type { DashboardStats, PipelineItem } from "../types";
 import { useCurrency } from "../context/CurrencyContext";
+import { formatRelativeTime } from "../lib/formatRelativeTime";
 
 const demoStats: DashboardStats = {
   totalClients: 347,
@@ -48,6 +55,10 @@ const emptyStats: DashboardStats = {
   revenueChange: 0,
   documentsProcessed: 0,
 };
+
+type CareSnapshot = { unread: number; openTasks: number; claimsQueue: number };
+
+const demoCareSnapshot: CareSnapshot = { unread: 4, openTasks: 7, claimsQueue: 2 };
 
 function startOfUtcMonth(): string {
   const d = new Date();
@@ -119,12 +130,33 @@ function StatCard({
   );
 }
 
+function StatGridSkeleton() {
+  return (
+    <>
+      {[0, 1, 2, 3].map((i) => (
+        <div
+          key={i}
+          className="dashboard-panel rounded-2xl border border-border/90 p-6 ring-1 ring-primary-950/[0.03] dark:ring-white/[0.05]"
+        >
+          <div className="flex items-center justify-between gap-3">
+            <div className="skeleton h-3 w-28 rounded" />
+            <div className="skeleton h-10 w-10 shrink-0 rounded-xl" />
+          </div>
+          <div className="skeleton mt-4 h-9 w-24 rounded-md" />
+          <div className="skeleton mt-3 h-3 w-32 rounded" />
+        </div>
+      ))}
+    </>
+  );
+}
+
 export function DashboardPage() {
   const { format } = useCurrency();
   const { user, profile, session, demoAuthActive } = useAuth();
   const [stats, setStats] = useState<DashboardStats | null>(demoAuthActive ? demoStats : null);
   const [pipeline, setPipeline] = useState<PipelineItem[]>(demoAuthActive ? demoPipeline : []);
   const [loading, setLoading] = useState(!demoAuthActive && Boolean(session && user));
+  const [careSnapshot, setCareSnapshot] = useState<CareSnapshot | null>(demoAuthActive ? demoCareSnapshot : null);
 
   useEffect(() => {
     if (demoAuthActive) {
@@ -286,6 +318,54 @@ export function DashboardPage() {
     };
   }, [user?.id, profile, session, demoAuthActive]);
 
+  useEffect(() => {
+    if (demoAuthActive) {
+      setCareSnapshot(demoCareSnapshot);
+      return;
+    }
+    if (!session?.user?.id || !profile) {
+      setCareSnapshot(null);
+      return;
+    }
+    let cancelled = false;
+    const uid = session.user.id;
+    const { role } = profile;
+
+    async function loadCare() {
+      const unreadReq = supabase
+        .from("portal_notifications")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", uid)
+        .eq("read", false);
+
+      if (role === "admin" || role === "broker") {
+        const [ur, tr, cr] = await Promise.all([
+          unreadReq,
+          supabase.from("broker_tasks").select("id", { count: "exact", head: true }).in("status", ["open", "in_progress"]),
+          supabase.from("claim_intakes").select("id", { count: "exact", head: true }).in("status", ["submitted", "in_review"]),
+        ]);
+        if (cancelled) return;
+        setCareSnapshot({
+          unread: ur.count ?? 0,
+          openTasks: tr.count ?? 0,
+          claimsQueue: cr.count ?? 0,
+        });
+      } else {
+        const ur = await unreadReq;
+        if (cancelled) return;
+        setCareSnapshot({ unread: ur.count ?? 0, openTasks: 0, claimsQueue: 0 });
+      }
+    }
+
+    void loadCare().catch(() => {
+      if (!cancelled) setCareSnapshot({ unread: 0, openTasks: 0, claimsQueue: 0 });
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [demoAuthActive, session, profile]);
+
   const revenueHeights = [65, 72, 58, 80, 85, 78, 92, 88, 95, 90, 98, 100];
 
   if (!demoAuthActive && session && user && !profile) {
@@ -301,6 +381,9 @@ export function DashboardPage() {
 
   const viewStats = stats ?? (demoAuthActive ? demoStats : emptyStats);
   const viewPipeline = demoAuthActive ? demoPipeline : pipeline;
+  const showStatSkeleton = loading && !demoAuthActive && Boolean(session && user && profile);
+  const careLoading = careSnapshot === null && !demoAuthActive && Boolean(session && user && profile);
+  const isClientLive = profile?.role === "client" && !demoAuthActive;
 
   return (
     <div className="space-y-8">
@@ -351,8 +434,105 @@ export function DashboardPage() {
         </div>
       </div>
 
+      <div className="flex flex-wrap gap-2">
+        {(
+          [
+            { to: "/dashboard/documents", label: "Documents", Icon: FileText },
+            { to: "/dashboard/inbox", label: "Inbox", Icon: Inbox },
+            { to: "/dashboard/payments", label: "Payments", Icon: CreditCard },
+            { to: "/dashboard/upload", label: "Upload", Icon: Upload },
+            { to: "/dashboard/settings", label: "Settings", Icon: Settings },
+          ] as const
+        ).map(({ to, label, Icon }) => (
+          <Link
+            key={to}
+            to={to}
+            className="card-hover inline-flex items-center gap-2 rounded-full border border-border/80 bg-surface/90 px-3 py-1.5 text-xs font-semibold text-muted-foreground shadow-sm transition-colors hover:border-primary-300 hover:text-surface-foreground dark:border-border dark:hover:border-primary-600"
+          >
+            <Icon className="h-3.5 w-3.5 shrink-0" aria-hidden />
+            {label}
+          </Link>
+        ))}
+      </div>
+
+      <section className="dashboard-panel rounded-2xl p-5" aria-label="Care snapshot">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">At a glance</p>
+            <p className="mt-0.5 text-sm text-muted-foreground">Care workspace counters — jump in when something needs you</p>
+          </div>
+          <Sparkles className="hidden h-5 w-5 shrink-0 text-accent-500 sm:block" aria-hidden />
+        </div>
+        {careLoading ? (
+          <div className="mt-4 grid gap-3 sm:grid-cols-3">
+            {[0, 1, 2].map((i) => (
+              <div key={i} className="rounded-xl border border-border/80 bg-surface/50 p-4 dark:border-border">
+                <div className="skeleton mb-3 h-3 w-28 rounded" />
+                <div className="skeleton h-8 w-14 rounded-md" />
+              </div>
+            ))}
+          </div>
+        ) : isClientLive ? (
+          <div className="mt-4 max-w-md">
+            <Link
+              to="/dashboard/notifications"
+              className="card-hover flex items-center justify-between gap-4 rounded-xl border border-border/90 bg-surface p-4 shadow-sm dark:border-border"
+            >
+              <div className="flex min-w-0 items-center gap-3">
+                <div className="rounded-lg bg-primary-50 p-2 text-primary-700 dark:bg-primary-950/50 dark:text-primary-300">
+                  <BellRing className="h-5 w-5 shrink-0" aria-hidden />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-sm font-bold text-surface-foreground">Unread notifications</p>
+                  <p className="text-xs text-muted-foreground">Portal alerts and reminders</p>
+                </div>
+              </div>
+              <span className="text-2xl font-extrabold tabular-nums text-surface-foreground">{careSnapshot?.unread ?? 0}</span>
+            </Link>
+          </div>
+        ) : (
+          <div className="mt-4 grid gap-3 sm:grid-cols-3">
+            <Link
+              to="/dashboard/notifications"
+              className="card-hover flex flex-col justify-between gap-3 rounded-xl border border-border/90 bg-surface p-4 shadow-sm dark:border-border"
+            >
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Unread</span>
+                <BellRing className="h-4 w-4 text-primary-600 dark:text-primary-400" aria-hidden />
+              </div>
+              <p className="text-3xl font-extrabold tabular-nums text-surface-foreground">{careSnapshot?.unread ?? 0}</p>
+              <p className="text-xs text-muted-foreground">Notifications</p>
+            </Link>
+            <Link
+              to="/dashboard/tasks"
+              className="card-hover flex flex-col justify-between gap-3 rounded-xl border border-border/90 bg-surface p-4 shadow-sm dark:border-border"
+            >
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Open tasks</span>
+                <ListTodo className="h-4 w-4 text-accent-600 dark:text-accent-400" aria-hidden />
+              </div>
+              <p className="text-3xl font-extrabold tabular-nums text-surface-foreground">{careSnapshot?.openTasks ?? 0}</p>
+              <p className="text-xs text-muted-foreground">Broker backlog</p>
+            </Link>
+            <Link
+              to="/dashboard/claims"
+              className="card-hover flex flex-col justify-between gap-3 rounded-xl border border-border/90 bg-surface p-4 shadow-sm dark:border-border"
+            >
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Claims queue</span>
+                <CircleAlert className="h-4 w-4 text-warning-600 dark:text-warning-400" aria-hidden />
+              </div>
+              <p className="text-3xl font-extrabold tabular-nums text-surface-foreground">{careSnapshot?.claimsQueue ?? 0}</p>
+              <p className="text-xs text-muted-foreground">Submitted and in review</p>
+            </Link>
+          </div>
+        )}
+      </section>
+
       <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
-        {profile?.role === "client" && !demoAuthActive ? (
+        {showStatSkeleton ? (
+          <StatGridSkeleton />
+        ) : profile?.role === "client" && !demoAuthActive ? (
           <>
             <StatCard
               title="Active Policies"
@@ -427,7 +607,20 @@ export function DashboardPage() {
           </div>
           <div className="divide-y divide-border/80">
             {viewPipeline.length === 0 && !loading && (
-              <div className="px-6 py-12 text-center text-sm text-muted-foreground">No documents yet.</div>
+              <div className="px-6 py-14 text-center">
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-50 text-primary-600 dark:bg-primary-950/60 dark:text-primary-300">
+                  <Upload className="h-7 w-7" aria-hidden />
+                </div>
+                <p className="mt-4 text-sm font-semibold text-surface-foreground">No documents in the pipeline yet</p>
+                <p className="mt-1 text-sm text-muted-foreground">Upload a policy or endorsement to kick off OCR and review.</p>
+                <Link
+                  to="/dashboard/upload"
+                  className="mt-5 inline-flex items-center gap-2 rounded-xl bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white shadow-md transition hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400"
+                >
+                  <Upload className="h-4 w-4" aria-hidden />
+                  Go to upload
+                </Link>
+              </div>
             )}
             {viewPipeline.map((item) => (
               <div
@@ -437,6 +630,7 @@ export function DashboardPage() {
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-surface-foreground truncate">{item.clientName}</p>
                   <p className="text-sm text-muted-foreground">{item.documentType}</p>
+                  <p className="mt-0.5 text-xs text-muted-foreground/90">{formatRelativeTime(item.uploadedAt)}</p>
                 </div>
                 <span className={`rounded-full px-2.5 py-1 text-xs font-medium capitalize ${DOCUMENT_STATUS_BADGE_CLASS[item.status]}`}>
                   {item.status}

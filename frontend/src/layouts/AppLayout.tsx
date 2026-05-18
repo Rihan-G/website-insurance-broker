@@ -15,6 +15,7 @@ import { ThemeToggle } from "../components/ThemeToggle";
 import { CommandPalette } from "../components/CommandPalette";
 import { CurrencySwitcher } from "../components/CurrencySwitcher";
 import { COMPANY_NAME_SHORT, PORTAL_HEADING } from "../lib/branding";
+import { supabase } from "../lib/supabase";
 import "../lib/i18n";
 
 interface NavItem {
@@ -124,16 +125,37 @@ export function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [cmdOpen, setCmdOpen] = useState(false);
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
-  const { profile, signOut } = useAuth();
+  const { profile, signOut, session, demoAuthActive } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const mainRef = useRef<HTMLElement>(null);
   const { i18n } = useTranslation();
+  const [notifBadge, setNotifBadge] = useState<number | null>(null);
   useAutoLogout();
 
   useEffect(() => {
     mainRef.current?.scrollTo(0, 0);
   }, [location.pathname]);
+
+  useEffect(() => {
+    if (demoAuthActive || !session?.user?.id) {
+      setNotifBadge(null);
+      return;
+    }
+    let cancelled = false;
+    void (async () => {
+      const { count, error } = await supabase
+        .from("portal_notifications")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", session.user.id)
+        .eq("read", false);
+      if (cancelled || error) return;
+      setNotifBadge(count ?? 0);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [session?.user?.id, demoAuthActive]);
 
   const jumpShortcut =
     typeof navigator !== "undefined" && /Mac|iPhone|iPad|iPod/i.test(navigator.userAgent) ? "⌘K" : "Ctrl+K";
@@ -220,17 +242,26 @@ export function AppLayout() {
                     }`
                   }
                 >
-                  {({ isActive }) => (
+                  {({ isActive }) => {
+                    const badgeCount =
+                      item.name === "notifications" && notifBadge != null && notifBadge > 0
+                        ? notifBadge > 99
+                          ? "99+"
+                          : String(notifBadge)
+                        : undefined;
+                    const badgeText = item.badge ?? badgeCount;
+                    return (
                     <>
                       <item.icon className={`h-4 w-4 shrink-0 transition-colors duration-200 ${isActive ? "text-accent-400" : "text-primary-400 group-hover:text-primary-200"}`} />
                       <span className="truncate">{navLabels[item.name] ?? item.name}</span>
-                      {item.badge && (
+                      {badgeText && (
                         <span className="ml-auto rounded-full bg-danger-500 px-1.5 py-0.5 text-xs font-bold text-white leading-none">
-                          {item.badge}
+                          {badgeText}
                         </span>
                       )}
                     </>
-                  )}
+                  );
+                  }}
                 </NavLink>
               ))}
             </div>
