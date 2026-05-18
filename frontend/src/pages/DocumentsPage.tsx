@@ -10,6 +10,7 @@ import {
 import { openDocumentInNewTab, triggerDocumentDownload } from "../lib/documentStorage";
 import { exportToCsv } from "../lib/exportService";
 import { supabase } from "../lib/supabase";
+import { DEMO_IDS } from "../lib/demoAuth";
 
 interface DocumentRow {
   id: string;
@@ -24,17 +25,59 @@ interface DocumentRow {
   confidence: number | null;
 }
 
-const mockDocuments: DocumentRow[] = [
-  { id: "1", fileName: "motor_policy_2025.pdf", client: "Marie Dupont", type: "Motor Insurance", status: "approved", uploadedAt: "2025-01-15", size: "2.4 MB", confidence: 98 },
-  { id: "2", fileName: "home_valuation.pdf", client: "Jean-Pierre Ramgoolam", type: "Home Insurance", status: "processing", uploadedAt: "2025-01-15", size: "5.1 MB", confidence: 87 },
-  { id: "3", fileName: "life_application.pdf", client: "Priya Devi", type: "Life Insurance", status: "reviewed", uploadedAt: "2025-01-14", size: "1.8 MB", confidence: 94 },
-  { id: "4", fileName: "health_claim_form.pdf", client: "Ahmed Boolell", type: "Health Insurance", status: "uploaded", uploadedAt: "2025-01-14", size: "3.2 MB", confidence: null },
-  { id: "5", fileName: "travel_docs.pdf", client: "Sophie Chen", type: "Travel Insurance", status: "rejected", uploadedAt: "2025-01-13", size: "892 KB", confidence: 42 },
-  { id: "6", fileName: "renewal_notice.pdf", client: "Ravi Patel", type: "Motor Insurance", status: "approved", uploadedAt: "2025-01-13", size: "1.1 MB", confidence: 96 },
+/** Demo rows: `demoVisibleForClientUserId` limits portal clients to their own folder (staff see all). */
+type MockDocumentSource = DocumentRow & { demoVisibleForClientUserId?: string };
+
+const MOCK_DOCUMENT_SOURCES: MockDocumentSource[] = [
+  {
+    id: "dc-1",
+    fileName: "motor_policy_2025.pdf",
+    client: "Demo Client",
+    type: "Motor Insurance",
+    status: "approved",
+    uploadedAt: "2025-01-15",
+    size: "2.4 MB",
+    confidence: 98,
+    demoVisibleForClientUserId: DEMO_IDS.CLIENT,
+  },
+  {
+    id: "dc-2",
+    fileName: "claims_photos.zip",
+    client: "Demo Client",
+    type: "Motor Insurance",
+    status: "processing",
+    uploadedAt: "2025-01-14",
+    size: "8.1 MB",
+    confidence: 71,
+    demoVisibleForClientUserId: DEMO_IDS.CLIENT,
+  },
+  {
+    id: "dc-3",
+    fileName: "noc_letter.pdf",
+    client: "Demo Client",
+    type: "Motor Insurance",
+    status: "uploaded",
+    uploadedAt: "2025-01-13",
+    size: "420 KB",
+    confidence: null,
+    demoVisibleForClientUserId: DEMO_IDS.CLIENT,
+  },
+  { id: "s-1", fileName: "motor_policy_2025.pdf", client: "Marie Dupont", type: "Motor Insurance", status: "approved", uploadedAt: "2025-01-15", size: "2.4 MB", confidence: 98 },
+  { id: "s-2", fileName: "home_valuation.pdf", client: "Jean-Pierre Ramgoolam", type: "Home Insurance", status: "processing", uploadedAt: "2025-01-15", size: "5.1 MB", confidence: 87 },
+  { id: "s-3", fileName: "life_application.pdf", client: "Priya Devi", type: "Life Insurance", status: "reviewed", uploadedAt: "2025-01-14", size: "1.8 MB", confidence: 94 },
+  { id: "s-4", fileName: "health_claim_form.pdf", client: "Ahmed Boolell", type: "Health Insurance", status: "uploaded", uploadedAt: "2025-01-14", size: "3.2 MB", confidence: null },
+  { id: "s-5", fileName: "travel_docs.pdf", client: "Sophie Chen", type: "Travel Insurance", status: "rejected", uploadedAt: "2025-01-13", size: "892 KB", confidence: 42 },
+  { id: "s-6", fileName: "renewal_notice.pdf", client: "Ravi Patel", type: "Motor Insurance", status: "approved", uploadedAt: "2025-01-13", size: "1.1 MB", confidence: 96 },
 ];
 
+function stripMockMeta(row: MockDocumentSource): DocumentRow {
+  const { demoVisibleForClientUserId: _scope, ...rest } = row;
+  void _scope;
+  return rest;
+}
+
 export function DocumentsPage() {
-  const { demoAuthActive, profile } = useAuth();
+  const { user, demoAuthActive, profile } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [liveRows, setLiveRows] = useState<DocumentRow[]>([]);
@@ -50,7 +93,7 @@ export function DocumentsPage() {
     let cancelled = false;
     async function load() {
       setLoading(true);
-      const q = supabase
+      let q = supabase
         .from("documents")
         .select(
           `
@@ -67,6 +110,10 @@ export function DocumentsPage() {
         )
         .order("created_at", { ascending: false })
         .limit(200);
+
+      if (profile?.role === "client" && user?.id) {
+        q = q.eq("client_id", user.id);
+      }
 
       const { data, error } = await q;
       setLoading(false);
@@ -108,9 +155,17 @@ export function DocumentsPage() {
     return () => {
       cancelled = true;
     };
-  }, [demoAuthActive, profile?.role]);
+  }, [demoAuthActive, profile?.role, user?.id]);
 
-  const rows = demoAuthActive ? mockDocuments : liveRows;
+  const rows = useMemo(() => {
+    if (!demoAuthActive) return liveRows;
+    const role = profile?.role;
+    const uid = user?.id;
+    if (role === "client" && uid) {
+      return MOCK_DOCUMENT_SOURCES.filter((d) => d.demoVisibleForClientUserId === uid).map(stripMockMeta);
+    }
+    return MOCK_DOCUMENT_SOURCES.map(stripMockMeta);
+  }, [demoAuthActive, profile?.role, user?.id, liveRows]);
 
   const filtered = useMemo(
     () =>

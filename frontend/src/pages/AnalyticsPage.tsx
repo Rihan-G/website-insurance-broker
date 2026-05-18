@@ -8,6 +8,8 @@ import { supabase } from "../lib/supabase";
 import { exportToCsv } from "../lib/exportService";
 import toast from "react-hot-toast";
 
+const ANALYTICS_PREFS_LS = "sb_analytics_prefs_v1";
+
 const COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#06b6d4"];
 
 const monthlyRevenue = [
@@ -70,6 +72,30 @@ function KPICard({ title, value, change, icon: Icon, color }: KPICardProps) {
 export function AnalyticsPage() {
   const [period, setPeriod] = useState<"3m" | "6m" | "12m">("12m");
   const [liveStats, setLiveStats] = useState({ clients: 0, docs: 0, payments: 0 });
+  const [operatorName, setOperatorName] = useState("");
+  const [accent, setAccent] = useState<"blue" | "emerald" | "violet">("blue");
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(ANALYTICS_PREFS_LS);
+      if (!raw) return;
+      const v = JSON.parse(raw) as { operatorName?: string; accent?: "blue" | "emerald" | "violet" };
+      if (typeof v.operatorName === "string") setOperatorName(v.operatorName);
+      if (v.accent === "blue" || v.accent === "emerald" || v.accent === "violet") setAccent(v.accent);
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  const persistPrefs = (next: { operatorName: string; accent: "blue" | "emerald" | "violet" }) => {
+    setOperatorName(next.operatorName);
+    setAccent(next.accent);
+    try {
+      localStorage.setItem(ANALYTICS_PREFS_LS, JSON.stringify(next));
+    } catch {
+      /* ignore */
+    }
+  };
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -85,6 +111,8 @@ export function AnalyticsPage() {
 
   const sliceMonths = period === "3m" ? 3 : period === "6m" ? 6 : 12;
   const chartData = monthlyRevenue.slice(-sliceMonths);
+  const accentStroke =
+    accent === "emerald" ? "#10b981" : accent === "violet" ? "#8b5cf6" : "#3b82f6";
 
   const handleExport = () => {
     exportToCsv(monthlyRevenue, "analytics_revenue");
@@ -96,7 +124,10 @@ export function AnalyticsPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="text-2xl font-bold text-surface-foreground">Analytics</h2>
-          <p className="text-muted-foreground">Revenue, growth, and performance insights</p>
+          <p className="text-muted-foreground">
+            Revenue, growth, and performance insights
+            {operatorName.trim() ? ` — personalised for ${operatorName.trim()}` : ""}
+          </p>
         </div>
         <div className="flex items-center gap-2">
           <div className="flex rounded-lg border border-border overflow-hidden">
@@ -118,6 +149,30 @@ export function AnalyticsPage() {
         </div>
       </div>
 
+      <div className="rounded-xl border border-border bg-surface p-4 sm:flex sm:flex-wrap sm:items-end sm:gap-4">
+        <div className="flex-1 min-w-[200px]">
+          <label className="text-xs font-medium text-muted-foreground">Personalise — display name</label>
+          <input
+            className="mt-1 w-full max-w-md rounded-lg border border-border bg-background px-3 py-2 text-sm"
+            placeholder="e.g. your desk or branch name"
+            value={operatorName}
+            onChange={(e) => persistPrefs({ operatorName: e.target.value, accent })}
+          />
+        </div>
+        <div>
+          <label className="text-xs font-medium text-muted-foreground">Chart accent</label>
+          <select
+            className="mt-1 rounded-lg border border-border bg-background px-3 py-2 text-sm"
+            value={accent}
+            onChange={(e) => persistPrefs({ operatorName, accent: e.target.value as typeof accent })}
+          >
+            <option value="blue">Ocean blue</option>
+            <option value="emerald">Emerald</option>
+            <option value="violet">Violet</option>
+          </select>
+        </div>
+      </div>
+
       {/* KPIs */}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <KPICard title="Total Clients" value={liveStats.clients > 0 ? liveStats.clients.toString() : "347"} change={8.2} icon={Users} color="bg-primary-100 text-primary-600" />
@@ -133,8 +188,8 @@ export function AnalyticsPage() {
           <AreaChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
             <defs>
               <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.15} />
-                <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                <stop offset="5%" stopColor={accentStroke} stopOpacity={0.15} />
+                <stop offset="95%" stopColor={accentStroke} stopOpacity={0} />
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -142,7 +197,7 @@ export function AnalyticsPage() {
             <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}K`} />
             <Tooltip formatter={(v, n) => [n === "revenue" ? `MUR ${Number(v).toLocaleString()}` : v, n === "revenue" ? "Revenue" : "Clients"]} />
             <Legend />
-            <Area type="monotone" dataKey="revenue" name="Revenue (MUR)" stroke="#3b82f6" fill="url(#revGrad)" strokeWidth={2} />
+            <Area type="monotone" dataKey="revenue" name="Revenue (MUR)" stroke={accentStroke} fill="url(#revGrad)" strokeWidth={2} />
           </AreaChart>
         </ResponsiveContainer>
       </div>

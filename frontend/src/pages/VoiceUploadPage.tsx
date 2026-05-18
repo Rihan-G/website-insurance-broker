@@ -1,8 +1,9 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Mic, Square, Upload, FileAudio, Loader2, CheckCircle, Globe, AlertCircle } from "lucide-react";
 import { supabase } from "../lib/supabase";
 import { db } from "../lib/db";
 import { useAuth } from "../context/AuthContext";
+import { hasAiApiKeys } from "../lib/aiConfig";
 import toast from "react-hot-toast";
 
 interface VoiceNote {
@@ -21,7 +22,8 @@ const languageLabels: Record<string, string> = {
 };
 
 export function VoiceUploadPage() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
+  const [assistantLane, setAssistantLane] = useState<"staff" | "client">("staff");
   const [recording, setRecording] = useState(false);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
@@ -33,6 +35,11 @@ export function VoiceUploadPage() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    if (profile?.role === "client") setAssistantLane("client");
+    else setAssistantLane("staff");
+  }, [profile?.role]);
 
   const startRecording = async () => {
     try {
@@ -94,100 +101,208 @@ export function VoiceUploadPage() {
     }
   };
 
-  const loadNotes = async () => {
+  const loadNotes = useCallback(async () => {
     if (!user) return;
     setLoadingNotes(true);
     const { data } = await db.voiceNotes().select("*").eq("client_id", user.id).order("created_at", { ascending: false }).limit(10);
     setNotes((data as VoiceNote[]) ?? []);
     setLoadingNotes(false);
-  };
+  }, [user]);
+
+  useEffect(() => {
+    void loadNotes();
+  }, [loadNotes]);
 
   const formatDuration = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+
+  const aiReady = hasAiApiKeys();
 
   return (
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold text-surface-foreground">Voice Note Upload</h2>
-        <p className="text-muted-foreground">Record in Kreol Morisien, English, or French — auto-transcribed</p>
+        <p className="text-muted-foreground">
+          {aiReady
+            ? "Record in Kreol Morisien, English, or French — transcription runs when your backend is wired to the AI provider."
+            : "Record voice notes for your files. Transcription and assistant replies stay in placeholder mode until you add API keys (see below)."}
+        </p>
+      </div>
+
+      {!aiReady && (
+        <div className="rounded-xl border border-amber-300 bg-amber-50/95 p-4 text-sm text-amber-950 dark:border-amber-700/60 dark:bg-amber-950/40 dark:text-amber-50">
+          <p className="font-semibold text-surface-foreground dark:text-amber-50">AI transcription &amp; assistants — not configured</p>
+          <p className="mt-1 text-muted-foreground dark:text-amber-100/90">
+            Add one of these to <code className="rounded bg-white/70 px-1 py-0.5 text-xs dark:bg-black/30">frontend/.env</code> (then restart the dev server or rebuild). Keys are read at build time in Vite; use Edge Functions or a backend proxy in production.
+          </p>
+          <ul className="mt-2 list-disc space-y-1 pl-5 text-xs sm:text-sm">
+            <li>
+              <code className="font-mono">VITE_GEMINI_API_KEY</code> — recommended for Gemini Flash Lite speech workflows
+            </li>
+            <li>
+              <code className="font-mono">VITE_AI_API_KEY</code> — generic hook for a future provider abstraction
+            </li>
+            <li>
+              <code className="font-mono">VITE_OPENAI_API_KEY</code> — optional OpenAI-compatible endpoint
+            </li>
+          </ul>
+        </div>
+      )}
+
+      <div className="rounded-xl border border-border bg-muted/25 p-4">
+        <p className="text-sm font-semibold text-surface-foreground">AI assistant lanes (preview)</p>
+        {aiReady ? (
+          <>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Separate broker-desk and client-care assistants are planned. This toggle only adjusts on-screen guidance for now.
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => setAssistantLane("staff")}
+                className={`rounded-lg px-3 py-1.5 text-xs font-semibold ${assistantLane === "staff" ? "bg-primary-600 text-white" : "border border-border bg-surface text-muted-foreground"}`}
+              >
+                Broker desk
+              </button>
+              <button
+                type="button"
+                onClick={() => setAssistantLane("client")}
+                className={`rounded-lg px-3 py-1.5 text-xs font-semibold ${assistantLane === "client" ? "bg-primary-600 text-white" : "border border-border bg-surface text-muted-foreground"}`}
+              >
+                Client care
+              </button>
+            </div>
+            <p className="mt-2 text-xs text-muted-foreground">
+              {assistantLane === "staff"
+                ? "Tip: mention policy numbers, diary dates, and underwriting questions clearly for the desk transcript."
+                : "Tip: speak in short sentences when explaining premiums or payment steps so the client summary stays easy to read."}
+            </p>
+          </>
+        ) : (
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <div className="rounded-lg border border-dashed border-border bg-surface/80 p-3 dark:bg-surface/40">
+              <p className="text-xs font-semibold text-surface-foreground">Broker desk (placeholder)</p>
+              <p className="mt-2 text-xs italic text-muted-foreground">
+                [Assistant summary will appear here after <code className="not-italic">VITE_GEMINI_API_KEY</code> or another supported key is set and the Edge pipeline is connected.]
+              </p>
+            </div>
+            <div className="rounded-lg border border-dashed border-border bg-surface/80 p-3 dark:bg-surface/40">
+              <p className="text-xs font-semibold text-surface-foreground">Client care (placeholder)</p>
+              <p className="mt-2 text-xs italic text-muted-foreground">
+                [Plain-language client tips will render here once the client-care model endpoint is configured.]
+              </p>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Recorder */}
         <div className="rounded-xl border border-border bg-surface p-6 space-y-5">
-          <div className="flex items-center gap-3">
-            <Globe className="h-5 w-5 text-muted-foreground" />
-            <select
-              aria-label="Select transcription language"
-              value={language}
-              onChange={(e) => setLanguage(e.target.value)}
-              className="rounded-lg border border-border bg-surface px-3 py-2 text-sm focus:border-primary-500 focus:outline-none cursor-pointer"
-            >
-              <option value="mfe">Kreol Morisien</option>
-              <option value="en">English</option>
-              <option value="fr">Français</option>
-            </select>
-          </div>
-
-          <div className="flex flex-col items-center gap-4 py-4">
-            {recording ? (
-              <>
-                <div className="relative flex h-24 w-24 items-center justify-center rounded-full bg-danger-50 border-4 border-danger-200">
-                  <div className="absolute inset-0 rounded-full bg-danger-200 animate-ping opacity-30" />
-                  <Mic className="h-10 w-10 text-danger-600" />
-                </div>
-                <p className="text-2xl font-mono font-bold text-surface-foreground">{formatDuration(duration)}</p>
-                <p className="text-sm text-danger-600 font-medium animate-pulse">Recording in {languageLabels[language]}…</p>
-                <button
-                  onClick={stopRecording}
-                  className="inline-flex items-center gap-2 rounded-full bg-danger-600 px-6 py-3 text-sm font-semibold text-white hover:bg-danger-700 cursor-pointer transition-colors duration-200"
+          {aiReady ? (
+            <>
+              <div className="flex items-center gap-3">
+                <Globe className="h-5 w-5 text-muted-foreground" />
+                <select
+                  aria-label="Select transcription language"
+                  value={language}
+                  onChange={(e) => setLanguage(e.target.value)}
+                  className="rounded-lg border border-border bg-surface px-3 py-2 text-sm focus:border-primary-500 focus:outline-none cursor-pointer"
                 >
-                  <Square className="h-4 w-4" />
-                  Stop Recording
-                </button>
-              </>
-            ) : (
-              <>
-                <div className="flex h-24 w-24 items-center justify-center rounded-full bg-primary-50 border-4 border-primary-200">
-                  <Mic className="h-10 w-10 text-primary-600" />
+                  <option value="mfe">Kreol Morisien</option>
+                  <option value="en">English</option>
+                  <option value="fr">Français</option>
+                </select>
+              </div>
+
+              <div className="flex flex-col items-center gap-4 py-4">
+                {recording ? (
+                  <>
+                    <div className="relative flex h-24 w-24 items-center justify-center rounded-full bg-danger-50 border-4 border-danger-200">
+                      <div className="absolute inset-0 rounded-full bg-danger-200 animate-ping opacity-30" />
+                      <Mic className="h-10 w-10 text-danger-600" />
+                    </div>
+                    <p className="text-2xl font-mono font-bold text-surface-foreground">{formatDuration(duration)}</p>
+                    <p className="text-sm text-danger-600 font-medium animate-pulse">Recording in {languageLabels[language]}…</p>
+                    <button
+                      onClick={stopRecording}
+                      className="inline-flex items-center gap-2 rounded-full bg-danger-600 px-6 py-3 text-sm font-semibold text-white hover:bg-danger-700 cursor-pointer transition-colors duration-200"
+                    >
+                      <Square className="h-4 w-4" />
+                      Stop Recording
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex h-24 w-24 items-center justify-center rounded-full bg-primary-50 border-4 border-primary-200">
+                      <Mic className="h-10 w-10 text-primary-600" />
+                    </div>
+                    <p className="text-sm text-muted-foreground text-center">Click to start recording your voice note in {languageLabels[language]}</p>
+                    <button
+                      onClick={startRecording}
+                      className="inline-flex items-center gap-2 rounded-full bg-primary-600 px-6 py-3 text-sm font-semibold text-white hover:bg-primary-700 cursor-pointer transition-colors duration-200"
+                    >
+                      <Mic className="h-4 w-4" />
+                      Start Recording
+                    </button>
+                  </>
+                )}
+              </div>
+
+              {audioUrl && !recording && (
+                <div className="rounded-xl border border-border bg-muted p-4 space-y-3">
+                  <p className="text-sm font-medium text-surface-foreground">Recording ready ({formatDuration(duration)})</p>
+                  <audio controls src={audioUrl} className="w-full" />
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => { setAudioBlob(null); setAudioUrl(null); setDuration(0); }}
+                      className="flex-1 rounded-lg border border-border py-2 text-sm font-medium text-muted-foreground hover:bg-muted cursor-pointer"
+                    >
+                      Discard
+                    </button>
+                    <button
+                      onClick={uploadNote}
+                      disabled={uploading}
+                      className="flex-1 inline-flex items-center justify-center gap-2 rounded-lg bg-primary-600 py-2 text-sm font-semibold text-white hover:bg-primary-700 disabled:opacity-50 cursor-pointer"
+                    >
+                      {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                      {uploading ? "Uploading…" : "Upload & Transcribe"}
+                    </button>
+                  </div>
                 </div>
-                <p className="text-sm text-muted-foreground text-center">Click to start recording your voice note in {languageLabels[language]}</p>
+              )}
+
+              <div className="rounded-lg bg-primary-50 border border-primary-200 p-4 text-sm text-primary-800 dark:bg-primary-950/55 dark:border-primary-700/50 dark:text-primary-100">
+                <strong>Powered by Speech-to-Text AI</strong> — Supports Kreol Morisien (Mauritian Creole), English, and French transcription via Gemini Flash Lite.
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="flex flex-col items-center gap-4 rounded-xl border border-dashed border-border bg-muted/20 py-10 px-4 text-center">
+                <div className="flex h-24 w-24 items-center justify-center rounded-full border-2 border-dashed border-muted-foreground/30 bg-muted/40">
+                  <Mic className="h-10 w-10 text-muted-foreground/50" aria-hidden />
+                </div>
+                <p className="text-sm font-medium text-surface-foreground">Recorder (placeholder)</p>
+                <p className="max-w-sm text-xs text-muted-foreground">
+                  Start recording, language selection, and upload run after you set a supported API key in <code className="rounded bg-muted px-1 py-0.5 font-mono text-[11px]">frontend/.env</code> and restart the dev server.
+                </p>
                 <button
-                  onClick={startRecording}
-                  className="inline-flex items-center gap-2 rounded-full bg-primary-600 px-6 py-3 text-sm font-semibold text-white hover:bg-primary-700 cursor-pointer transition-colors duration-200"
+                  type="button"
+                  disabled
+                  className="inline-flex cursor-not-allowed items-center gap-2 rounded-full border border-border bg-muted px-6 py-3 text-sm font-semibold text-muted-foreground opacity-70"
                 >
                   <Mic className="h-4 w-4" />
                   Start Recording
                 </button>
-              </>
-            )}
-          </div>
-
-          {audioUrl && !recording && (
-            <div className="rounded-xl border border-border bg-muted p-4 space-y-3">
-              <p className="text-sm font-medium text-surface-foreground">Recording ready ({formatDuration(duration)})</p>
-              <audio controls src={audioUrl} className="w-full" />
-              <div className="flex gap-3">
-                <button
-                  onClick={() => { setAudioBlob(null); setAudioUrl(null); setDuration(0); }}
-                  className="flex-1 rounded-lg border border-border py-2 text-sm font-medium text-muted-foreground hover:bg-muted cursor-pointer"
-                >
-                  Discard
-                </button>
-                <button
-                  onClick={uploadNote}
-                  disabled={uploading}
-                  className="flex-1 inline-flex items-center justify-center gap-2 rounded-lg bg-primary-600 py-2 text-sm font-semibold text-white hover:bg-primary-700 disabled:opacity-50 cursor-pointer"
-                >
-                  {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
-                  {uploading ? "Uploading…" : "Upload & Transcribe"}
-                </button>
+                <div className="w-full max-w-xs rounded-lg border border-dashed border-border bg-surface/60 p-3 text-left">
+                  <p className="text-[11px] font-semibold text-muted-foreground">Upload &amp; transcribe</p>
+                  <p className="mt-1 text-xs italic text-muted-foreground">Appears here once recording is enabled.</p>
+                </div>
               </div>
-            </div>
+              <div className="rounded-lg border border-dashed border-amber-300/60 bg-amber-50/80 p-4 text-sm text-amber-950 dark:border-amber-700/50 dark:bg-amber-950/35 dark:text-amber-50">
+                <strong className="text-surface-foreground dark:text-amber-50">Transcription</strong> — Provider-specific branding and live speech-to-text appear after API keys are configured; until then this panel stays in preview layout only.
+              </div>
+            </>
           )}
-
-          <div className="rounded-lg bg-primary-50 border border-primary-200 p-4 text-sm text-primary-800 dark:bg-primary-950/55 dark:border-primary-700/50 dark:text-primary-100">
-            <strong>Powered by Speech-to-Text AI</strong> — Supports Kreol Morisien (Mauritian Creole), English, and French transcription via Gemini Flash Lite.
-          </div>
         </div>
 
         {/* Past notes */}

@@ -4,6 +4,11 @@ import { format } from "date-fns";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
 import { db } from "../lib/db";
+import {
+  readDemoPortalNotifications,
+  markDemoPortalNotificationRead,
+  markAllDemoPortalNotificationsRead,
+} from "../lib/demoClientNotifications";
 
 type NotifKind = "document" | "payment" | "security" | "system";
 
@@ -55,7 +60,15 @@ export function NotificationsPage() {
       return;
     }
     if (demoAuthActive || !session) {
-      setItems(MOCK);
+      const stacked = readDemoPortalNotifications(user.id).map((n) => ({
+        id: n.id,
+        kind: n.kind,
+        title: n.title,
+        body: n.body,
+        at: new Date(n.at),
+        read: n.read,
+      }));
+      setItems([...stacked, ...MOCK]);
       setLive(false);
       setLoading(false);
       return;
@@ -94,6 +107,10 @@ export function NotificationsPage() {
 
   const markRead = async (id: string) => {
     setItems((prev) => prev.map((i) => (i.id === id ? { ...i, read: true } : i)));
+    if (demoAuthActive && user && id.startsWith("demo-n-")) {
+      markDemoPortalNotificationRead(user.id, id);
+      return;
+    }
     if (!live || demoAuthActive || !session || id.startsWith("mock")) return;
     const { error } = await db.portalNotifications().update({ read: true }).eq("id", id).eq("user_id", user!.id);
     if (error) toast.error(error.message);
@@ -101,6 +118,11 @@ export function NotificationsPage() {
 
   const markAll = async () => {
     setItems((prev) => prev.map((i) => ({ ...i, read: true })));
+    if (demoAuthActive && user) {
+      markAllDemoPortalNotificationsRead(user.id);
+      toast.success("All notifications marked read (demo).");
+      return;
+    }
     if (!live || demoAuthActive || !session) {
       toast.success("All notifications marked read (demo).");
       return;

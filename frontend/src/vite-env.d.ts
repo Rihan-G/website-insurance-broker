@@ -9,4 +9,14 @@ interface ImportMetaEnv {
   readonly VITE_STAFF_PORTAL_URL?: string;
   /** Client portal origin, no trailing slash (required on staff portal for my-policies hand-off). */
   readonly VITE_CLIENT_PORTAL_URL?: string;
+  /** Google Gemini API key for voice transcription / future AI features (server-safe: use Edge Functions in production). */
+  readonly VITE_GEMINI_API_KEY?: string;
+  /** Generic AI provider key hook (optional). */
+  readonly VITE_AI_API_KEY?: string;
+  /** OpenAI-compatible API key (optional). */
+  readonly VITE_OPENAI_API_KEY?: string;
+  /** Optional full URL to a GitHub compare view or PR (Renewals staff panel). Empty values are ignored. */
+  readonly VITE_GITHUB_PR_COMPARE?: string;
+  /** Optional override for “Repository” links (e.g. fork). Must be repo root, with or without https://. */
+  readonly VITE_GITHUB_REPO_URL?: string;
 }

@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { uploadDocument, saveDocumentRecord, simulateOcr, validateFile } from "../lib/uploadService";
 import { logAudit } from "../lib/auditService";
 import { DEMO_CLIENT_ROWS } from "../lib/demoClients";
+import { formatBytes } from "../lib/documentsDisplay";
 import { supabase } from "../lib/supabase";
 import toast from "react-hot-toast";
 
@@ -15,6 +16,9 @@ interface UploadProgress {
   error?: string;
   ocrConfidence?: number;
   isNewVersion?: boolean;
+  mimeType?: string;
+  sizeBytes?: number;
+  targetClientId?: string;
 }
 
 export function UploadPage() {
@@ -89,11 +93,34 @@ export function UploadPage() {
       const validation = validateFile(file);
 
       if (validation) {
-        setUploads((prev) => [...prev, { id, fileName: file.name, progress: 0, status: "error", error: validation }]);
+        setUploads((prev) => [
+          ...prev,
+          {
+            id,
+            fileName: file.name,
+            progress: 0,
+            status: "error",
+            error: validation,
+            mimeType: file.type,
+            sizeBytes: file.size,
+            targetClientId: resolvedClientId,
+          },
+        ]);
         return;
       }
 
-      setUploads((prev) => [...prev, { id, fileName: file.name, progress: 0, status: "uploading" }]);
+      setUploads((prev) => [
+        ...prev,
+        {
+          id,
+          fileName: file.name,
+          progress: 0,
+          status: "uploading",
+          mimeType: file.type,
+          sizeBytes: file.size,
+          targetClientId: resolvedClientId,
+        },
+      ]);
 
       try {
         const clientForPath = resolvedClientId;
@@ -162,6 +189,19 @@ export function UploadPage() {
         <p className="text-muted-foreground">Upload client documents for OCR processing and secure storage</p>
       </div>
 
+      <div className="rounded-xl border border-border bg-muted/20 p-4 sm:p-5 text-sm text-muted-foreground">
+        <p className="font-semibold text-surface-foreground">What is being uploaded</p>
+        <ul className="mt-2 list-disc space-y-1 pl-5">
+          <li>The original file (name, size, and MIME type shown per row below).</li>
+          <li>
+            Storage path prefix{" "}
+            <code className="rounded bg-muted px-1 py-0.5 text-xs text-surface-foreground">documents/{resolvedClientId}/…</code>{" "}
+            so the document is owned by that client profile in Supabase.
+          </li>
+          <li>A metadata row in the <code className="text-xs">documents</code> table plus audit log entry for compliance.</li>
+          <li>Simulated OCR confidence scores for supported types (demo / offline behaviour).</li>
+        </ul>
+      </div>
       {isStaff && user && (
         <div
           className="rounded-xl border border-border bg-surface p-4 sm:p-5"
@@ -279,6 +319,19 @@ export function UploadPage() {
                       </button>
                     </div>
                   </div>
+                  {(upload.mimeType || upload.sizeBytes != null || upload.targetClientId) && (
+                    <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                      {upload.mimeType && <span className="text-surface-foreground/90">MIME: {upload.mimeType}</span>}
+                      {upload.sizeBytes != null && (
+                        <span className="ml-2 text-surface-foreground/90">Size: {formatBytes(upload.sizeBytes)}</span>
+                      )}
+                      {upload.targetClientId && (
+                        <span className="ml-2 block sm:inline sm:ml-2">
+                          Storage folder: <code className="rounded bg-muted px-1 py-0.5 text-[10px]">documents/{upload.targetClientId}/</code>
+                        </span>
+                      )}
+                    </p>
+                  )}
                   {upload.status === "uploading" && (
                     <progress
                       className="thin-progress mt-2"

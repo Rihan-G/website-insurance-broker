@@ -153,6 +153,13 @@ export function CommissionPage() {
         </div>
       </div>
 
+      <div className="rounded-xl border border-amber-200 bg-amber-50/90 p-4 text-sm text-amber-950 dark:border-amber-800/60 dark:bg-amber-950/35 dark:text-amber-100">
+        <p className="font-semibold text-surface-foreground dark:text-amber-50">Management review</p>
+        <p className="mt-1 text-muted-foreground dark:text-amber-100/85">
+          Commission totals and payout timing should be reconciled with finance before month-end. Flag any broker lines that look out of pattern for director sign-off.
+        </p>
+      </div>
+
       {/* Totals */}
       <div className="grid gap-4 sm:grid-cols-3">
         {[

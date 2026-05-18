@@ -103,6 +103,13 @@ export function CapacityPage() {
         <p className="text-muted-foreground">Portfolio overview, broker workload, and business performance</p>
       </div>
 
+      <div className="rounded-xl border border-primary-200 bg-primary-50/90 p-4 text-sm dark:border-primary-800/50 dark:bg-primary-950/35 dark:text-primary-100">
+        <p className="font-semibold text-surface-foreground">Capacity &amp; workload review</p>
+        <p className="mt-1 text-muted-foreground dark:text-primary-100/85">
+          Use broker workload bars as a discussion starter with leadership — redistribute policies when any broker is consistently above the pack.
+        </p>
+      </div>
+
       {/* Portfolio totals */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[
