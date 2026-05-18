@@ -18,6 +18,7 @@ import { CurrencySwitcher } from "../components/CurrencySwitcher";
 import { COMPANY_NAME_SHORT, PORTAL_HEADING } from "../lib/branding";
 import { getPortalFlavor } from "../lib/portalFlavor";
 import { supabase } from "../lib/supabase";
+import type { Profile } from "../types";
 import "../lib/i18n";
 
 interface NavItem {
@@ -123,6 +124,148 @@ const navLabels: Record<string, string> = {
   settings: "Settings",
 };
 
+type VisibleNavGroup = { label: string; items: NavItem[] };
+
+function DashboardSidebarPanel({
+  onNavLinkClick,
+  onSignOut,
+  visibleGroups,
+  collapsedGroups,
+  toggleGroup,
+  notifBadge,
+  profile,
+}: {
+  onNavLinkClick: () => void;
+  onSignOut: () => void | Promise<void>;
+  visibleGroups: VisibleNavGroup[];
+  collapsedGroups: Set<string>;
+  toggleGroup: (label: string) => void;
+  notifBadge: number | null;
+  profile: Profile | null;
+}) {
+  const { i18n } = useTranslation();
+
+  return (
+    <>
+      <div className="absolute inset-0 bg-gradient-to-b from-primary-950 via-primary-900 to-primary-950" />
+      <div className="aurora-bg opacity-70">
+        <div className="aurora-orb-1 aurora-sidebar-1" />
+        <div className="aurora-orb-2 aurora-sidebar-2" />
+        <div className="aurora-orb-3 aurora-sidebar-3" />
+      </div>
+      <ParticleField count={10} variant="rise" className="opacity-60" />
+
+      <div className="relative flex h-16 shrink-0 items-center gap-3 border-b border-white/8 px-5">
+        <div className="rounded-lg border border-white/15 bg-white/10 p-1.5 shrink-0">
+          <ShieldCheck className="h-5 w-5 text-accent-400" />
+        </div>
+        <div className="min-w-0">
+          <span className="text-sm font-bold tracking-tight text-white">{COMPANY_NAME_SHORT}</span>
+          <p className="truncate text-xs text-primary-400">Insurance Portal</p>
+        </div>
+      </div>
+
+      <nav className="relative min-h-0 flex-1 overflow-y-auto px-3 py-4 space-y-0.5">
+        {visibleGroups.map((group) => (
+          <div key={group.label} className="mb-1">
+            <button
+              type="button"
+              onClick={() => toggleGroup(group.label)}
+              className="flex w-full cursor-pointer items-center justify-between px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-primary-500 transition-colors duration-200 hover:text-primary-300"
+            >
+              {group.label}
+              <ChevronDown
+                className={`h-3 w-3 transition-transform duration-200 ${collapsedGroups.has(group.label) ? "-rotate-90" : ""}`}
+              />
+            </button>
+            {!collapsedGroups.has(group.label) &&
+              group.items.map((item) => (
+                <NavLink
+                  key={item.name}
+                  to={item.to}
+                  end={item.to === "/dashboard"}
+                  onClick={() => onNavLinkClick()}
+                  className={({ isActive }) =>
+                    `group flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
+                      isActive
+                        ? "border border-white/10 bg-white/15 text-white nav-active-glow"
+                        : "text-primary-300 hover:bg-white/8 hover:text-white"
+                    }`
+                  }
+                >
+                  {({ isActive }) => {
+                    const badgeCount =
+                      item.name === "notifications" && notifBadge != null && notifBadge > 0
+                        ? notifBadge > 99
+                          ? "99+"
+                          : String(notifBadge)
+                        : undefined;
+                    const badgeText = item.badge ?? badgeCount;
+                    return (
+                      <>
+                        <item.icon
+                          className={`h-4 w-4 shrink-0 transition-colors duration-200 ${isActive ? "text-accent-400" : "text-primary-400 group-hover:text-primary-200"}`}
+                        />
+                        <span className="truncate">{navLabels[item.name] ?? item.name}</span>
+                        {badgeText && (
+                          <span className="ml-auto rounded-full bg-danger-500 px-1.5 py-0.5 text-xs font-bold leading-none text-white">
+                            {badgeText}
+                          </span>
+                        )}
+                      </>
+                    );
+                  }}
+                </NavLink>
+              ))}
+          </div>
+        ))}
+      </nav>
+
+      <div className="relative shrink-0 space-y-3 border-t border-white/8 p-4">
+        <div className="flex gap-1 rounded-xl border border-white/10 bg-white/8 p-1">
+          {[
+            ["en", "EN"],
+            ["fr", "FR"],
+            ["mfe", "KR"],
+          ].map(([code, label]) => (
+            <button
+              key={code}
+              type="button"
+              onClick={() => {
+                void i18n.changeLanguage(code ?? "en");
+                localStorage.setItem("sb_lang", code ?? "en");
+              }}
+              className={`flex-1 cursor-pointer rounded-lg py-1 text-xs font-bold transition-all duration-200 ${
+                i18n.language === code ? "bg-primary-500 text-white shadow-sm" : "text-primary-400 hover:text-white"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        <div className="flex items-center gap-3 px-2">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-accent-500 text-xs font-bold text-white shadow-sm">
+            {profile?.full_name?.split(" ").map((n) => n[0]).join("") || "U"}
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-semibold text-white">{profile?.full_name || "User"}</p>
+            <p className="text-xs text-primary-400 capitalize">{profile?.role || "client"}</p>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={() => void onSignOut()}
+          className="flex w-full cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-primary-300 transition-colors duration-200 hover:bg-white/8 hover:text-white"
+        >
+          <LogOut className="h-4 w-4" />
+          Sign Out
+        </button>
+      </div>
+    </>
+  );
+}
+
 export function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [cmdOpen, setCmdOpen] = useState(false);
@@ -131,13 +274,22 @@ export function AppLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const mainRef = useRef<HTMLElement>(null);
-  const { i18n } = useTranslation();
   const [notifBadge, setNotifBadge] = useState<number | null>(null);
   useAutoLogout();
 
   useEffect(() => {
     mainRef.current?.scrollTo(0, 0);
   }, [location.pathname]);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const closeOnDesktop = () => {
+      if (mq.matches) setSidebarOpen(false);
+    };
+    closeOnDesktop();
+    mq.addEventListener("change", closeOnDesktop);
+    return () => mq.removeEventListener("change", closeOnDesktop);
+  }, []);
 
   useEffect(() => {
     if (demoAuthActive || !session?.user?.id) {
@@ -199,123 +351,43 @@ export function AppLayout() {
       </a>
       <CommandPalette open={cmdOpen} onOpenChange={setCmdOpen} />
       {sidebarOpen && (
-        <div className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden" onClick={() => setSidebarOpen(false)} />
+        <div
+          className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden"
+          aria-hidden
+          onClick={() => setSidebarOpen(false)}
+        />
       )}
 
-      {/* ── Sidebar — Glassmorphism + Aurora gradient ── */}
-      {/* Wrapper is `w-0` below lg so a fixed drawer never reserves a flex column; at lg+ it is w-64 and the aside is in-flow (`static`). */}
-      <div className="relative z-50 min-h-0 w-0 shrink-0 self-stretch overflow-visible lg:z-auto lg:w-64 lg:shrink-0">
-        <aside
-          id="app-sidebar"
-          className={`fixed inset-y-0 left-0 flex h-[100dvh] min-h-0 w-64 max-w-[85vw] flex-col overflow-hidden border-r border-white/5 transition-transform duration-300 lg:static lg:h-full lg:max-w-none lg:translate-x-0 lg:border-r-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
-        >
-        {/* Sidebar gradient base */}
-        <div className="absolute inset-0 bg-gradient-to-b from-primary-950 via-primary-900 to-primary-950" />
-        {/* Visible aurora orbs in sidebar */}
-        <div className="aurora-bg opacity-70">
-          <div className="aurora-orb-1 aurora-sidebar-1" />
-          <div className="aurora-orb-2 aurora-sidebar-2" />
-          <div className="aurora-orb-3 aurora-sidebar-3" />
-        </div>
-        {/* Rising particles in sidebar */}
-        <ParticleField count={10} variant="rise" className="opacity-60" />
-
-        {/* Logo */}
-        <div className="relative flex h-16 items-center gap-3 px-5 border-b border-white/8">
-          <div className="rounded-lg bg-white/10 border border-white/15 p-1.5 shrink-0">
-            <ShieldCheck className="h-5 w-5 text-accent-400" />
-          </div>
-          <div className="min-w-0">
-            <span className="text-sm font-bold tracking-tight text-white">{COMPANY_NAME_SHORT}</span>
-            <p className="text-xs text-primary-400 truncate">Insurance Portal</p>
-          </div>
-        </div>
-
-        <nav className="relative flex-1 overflow-y-auto px-3 py-4 space-y-0.5">
-          {visibleGroups.map((group) => (
-            <div key={group.label} className="mb-1">
-              <button
-                onClick={() => toggleGroup(group.label)}
-                className="flex w-full items-center justify-between px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-primary-500 hover:text-primary-300 cursor-pointer transition-colors duration-200"
-              >
-                {group.label}
-                <ChevronDown className={`h-3 w-3 transition-transform duration-200 ${collapsedGroups.has(group.label) ? "-rotate-90" : ""}`} />
-              </button>
-              {!collapsedGroups.has(group.label) && group.items.map((item) => (
-                <NavLink
-                  key={item.name}
-                  to={item.to}
-                  end={item.to === "/dashboard"}
-                  onClick={() => setSidebarOpen(false)}
-                  className={({ isActive }) =>
-                    `group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium cursor-pointer transition-all duration-200 ${
-                      isActive
-                        ? "bg-white/15 text-white nav-active-glow border border-white/10"
-                        : "text-primary-300 hover:bg-white/8 hover:text-white"
-                    }`
-                  }
-                >
-                  {({ isActive }) => {
-                    const badgeCount =
-                      item.name === "notifications" && notifBadge != null && notifBadge > 0
-                        ? notifBadge > 99
-                          ? "99+"
-                          : String(notifBadge)
-                        : undefined;
-                    const badgeText = item.badge ?? badgeCount;
-                    return (
-                    <>
-                      <item.icon className={`h-4 w-4 shrink-0 transition-colors duration-200 ${isActive ? "text-accent-400" : "text-primary-400 group-hover:text-primary-200"}`} />
-                      <span className="truncate">{navLabels[item.name] ?? item.name}</span>
-                      {badgeText && (
-                        <span className="ml-auto rounded-full bg-danger-500 px-1.5 py-0.5 text-xs font-bold text-white leading-none">
-                          {badgeText}
-                        </span>
-                      )}
-                    </>
-                  );
-                  }}
-                </NavLink>
-              ))}
-            </div>
-          ))}
-        </nav>
-
-        <div className="relative border-t border-white/8 p-4 space-y-3">
-          {/* Language switcher */}
-          <div className="flex gap-1 rounded-xl bg-white/8 border border-white/10 p-1">
-            {[["en", "EN"], ["fr", "FR"], ["mfe", "KR"]].map(([code, label]) => (
-              <button
-                key={code}
-                onClick={() => { void i18n.changeLanguage(code ?? "en"); localStorage.setItem("sb_lang", code ?? "en"); }}
-                className={`flex-1 rounded-lg py-1 text-xs font-bold cursor-pointer transition-all duration-200 ${
-                  i18n.language === code ? "bg-primary-500 text-white shadow-sm" : "text-primary-400 hover:text-white"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-
-          <div className="flex items-center gap-3 px-2">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-accent-500 text-xs font-bold text-white shadow-sm">
-              {profile?.full_name?.split(" ").map((n) => n[0]).join("") || "U"}
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-semibold text-white">{profile?.full_name || "User"}</p>
-              <p className="text-xs text-primary-400 capitalize">{profile?.role || "client"}</p>
-            </div>
-          </div>
-          <button
-            onClick={handleSignOut}
-            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-primary-300 hover:bg-white/8 hover:text-white cursor-pointer transition-all duration-200"
-          >
-            <LogOut className="h-4 w-4" />
-            Sign Out
-          </button>
-        </div>
+      {/* Desktop: in-flow column. Mobile drawer is a separate fixed sibling (`lg:hidden`) so Chrome never reserves a phantom flex width. */}
+      <aside className="relative hidden h-full min-h-0 w-64 shrink-0 flex-col overflow-hidden border-r border-white/5 lg:flex lg:flex-col">
+        <DashboardSidebarPanel
+          onNavLinkClick={() => {}}
+          onSignOut={handleSignOut}
+          visibleGroups={visibleGroups}
+          collapsedGroups={collapsedGroups}
+          toggleGroup={toggleGroup}
+          notifBadge={notifBadge}
+          profile={profile}
+        />
       </aside>
-      </div>
+
+      <aside
+        id="app-sidebar"
+        aria-hidden={!sidebarOpen}
+        className={`fixed inset-y-0 left-0 z-50 flex h-[100dvh] min-h-0 w-64 max-w-[85vw] flex-col overflow-hidden border-r border-white/5 shadow-2xl transition-transform duration-300 ease-out will-change-transform lg:hidden ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full pointer-events-none"
+        }`}
+      >
+        <DashboardSidebarPanel
+          onNavLinkClick={() => setSidebarOpen(false)}
+          onSignOut={handleSignOut}
+          visibleGroups={visibleGroups}
+          collapsedGroups={collapsedGroups}
+          toggleGroup={toggleGroup}
+          notifBadge={notifBadge}
+          profile={profile}
+        />
+      </aside>
 
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
         {/* Top header — glass effect */}
