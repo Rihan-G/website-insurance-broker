@@ -3,8 +3,14 @@
 # One-time repo setup (owner must do in GitHub UI):
 #   Settings → Pages → Build and deployment → Source: "GitHub Actions"
 #
-# Live URL (after first successful run):
-#   https://<your-username>.github.io/website-insurance-broker/
+# Live URL depends on the repository name:
+#   • Project site (this repo): https://<owner>.github.io/website-insurance-broker/
+#   • User/org site (repo named <owner>.github.io): https://<owner>.github.io/
+#
+# Open the URL that matches your repo. Visiting only https://<owner>.github.io/ when
+# this app is published as a *project* site will show a different site or stale content.
+#
+# This workflow runs only on pushes to main — merge your PR before expecting updates.
 #
 # VITE_ALLOW_DEMO_LOGIN enables the same in-browser demo accounts as local dev
 # (no real Supabase required to try the portal on Pages).
@@ -42,9 +48,23 @@ jobs:
       - name: Install
         run: pnpm install
 
+      - name: Set Vite base path for GitHub Pages
+        run: |
+          set -euo pipefail
+          REPO="${GITHUB_REPOSITORY#*/}"
+          OWNER="${GITHUB_REPOSITORY%%/*}"
+          owner_lc=$(echo "$OWNER" | tr '[:upper:]' '[:lower:]')
+          repo_lc=$(echo "$REPO" | tr '[:upper:]' '[:lower:]')
+          if [ "$repo_lc" = "${owner_lc}.github.io" ]; then
+            echo "VITE_GH_PAGES_BASE=/" >> "$GITHUB_ENV"
+            echo "Using root base (user/org GitHub Pages repository)."
+          else
+            echo "VITE_GH_PAGES_BASE=/$REPO/" >> "$GITHUB_ENV"
+            echo "Using project base /$REPO/ for GitHub Pages."
+          fi
+
       - name: Build for GitHub Pages
         env:
-          VITE_GH_PAGES_BASE: /website-insurance-broker
           VITE_ALLOW_DEMO_LOGIN: "true"
         run: pnpm build
 
