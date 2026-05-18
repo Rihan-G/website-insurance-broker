@@ -4,7 +4,8 @@ import {
   LayoutDashboard, FileText, Upload, Users, Settings, LogOut, Menu, X,
   ShieldCheck, KeyRound, ClipboardList, MessageSquare, CreditCard,
   Calculator, BarChart3, Bell, MessageCircle, Mic, Shield, ChevronDown,
-  Globe, Home, RefreshCw, Award, Calendar, Search,
+  Globe, Home, RefreshCw, Award, Calendar, Search, CalendarClock, FileWarning,
+  MessagesSquare, BellRing, ListTodo,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useAutoLogout } from "../hooks/useAutoLogout";
@@ -14,6 +15,7 @@ import { ThemeToggle } from "../components/ThemeToggle";
 import { CommandPalette } from "../components/CommandPalette";
 import { CurrencySwitcher } from "../components/CurrencySwitcher";
 import { COMPANY_NAME_SHORT, PORTAL_HEADING } from "../lib/branding";
+import { supabase } from "../lib/supabase";
 import "../lib/i18n";
 
 interface NavItem {
@@ -49,6 +51,16 @@ const navGroups: Array<{ label: string; items: NavItem[] }> = [
       { name: "inbox", to: "/dashboard/inbox", icon: MessageSquare },
       { name: "payments", to: "/dashboard/payments", icon: CreditCard },
       { name: "whatsapp", to: "/dashboard/whatsapp", icon: MessageCircle, roles: ["admin", "broker"] },
+    ],
+  },
+  {
+    label: "Care",
+    items: [
+      { name: "renewals", to: "/dashboard/renewals", icon: CalendarClock },
+      { name: "claims", to: "/dashboard/claims", icon: FileWarning },
+      { name: "secure-messages", to: "/dashboard/secure-messages", icon: MessagesSquare },
+      { name: "notifications", to: "/dashboard/notifications", icon: BellRing },
+      { name: "tasks", to: "/dashboard/tasks", icon: ListTodo },
     ],
   },
   {
@@ -90,6 +102,11 @@ const navLabels: Record<string, string> = {
   "mid-term": "Mid-Term Adjust.",
   inbox: "Inbox",
   payments: "Payments",
+  renewals: "Renewals",
+  claims: "Claims intake",
+  "secure-messages": "Secure messages",
+  notifications: "Notifications",
+  tasks: "Tasks",
   whatsapp: "WhatsApp",
   review: "Doc Review",
   analytics: "Analytics",
@@ -108,16 +125,37 @@ export function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [cmdOpen, setCmdOpen] = useState(false);
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
-  const { profile, signOut } = useAuth();
+  const { profile, signOut, session, demoAuthActive } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const mainRef = useRef<HTMLElement>(null);
   const { i18n } = useTranslation();
+  const [notifBadge, setNotifBadge] = useState<number | null>(null);
   useAutoLogout();
 
   useEffect(() => {
     mainRef.current?.scrollTo(0, 0);
   }, [location.pathname]);
+
+  useEffect(() => {
+    if (demoAuthActive || !session?.user?.id) {
+      setNotifBadge(null);
+      return;
+    }
+    let cancelled = false;
+    void (async () => {
+      const { count, error } = await supabase
+        .from("portal_notifications")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", session.user.id)
+        .eq("read", false);
+      if (cancelled || error) return;
+      setNotifBadge(count ?? 0);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [session?.user?.id, demoAuthActive]);
 
   const jumpShortcut =
     typeof navigator !== "undefined" && /Mac|iPhone|iPad|iPod/i.test(navigator.userAgent) ? "⌘K" : "Ctrl+K";
@@ -204,17 +242,26 @@ export function AppLayout() {
                     }`
                   }
                 >
-                  {({ isActive }) => (
+                  {({ isActive }) => {
+                    const badgeCount =
+                      item.name === "notifications" && notifBadge != null && notifBadge > 0
+                        ? notifBadge > 99
+                          ? "99+"
+                          : String(notifBadge)
+                        : undefined;
+                    const badgeText = item.badge ?? badgeCount;
+                    return (
                     <>
                       <item.icon className={`h-4 w-4 shrink-0 transition-colors duration-200 ${isActive ? "text-accent-400" : "text-primary-400 group-hover:text-primary-200"}`} />
                       <span className="truncate">{navLabels[item.name] ?? item.name}</span>
-                      {item.badge && (
+                      {badgeText && (
                         <span className="ml-auto rounded-full bg-danger-500 px-1.5 py-0.5 text-xs font-bold text-white leading-none">
-                          {item.badge}
+                          {badgeText}
                         </span>
                       )}
                     </>
-                  )}
+                  );
+                  }}
                 </NavLink>
               ))}
             </div>
@@ -258,7 +305,7 @@ export function AppLayout() {
 
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Top header — glass effect */}
-        <header className="flex h-16 items-center gap-4 border-b border-border/60 bg-white/70 backdrop-blur-md px-6 lg:px-8 shadow-sm dark:border-border dark:bg-surface/75 dark:shadow-none">
+        <header className="flex h-16 items-center gap-4 border-b border-border/70 bg-white/85 px-6 shadow-[0_1px_0_rgba(255,255,255,0.65)_inset,0_8px_28px_-16px_rgba(3,105,161,0.12)] backdrop-blur-xl lg:px-8 dark:border-border dark:bg-surface/75 dark:shadow-[0_1px_0_rgba(255,255,255,0.05)_inset,0_12px_40px_-12px_rgba(0,0,0,0.5)]">
           <button
             onClick={() => setSidebarOpen(true)}
             className="rounded-xl p-1.5 text-muted-foreground hover:bg-primary-50 dark:hover:bg-muted cursor-pointer lg:hidden transition-colors duration-200"

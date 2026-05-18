@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { ShieldCheck, Eye, EyeOff, Lock, CheckCircle, Sparkles } from "lucide-react";
+import { ShieldCheck, Eye, EyeOff, Lock, CheckCircle, Sparkles, AlertTriangle } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { DEMO_ACCOUNTS } from "../lib/demoAuth";
 import { COMPANY_NAME_SHORT } from "../lib/branding";
@@ -112,7 +112,7 @@ export function LoginPage() {
       </div>
 
       {/* ── Right panel — Auth form ── */}
-      <div className="relative flex flex-1 items-center justify-center bg-gradient-to-br from-primary-50 via-white to-primary-50 dark:from-gray-950 dark:via-background dark:to-gray-950 px-6 lg:px-16 overflow-hidden">
+      <div className="relative flex flex-1 items-center justify-center overflow-hidden bg-gradient-to-br from-primary-50 via-white to-accent-50/35 dark:from-[#0a1018] dark:via-background dark:to-primary-950/40 px-6 lg:px-16">
         <div className="absolute top-5 right-5 z-20 lg:top-8 lg:right-8">
           <ThemeToggle />
         </div>
@@ -134,13 +134,17 @@ export function LoginPage() {
           </div>
 
           {/* Card */}
-          <div className="glass-card rounded-2xl p-8">
+          <div className="glass-card relative overflow-hidden rounded-2xl p-8 ring-1 ring-primary-900/[0.04] dark:ring-white/[0.06]">
+            <div
+              className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary-500/0 via-primary-500/70 to-accent-500/0 dark:via-primary-400/80"
+              aria-hidden
+            />
             <div className="mb-6 flex items-center gap-3">
-              <div className="rounded-lg bg-primary-100 dark:bg-primary-900/40 p-2">
-                <Lock className="h-5 w-5 text-primary-600 dark:text-primary-400" />
+              <div className="rounded-xl bg-gradient-to-br from-primary-100 to-primary-50 p-2.5 shadow-inner ring-1 ring-primary-200/60 dark:from-primary-900/50 dark:to-primary-950/30 dark:ring-primary-700/40">
+                <Lock className="h-5 w-5 text-primary-600 dark:text-primary-300" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-primary-900 dark:text-primary-50">
+                <h2 className="text-xl font-bold tracking-tight text-primary-900 dark:text-primary-50">
                   {isSignUp ? "Create Account" : "Secure Sign In"}
                 </h2>
                 <p className="text-xs text-muted-foreground">
@@ -150,9 +154,12 @@ export function LoginPage() {
             </div>
 
             {error && (
-              <div className="mb-4 rounded-lg bg-danger-50 dark:bg-danger-50/25 border border-danger-500/20 p-3 text-sm text-danger-600 dark:text-danger-500 flex items-start gap-2">
-                <span className="shrink-0 mt-0.5">⚠</span>
-                {error}
+              <div
+                role="alert"
+                className="mb-4 flex items-start gap-2.5 rounded-xl border border-danger-500/25 bg-danger-50/95 p-3.5 text-sm text-danger-700 shadow-sm dark:bg-danger-950/35 dark:text-danger-400"
+              >
+                <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-danger-600 dark:text-danger-400" aria-hidden />
+                <span>{error}</span>
               </div>
             )}
 
@@ -166,7 +173,7 @@ export function LoginPage() {
                     onChange={(e) => setFullName(e.target.value)}
                     required={isSignUp}
                     placeholder="Jean Dupont"
-                    className="w-full rounded-xl border border-border bg-white/80 dark:bg-surface/80 px-4 py-3 text-sm text-surface-foreground placeholder-muted-foreground focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none transition-all duration-200 backdrop-blur-sm"
+                    className="w-full rounded-xl border border-border/90 bg-white/90 px-4 py-3 text-sm text-surface-foreground shadow-sm placeholder:text-muted-foreground focus:border-primary-500 focus:ring-2 focus:ring-primary-500/25 focus:outline-none dark:border-border dark:bg-surface/90 dark:shadow-none"
                   />
                 </div>
               )}
@@ -179,7 +186,7 @@ export function LoginPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   placeholder="you@company.com"
-                  className="w-full rounded-xl border border-border bg-white/80 dark:bg-surface/80 px-4 py-3 text-sm text-surface-foreground placeholder-muted-foreground focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none transition-all duration-200 backdrop-blur-sm"
+                  className="w-full rounded-xl border border-border/90 bg-white/90 px-4 py-3 text-sm text-surface-foreground shadow-sm placeholder:text-muted-foreground focus:border-primary-500 focus:ring-2 focus:ring-primary-500/25 focus:outline-none dark:border-border dark:bg-surface/90 dark:shadow-none"
                 />
               </div>
 
@@ -192,12 +199,12 @@ export function LoginPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     placeholder="••••••••"
-                    className="w-full rounded-xl border border-border bg-white/80 dark:bg-surface/80 px-4 py-3 pr-11 text-sm text-surface-foreground placeholder-muted-foreground focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none transition-all duration-200 backdrop-blur-sm"
+                    className="w-full rounded-xl border border-border/90 bg-white/90 px-4 py-3 pr-11 text-sm text-surface-foreground shadow-sm placeholder:text-muted-foreground focus:border-primary-500 focus:ring-2 focus:ring-primary-500/25 focus:outline-none dark:border-border dark:bg-surface/90 dark:shadow-none"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-surface-foreground cursor-pointer transition-colors duration-200"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-muted-foreground hover:bg-primary-50 hover:text-surface-foreground dark:hover:bg-muted cursor-pointer transition-colors duration-200"
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
@@ -207,7 +214,7 @@ export function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="btn-glow w-full rounded-xl bg-gradient-to-r from-primary-600 to-primary-500 px-4 py-3 text-sm font-semibold text-white hover:from-primary-700 hover:to-primary-600 focus:ring-2 focus:ring-primary-500/30 focus:outline-none disabled:opacity-50 cursor-pointer shadow-md shadow-primary-500/25 transition-all duration-200"
+                className="btn-glow w-full rounded-xl bg-gradient-to-r from-primary-600 via-primary-600 to-primary-500 px-4 py-3.5 text-sm font-semibold text-white shadow-lg shadow-primary-600/25 hover:from-primary-700 hover:via-primary-600 hover:to-primary-600 focus:ring-2 focus:ring-primary-500/35 focus:outline-none disabled:opacity-50 cursor-pointer transition-[box-shadow,filter] duration-200"
               >
                 {loading ? (
                   <span className="flex items-center justify-center gap-2">
@@ -240,7 +247,7 @@ export function LoginPage() {
             )}
 
             {demoAuthAvailable && !isSignUp && (
-              <div className="mt-5 rounded-xl border border-border bg-muted/40 p-4 text-left text-xs text-muted-foreground">
+              <div className="mt-5 rounded-xl border border-border/80 bg-gradient-to-b from-muted/60 to-muted/30 p-4 text-left text-xs text-muted-foreground shadow-inner dark:from-muted/25 dark:to-transparent">
                 <p className="font-semibold text-surface-foreground">Local demo accounts</p>
                 <ul className="mt-2 space-y-2 font-mono text-[11px] leading-relaxed">
                   {DEMO_ACCOUNTS.map((acc) => (
@@ -254,8 +261,9 @@ export function LoginPage() {
             )}
           </div>
 
-          <p className="mt-4 text-center text-xs text-muted-foreground">
-            🔒 Protected by 256-bit SSL · FSC Mauritius Licensed
+          <p className="mt-5 flex items-center justify-center gap-1.5 text-center text-xs text-muted-foreground">
+            <Lock className="h-3.5 w-3.5 shrink-0 text-accent-600 dark:text-accent-500" aria-hidden />
+            <span>Protected by 256-bit SSL · FSC Mauritius Licensed</span>
           </p>
         </div>
       </div>

@@ -140,14 +140,20 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
             ))
           )}
         </div>
-        <div className="flex items-center justify-between border-t border-border px-4 py-2 text-[10px] text-muted-foreground">
-          <span>
-            <kbd className="rounded border border-border bg-muted px-1 py-0.5 font-mono">↑</kbd>{" "}
-            <kbd className="rounded border border-border bg-muted px-1 py-0.5 font-mono">↓</kbd> move ·{" "}
-            <kbd className="rounded border border-border bg-muted px-1 py-0.5 font-mono">Enter</kbd> open
+        <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border bg-muted/30 px-4 py-2.5 text-[10px] text-muted-foreground">
+          <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <kbd className="rounded border border-border bg-surface px-1 py-0.5 font-mono">↑</kbd>
+            <kbd className="rounded border border-border bg-surface px-1 py-0.5 font-mono">↓</kbd>
+            <span>move</span>
+            <span className="text-border">·</span>
+            <kbd className="rounded border border-border bg-surface px-1 py-0.5 font-mono">Enter</kbd>
+            <span>open</span>
           </span>
-          <span>
-            <kbd className="rounded border border-border bg-muted px-1 py-0.5 font-mono">Esc</kbd> close
+          <span className="flex items-center gap-2">
+            <kbd className="rounded border border-border bg-surface px-1 py-0.5 font-mono">Esc</kbd>
+            <span>close</span>
+            <span className="hidden text-border sm:inline">·</span>
+            <span className="hidden sm:inline font-medium text-surface-foreground/80">Ctrl/⌘ K toggles</span>
           </span>
         </div>
       </div>

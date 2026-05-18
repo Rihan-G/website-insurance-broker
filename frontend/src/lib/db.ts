@@ -24,4 +24,10 @@ export const db = {
   documents: () => sb.from("documents"),
   policies: () => sb.from("policies"),
   auditLogs: () => sb.from("audit_logs"),
+  renewalPreferences: () => sb.from("renewal_preferences"),
+  claimIntakes: () => sb.from("claim_intakes"),
+  secureThreads: () => sb.from("secure_threads"),
+  secureMessages: () => sb.from("secure_messages"),
+  portalNotifications: () => sb.from("portal_notifications"),
+  brokerTasks: () => sb.from("broker_tasks"),
 };

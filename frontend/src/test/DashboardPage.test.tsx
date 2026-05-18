@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import { describe, it, expect, vi } from "vitest";
 import { CurrencyProvider } from "../context/CurrencyContext";
 import { DashboardPage } from "../pages/DashboardPage";
@@ -20,9 +21,11 @@ vi.mock("../context/AuthContext", () => ({
 
 function renderDashboard() {
   return render(
-    <CurrencyProvider>
-      <DashboardPage />
-    </CurrencyProvider>,
+    <MemoryRouter>
+      <CurrencyProvider>
+        <DashboardPage />
+      </CurrencyProvider>
+    </MemoryRouter>,
   );
 }
 
@@ -51,5 +54,14 @@ describe("DashboardPage", () => {
     renderDashboard();
     expect(screen.getByText("Revenue Trend")).toBeInTheDocument();
     expect(screen.getByText("+12.5% Growth")).toBeInTheDocument();
+  });
+
+  it("shows care snapshot region with demo counts", () => {
+    renderDashboard();
+    const region = screen.getByRole("region", { name: /care snapshot/i });
+    expect(region).toBeInTheDocument();
+    expect(region).toHaveTextContent("Unread");
+    expect(region).toHaveTextContent("Open tasks");
+    expect(region).toHaveTextContent("Claims queue");
   });
 });
