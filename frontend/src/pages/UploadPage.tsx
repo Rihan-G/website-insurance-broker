@@ -38,7 +38,14 @@ export function UploadPage() {
       setUploads((prev) => [...prev, { id, fileName: file.name, progress: 0, status: "uploading" }]);
 
       try {
-        const clientId = user?.id ?? "anonymous";
+        if (!user?.id) {
+          updateUpload(id, { status: "error", error: "Sign in to upload documents to your folder." });
+          toast.error("You must be signed in to upload.");
+          return;
+        }
+
+        // Row and storage path use this UUID; RLS ensures clients only write their own `client_id`.
+        const clientId = user.id;
         const uploadResult = await uploadDocument(file, clientId, (pct) =>
           updateUpload(id, { progress: pct })
         );
@@ -49,7 +56,7 @@ export function UploadPage() {
         await new Promise((r) => setTimeout(r, 1800));
         const ocr = simulateOcr(file.type);
 
-        await saveDocumentRecord(clientId, clientId, file, uploadResult);
+        await saveDocumentRecord(clientId, user.id, file, uploadResult);
 
         if (user) {
           await logAudit(user.id, "document.uploaded", "document", file.name, {
@@ -120,6 +127,15 @@ export function UploadPage() {
         </div>
         <p className="text-lg font-semibold text-surface-foreground">Drop files here or click to browse</p>
         <p className="mt-2 text-sm text-muted-foreground">PDF, JPG, PNG up to 25MB — Insurance documents, claims, policies</p>
+        {user?.id ? (
+          <p className="mt-2 text-xs text-muted-foreground max-w-xl mx-auto">
+            Files are saved to your private folder and registered on your account only. They are not visible to other clients.
+          </p>
+        ) : (
+          <p className="mt-2 text-xs text-warning-700 dark:text-warning-400 max-w-xl mx-auto">
+            Sign in so uploads are tied to your profile and protected by access rules.
+          </p>
+        )}
         <div className="mt-4 inline-flex items-center gap-1.5 text-xs text-accent-600 font-medium">
           <ShieldCheck className="h-3.5 w-3.5" />
           Files are encrypted during upload and at rest

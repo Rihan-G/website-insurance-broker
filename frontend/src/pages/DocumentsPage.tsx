@@ -34,7 +34,7 @@ const mockDocuments: DocumentRow[] = [
 ];
 
 export function DocumentsPage() {
-  const { demoAuthActive, profile } = useAuth();
+  const { demoAuthActive, profile, user } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [liveRows, setLiveRows] = useState<DocumentRow[]>([]);
@@ -50,7 +50,7 @@ export function DocumentsPage() {
     let cancelled = false;
     async function load() {
       setLoading(true);
-      const q = supabase
+      let q = supabase
         .from("documents")
         .select(
           `
@@ -67,6 +67,10 @@ export function DocumentsPage() {
         )
         .order("created_at", { ascending: false })
         .limit(200);
+
+      if (profile?.role === "client" && user?.id) {
+        q = q.eq("client_id", user.id);
+      }
 
       const { data, error } = await q;
       setLoading(false);
@@ -108,7 +112,7 @@ export function DocumentsPage() {
     return () => {
       cancelled = true;
     };
-  }, [demoAuthActive, profile?.role]);
+  }, [demoAuthActive, profile?.role, user?.id]);
 
   const rows = demoAuthActive ? mockDocuments : liveRows;
 
