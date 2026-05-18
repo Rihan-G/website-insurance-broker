@@ -1,5 +1,5 @@
 /* Tailwind CSS v4: @theme and @custom-variant are compiler directives — see VS Code workspace settings if the editor flags them. */
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+/* Fonts load from index.html (single request, no render-blocking @import). */
 @import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
