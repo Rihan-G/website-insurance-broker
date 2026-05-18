@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Outlet, NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, FileText, Upload, Users, Settings, LogOut, Menu, X,
@@ -275,7 +276,12 @@ export function AppLayout() {
   const location = useLocation();
   const mainRef = useRef<HTMLElement>(null);
   const [notifBadge, setNotifBadge] = useState<number | null>(null);
+  const [portalReady, setPortalReady] = useState(false);
   useAutoLogout();
+
+  useEffect(() => {
+    setPortalReady(true);
+  }, []);
 
   useEffect(() => {
     mainRef.current?.scrollTo(0, 0);
@@ -342,111 +348,113 @@ export function AppLayout() {
   })).filter((group) => group.items.length > 0);
 
   return (
-    <div className="relative isolate flex w-full flex-1 flex-col min-h-0 min-h-screen-dynamic">
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden"
-          aria-hidden
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
+    <>
+      <div className="relative isolate flex w-full flex-1 flex-col min-h-0 min-h-screen-dynamic">
+        <div className="relative z-0 flex min-h-0 w-full min-w-0 max-w-full flex-1 flex-col overflow-x-hidden overflow-y-hidden dashboard-bg lg:flex-row">
+          <a
+            href="#main-content"
+            className="absolute -top-16 left-4 z-[9999] rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white shadow-lg transition-[top] duration-200 focus:top-4 focus:outline-none focus:ring-2 focus:ring-ring"
+          >
+            Skip to main content
+          </a>
+          <CommandPalette open={cmdOpen} onOpenChange={setCmdOpen} />
 
-      {/*
-        Mobile: column stack only (desktop nav hidden). Desktop: row.
-        Mobile drawer is NOT a child of this flex box — Chrome iOS/Android can still
-        count `position:fixed` flex children as taking width, which squishes the main column in portrait.
-      */}
-      <div className="relative z-0 flex min-h-0 w-full min-w-0 max-w-full flex-1 flex-col overflow-x-hidden overflow-y-hidden dashboard-bg lg:flex-row">
-        <a
-          href="#main-content"
-          className="absolute -top-16 left-4 z-[9999] rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white shadow-lg transition-[top] duration-200 focus:top-4 focus:outline-none focus:ring-2 focus:ring-ring"
-        >
-          Skip to main content
-        </a>
-        <CommandPalette open={cmdOpen} onOpenChange={setCmdOpen} />
+          <aside className="relative hidden h-full min-h-0 w-64 shrink-0 flex-col overflow-hidden border-r border-white/5 lg:flex lg:flex-col">
+            <DashboardSidebarPanel
+              onNavLinkClick={() => {}}
+              onSignOut={handleSignOut}
+              visibleGroups={visibleGroups}
+              collapsedGroups={collapsedGroups}
+              toggleGroup={toggleGroup}
+              notifBadge={notifBadge}
+              profile={profile}
+            />
+          </aside>
 
-        <aside className="relative hidden h-full min-h-0 w-64 shrink-0 flex-col overflow-hidden border-r border-white/5 lg:flex lg:flex-col">
-          <DashboardSidebarPanel
-            onNavLinkClick={() => {}}
-            onSignOut={handleSignOut}
-            visibleGroups={visibleGroups}
-            collapsedGroups={collapsedGroups}
-            toggleGroup={toggleGroup}
-            notifBadge={notifBadge}
-            profile={profile}
-          />
-        </aside>
-
-        <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden max-lg:box-border max-lg:pt-[env(safe-area-inset-top)]">
-          {/* Top header — glass effect */}
-          <header className="flex h-16 min-w-0 shrink-0 items-center gap-4 border-b border-border/70 bg-white/85 px-6 shadow-[0_1px_0_rgba(255,255,255,0.65)_inset,0_8px_28px_-16px_rgba(3,105,161,0.12)] backdrop-blur-xl lg:px-8 dark:border-border dark:bg-surface/75 dark:shadow-[0_1px_0_rgba(255,255,255,0.05)_inset,0_12px_40px_-12px_rgba(0,0,0,0.5)]">
-            <button
-              type="button"
-              aria-expanded={sidebarOpen}
-              aria-controls="app-sidebar"
-              onClick={() => setSidebarOpen((open) => !open)}
-              className="shrink-0 rounded-xl p-1.5 text-muted-foreground hover:bg-primary-50 dark:hover:bg-muted cursor-pointer lg:hidden transition-colors duration-200"
-            >
-              {sidebarOpen ? <X className="h-5 w-5" aria-hidden /> : <Menu className="h-5 w-5" aria-hidden />}
-              <span className="sr-only">{sidebarOpen ? "Close navigation" : "Open navigation"}</span>
-            </button>
-            <div className="flex min-w-0 flex-1 items-center gap-2">
-              <ShieldCheck className="h-5 w-5 shrink-0 text-primary-500 hidden sm:block" />
-              <h1 className="truncate text-base font-bold text-surface-foreground">{PORTAL_HEADING}</h1>
-            </div>
-            <div className="ml-auto flex shrink-0 items-center gap-2 sm:gap-3">
+          <div className="flex min-h-0 min-w-0 w-full max-w-full flex-1 flex-col overflow-hidden max-lg:box-border max-lg:pt-[env(safe-area-inset-top)]">
+            {/* Top header — glass effect */}
+            <header className="flex h-16 min-w-0 shrink-0 items-center gap-4 border-b border-border/70 bg-white/85 px-6 shadow-[0_1px_0_rgba(255,255,255,0.65)_inset,0_8px_28px_-16px_rgba(3,105,161,0.12)] backdrop-blur-xl lg:px-8 dark:border-border dark:bg-surface/75 dark:shadow-[0_1px_0_rgba(255,255,255,0.05)_inset,0_12px_40px_-12px_rgba(0,0,0,0.5)]">
               <button
                 type="button"
-                onClick={() => setCmdOpen(true)}
-                className="hidden sm:inline-flex items-center gap-2 rounded-xl border border-border bg-surface/80 px-3 py-1.5 text-xs font-medium text-muted-foreground hover:border-primary-300 hover:text-surface-foreground cursor-pointer transition-colors dark:border-border dark:hover:border-primary-600"
-                aria-label="Open jump to page"
+                aria-expanded={sidebarOpen}
+                aria-controls="app-sidebar"
+                onClick={() => setSidebarOpen((open) => !open)}
+                className="shrink-0 rounded-xl p-1.5 text-muted-foreground hover:bg-primary-50 dark:hover:bg-muted cursor-pointer lg:hidden transition-colors duration-200"
               >
-                <Search className="h-3.5 w-3.5 shrink-0" />
-                <span className="max-w-[8rem] truncate">Jump to…</span>
-                <kbd className="hidden rounded border border-border bg-muted px-1 font-mono text-[10px] text-muted-foreground md:inline">{jumpShortcut}</kbd>
+                {sidebarOpen ? <X className="h-5 w-5" aria-hidden /> : <Menu className="h-5 w-5" aria-hidden />}
+                <span className="sr-only">{sidebarOpen ? "Close navigation" : "Open navigation"}</span>
               </button>
-              <CurrencySwitcher />
-              <ThemeToggle />
-              <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-accent-50 border border-accent-200/60 px-3 py-1 text-xs font-semibold text-accent-700 dark:border-accent-600/40 dark:bg-accent-950/50 dark:text-accent-300">
-                <span className="h-1.5 w-1.5 rounded-full bg-accent-500 animate-pulse" />
-                Protected · {profile?.role === "client" ? "Member" : profile?.role ?? "client"}
-              </span>
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-accent-500 text-xs font-bold text-white shadow-sm sm:hidden">
-                {profile?.full_name?.charAt(0) ?? "U"}
+              <div className="flex min-w-0 flex-1 items-center gap-2">
+                <ShieldCheck className="h-5 w-5 shrink-0 text-primary-500 hidden sm:block" />
+                <h1 className="truncate text-base font-bold text-surface-foreground">{PORTAL_HEADING}</h1>
               </div>
-            </div>
-          </header>
+              <div className="ml-auto flex shrink-0 items-center gap-2 sm:gap-3">
+                <button
+                  type="button"
+                  onClick={() => setCmdOpen(true)}
+                  className="hidden sm:inline-flex items-center gap-2 rounded-xl border border-border bg-surface/80 px-3 py-1.5 text-xs font-medium text-muted-foreground hover:border-primary-300 hover:text-surface-foreground cursor-pointer transition-colors dark:border-border dark:hover:border-primary-600"
+                  aria-label="Open jump to page"
+                >
+                  <Search className="h-3.5 w-3.5 shrink-0" />
+                  <span className="max-w-[8rem] truncate">Jump to…</span>
+                  <kbd className="hidden rounded border border-border bg-muted px-1 font-mono text-[10px] text-muted-foreground md:inline">{jumpShortcut}</kbd>
+                </button>
+                <CurrencySwitcher />
+                <ThemeToggle />
+                <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-accent-50 border border-accent-200/60 px-3 py-1 text-xs font-semibold text-accent-700 dark:border-accent-600/40 dark:bg-accent-950/50 dark:text-accent-300">
+                  <span className="h-1.5 w-1.5 rounded-full bg-accent-500 animate-pulse" />
+                  Protected · {profile?.role === "client" ? "Member" : profile?.role ?? "client"}
+                </span>
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-accent-500 text-xs font-bold text-white shadow-sm sm:hidden">
+                  {profile?.full_name?.charAt(0) ?? "U"}
+                </div>
+              </div>
+            </header>
 
-          <main
-            ref={mainRef}
-            id="main-content"
-            tabIndex={-1}
-            className="min-h-0 min-w-0 flex-1 touch-pan-y overflow-x-hidden overflow-y-auto overscroll-y-contain p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] lg:p-8 lg:pb-[max(2rem,env(safe-area-inset-bottom))] outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
-          >
-            <DashboardAccessSentinel>
-              <Outlet />
-            </DashboardAccessSentinel>
-          </main>
+            <main
+              ref={mainRef}
+              id="main-content"
+              tabIndex={-1}
+              className="min-h-0 min-w-0 w-full max-w-full flex-1 touch-pan-y overflow-x-hidden overflow-y-auto overscroll-y-contain p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] lg:p-8 lg:pb-[max(2rem,env(safe-area-inset-bottom))] outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+            >
+              <DashboardAccessSentinel>
+                <Outlet />
+              </DashboardAccessSentinel>
+            </main>
+          </div>
         </div>
       </div>
 
-      <aside
-        id="app-sidebar"
-        aria-hidden={!sidebarOpen}
-        className={`fixed inset-y-0 left-0 z-[60] flex w-64 max-w-[85vw] flex-col overflow-hidden border-r border-white/5 bg-primary-950 shadow-2xl transition-transform duration-300 ease-out will-change-transform lg:hidden ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full pointer-events-none"
-        }`}
-      >
-        <DashboardSidebarPanel
-          onNavLinkClick={() => setSidebarOpen(false)}
-          onSignOut={handleSignOut}
-          visibleGroups={visibleGroups}
-          collapsedGroups={collapsedGroups}
-          toggleGroup={toggleGroup}
-          notifBadge={notifBadge}
-          profile={profile}
-        />
-      </aside>
-    </div>
+      {portalReady &&
+        createPortal(
+          <>
+            {sidebarOpen && (
+              <div
+                className="fixed inset-0 z-[10040] bg-black/50 backdrop-blur-sm lg:hidden"
+                aria-hidden
+                onClick={() => setSidebarOpen(false)}
+              />
+            )}
+            <aside
+              id="app-sidebar"
+              aria-hidden={!sidebarOpen}
+              className={`fixed inset-y-0 left-0 z-[10050] flex w-64 max-w-[85vw] flex-col overflow-hidden border-r border-white/5 bg-primary-950 shadow-2xl transition-transform duration-300 ease-out will-change-transform lg:hidden ${
+                sidebarOpen ? "translate-x-0" : "-translate-x-full pointer-events-none"
+              }`}
+            >
+              <DashboardSidebarPanel
+                onNavLinkClick={() => setSidebarOpen(false)}
+                onSignOut={handleSignOut}
+                visibleGroups={visibleGroups}
+                collapsedGroups={collapsedGroups}
+                toggleGroup={toggleGroup}
+                notifBadge={notifBadge}
+                profile={profile}
+              />
+            </aside>
+          </>,
+          document.body,
+        )}
+    </>
   );
 }
