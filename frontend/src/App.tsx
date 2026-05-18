@@ -32,6 +32,8 @@ import { MidTermPage } from "./pages/MidTermPage";
 import { CapacityPage } from "./pages/CapacityPage";
 import { HolidayCalendarPage } from "./pages/HolidayCalendarPage";
 import { CommissionPage } from "./pages/CommissionPage";
+import { RenewalsPage } from "./pages/RenewalsPage";
+import { TasksPage } from "./pages/TasksPage";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -63,6 +65,8 @@ export default function App() {
         <Route index element={<DashboardPage />} />
         <Route path="documents" element={<DocumentsPage />} />
         <Route path="upload" element={<UploadPage />} />
+        <Route path="renewals" element={<RenewalsPage />} />
+        <Route path="tasks" element={<TasksPage />} />
         <Route
           path="clients"
           element={

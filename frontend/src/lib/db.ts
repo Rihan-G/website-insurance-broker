@@ -24,4 +24,6 @@ export const db = {
   documents: () => sb.from("documents"),
   policies: () => sb.from("policies"),
   auditLogs: () => sb.from("audit_logs"),
+  renewals: () => sb.from("renewals"),
+  tasks: () => sb.from("tasks"),
 };

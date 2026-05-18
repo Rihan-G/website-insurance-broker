@@ -4,7 +4,7 @@ import {
   LayoutDashboard, FileText, Upload, Users, Settings, LogOut, Menu, X,
   ShieldCheck, KeyRound, ClipboardList, MessageSquare, CreditCard,
   Calculator, BarChart3, Bell, MessageCircle, Mic, Shield, ChevronDown,
-  Globe, Home, RefreshCw, Award, Calendar,
+  Globe, Home, RefreshCw, Award, Calendar, ListTodo, CalendarClock,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useAutoLogout } from "../hooks/useAutoLogout";
@@ -23,6 +23,13 @@ interface NavItem {
 }
 
 const navGroups: Array<{ label: string; items: NavItem[] }> = [
+  {
+    label: "Planning",
+    items: [
+      { name: "renewals", to: "/dashboard/renewals", icon: CalendarClock },
+      { name: "tasks", to: "/dashboard/tasks", icon: ListTodo },
+    ],
+  },
   {
     label: "Core",
     items: [
@@ -79,6 +86,8 @@ const navGroups: Array<{ label: string; items: NavItem[] }> = [
 
 const navLabels: Record<string, string> = {
   dashboard: "Dashboard",
+  renewals: "Renewals",
+  tasks: "Tasks",
   "my-policies": "My Policies",
   documents: "Documents",
   upload: "Upload",

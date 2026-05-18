@@ -366,6 +366,78 @@ export interface Database {
         };
         Update: Partial<{ status: string; sent_at: string | null; external_id: string | null }>;
       };
+      renewals: {
+        Row: {
+          id: string;
+          client_id: string;
+          policy_id: string | null;
+          title: string;
+          notes: string | null;
+          renewal_date: string;
+          status: "scheduled" | "due" | "completed" | "lapsed" | "cancelled";
+          color_token: "primary" | "accent" | "warning" | "danger" | "muted";
+          template_key: string | null;
+          created_by: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          client_id: string;
+          policy_id?: string | null;
+          title: string;
+          notes?: string | null;
+          renewal_date: string;
+          status?: string;
+          color_token?: string;
+          template_key?: string | null;
+          created_by: string;
+        };
+        Update: Partial<{
+          policy_id: string | null;
+          title: string;
+          notes: string | null;
+          renewal_date: string;
+          status: string;
+          color_token: string;
+          template_key: string | null;
+          updated_at: string;
+        }>;
+      };
+      tasks: {
+        Row: {
+          id: string;
+          assignee_id: string;
+          client_id: string | null;
+          title: string;
+          description: string | null;
+          task_date: string;
+          status: "pending" | "in_progress" | "completed" | "cancelled";
+          color_token: "primary" | "accent" | "warning" | "danger" | "muted";
+          created_by: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          assignee_id: string;
+          client_id?: string | null;
+          title: string;
+          description?: string | null;
+          task_date: string;
+          status?: string;
+          color_token?: string;
+          created_by: string;
+        };
+        Update: Partial<{
+          assignee_id: string;
+          client_id: string | null;
+          title: string;
+          description: string | null;
+          task_date: string;
+          status: string;
+          color_token: string;
+          updated_at: string;
+        }>;
+      };
     };
   };
 }
@@ -380,3 +452,5 @@ export type InboxMessage = Database["public"]["Tables"]["inbox_messages"]["Row"]
 export type ExpiryAlert = Database["public"]["Tables"]["expiry_alerts"]["Row"];
 export type VoiceNote = Database["public"]["Tables"]["voice_notes"]["Row"];
 export type Commission = Database["public"]["Tables"]["commissions"]["Row"];
+export type Renewal = Database["public"]["Tables"]["renewals"]["Row"];
+export type Task = Database["public"]["Tables"]["tasks"]["Row"];
