@@ -32,12 +32,13 @@ This repo deploys the **static frontend** to **GitHub Pages** on every push to `
 
 ### One-time setup in GitHub
 
-1. Open the repo on GitHub → **Settings** (repo settings, not your global account).
-2. In the left sidebar, click **Pages**.
-3. Under **Build and deployment**, set **Source** to **GitHub Actions** (not “Deploy from a branch”).
-4. Go to the **Actions** tab → select **Deploy GitHub Pages** → **Run workflow** (or push a commit to `main`).
-5. The first deploy may pause for **environment approval**: open the workflow run, click **Review deployments**, approve **github-pages** if GitHub asks.
-6. When the job is green, **Pages** will show your URL (refresh the Pages settings page if needed).
+1. Open the repo on GitHub → **Settings** (the **repository’s** ⚙️ **Settings** tab at the top of the repo — not your profile **Settings** at github.com/settings).
+2. In the **left sidebar**, open **Code and automation** → **Pages**. (GitHub regrouped menus; **Pages** is no longer only at the bottom of one long page.) You can also go directly to `https://github.com/OWNER/REPO/settings/pages` (replace `OWNER` and `REPO`).
+3. You need **Admin** role on the repository to see **Pages**. If you only have **Read** access, the section will be hidden.
+4. Under **Build and deployment**, set **Source** to **GitHub Actions** (not “Deploy from a branch”).
+5. Go to the **Actions** tab → select **Deploy GitHub Pages** → **Run workflow** (or push a commit to `main`).
+6. The first deploy may pause for **environment approval**: open the workflow run, click **Review deployments**, approve **github-pages** if GitHub asks.
+7. When the job is green, **Pages** will show your URL (refresh the Pages settings page if needed).
 
 **Site URL** (replace `<user>` with your GitHub username, lowercase in the host, and `<repo>` with this repository name):
 
@@ -63,7 +64,7 @@ Many screens use **mock data** when demo mode is active; any feature that still 
 - **Site looks old or missing new pages:** the Pages workflow only runs when **`main` is pushed**. Merge your branch into `main` (or push directly to `main`) and wait for the **Deploy GitHub Pages** action to finish green.
 - **404 on refresh:** the workflow copies `index.html` → `404.html`; redeploy from `main`.
 - **Blank page or wrong assets:** confirm the workflow log line `VITE_GH_PAGES_BASE=...` matches your GitHub Pages URL path (repository slug; the workflow lowercases it automatically).
-- **Workflow not listed:** ensure `.github/workflows/deploy-github-pages.yml` exists on the default branch you push.
+- **No “Pages” in Settings:** use the left sidebar **Code and automation** → **Pages**, or open `https://github.com/OWNER/REPO/settings/pages`. Confirm you are in **repo** Settings (not your user profile) and that you have **Admin** on the repo.
 
 ## Tech Stack
 
