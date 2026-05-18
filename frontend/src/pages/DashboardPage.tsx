@@ -64,16 +64,32 @@ function StatCard({
   accent?: boolean;
 }) {
   return (
-    <div className={`card-hover card-glow rounded-2xl border p-6 relative overflow-hidden group ${accent ? "border-primary-200 bg-gradient-to-br from-primary-600 to-primary-700 text-white" : "border-border bg-surface"}`}>
-      <div className="absolute inset-0 bg-gradient-to-br from-white/0 to-white/0 group-hover:from-white/5 group-hover:to-transparent transition-all duration-300 pointer-events-none" />
+    <div
+      className={`card-hover card-glow group relative overflow-hidden rounded-2xl border p-6 ${
+        accent
+          ? "border-primary-400/25 bg-gradient-to-br from-primary-600 via-primary-700 to-primary-900 text-white shadow-lg shadow-primary-950/15 ring-1 ring-white/10"
+          : "dashboard-panel border-border/90 ring-1 ring-primary-950/[0.03] dark:ring-white/[0.05]"
+      }`}
+    >
+      <div
+        className={`pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 ${
+          accent
+            ? "bg-gradient-to-br from-white/12 via-transparent to-accent-500/10"
+            : "bg-gradient-to-br from-primary-50/50 via-transparent to-accent-50/20 dark:from-primary-500/10 dark:to-transparent"
+        }`}
+      />
       <div className="relative">
-        <div className="flex items-center justify-between">
-          <p className={`text-sm font-semibold ${accent ? "text-primary-100" : "text-muted-foreground"}`}>{title}</p>
-          <div className={`rounded-xl p-2.5 shadow-sm ${accent ? "bg-white/15 border border-white/20" : iconBg}`}>
+        <div className="flex items-center justify-between gap-3">
+          <p className={`text-[13px] font-semibold uppercase tracking-wide ${accent ? "text-primary-100/95" : "text-muted-foreground"}`}>{title}</p>
+          <div
+            className={`rounded-xl p-2.5 shadow-sm ${
+              accent ? "bg-white/15 ring-1 ring-white/25 backdrop-blur-sm" : `${iconBg} ring-1 ring-black/[0.04] dark:ring-white/10`
+            }`}
+          >
             <Icon className={`h-5 w-5 ${accent ? "text-white" : ""}`} />
           </div>
         </div>
-        <p className={`mt-3 text-3xl font-extrabold animate-number-pop ${accent ? "text-white" : "text-surface-foreground"}`}>{value}</p>
+        <p className={`mt-3 text-3xl font-extrabold tracking-tight tabular-nums animate-number-pop ${accent ? "text-white" : "text-surface-foreground"}`}>{value}</p>
         {change !== undefined && (
           <div className="mt-2 flex items-center gap-1 text-sm">
             {change > 0 ? (
@@ -282,10 +298,11 @@ export function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-start justify-between">
-        <div>
-          <h2 className="text-2xl font-bold text-surface-foreground">Dashboard</h2>
-          <p className="text-muted-foreground">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="space-y-1">
+          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary-600/80 dark:text-primary-400/90">Overview</p>
+          <h2 className="text-2xl font-bold tracking-tight text-surface-foreground sm:text-3xl">Dashboard</h2>
+          <p className="max-w-xl text-sm leading-relaxed text-muted-foreground">
             {demoAuthActive
               ? "Demo data — sign in with Supabase to see live metrics."
               : loading
@@ -293,8 +310,8 @@ export function DashboardPage() {
                 : "Overview of your insurance brokerage"}
           </p>
         </div>
-        <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-accent-50 border border-accent-200 px-3 py-1.5 text-xs font-medium text-accent-700 dark:border-accent-600/40 dark:bg-accent-950/50 dark:text-accent-300">
-          <ShieldCheck className="h-3.5 w-3.5" />
+        <span className="inline-flex w-fit items-center gap-2 rounded-full border border-accent-200/90 bg-gradient-to-r from-accent-50 to-accent-100/80 px-3.5 py-1.5 text-xs font-semibold text-accent-800 shadow-sm dark:border-accent-600/35 dark:from-accent-950/60 dark:to-accent-950/30 dark:text-accent-200">
+          <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-accent-600 dark:text-accent-400" aria-hidden />
           {demoAuthActive ? "Demo session" : "Live data"}
         </span>
       </div>
@@ -363,19 +380,25 @@ export function DashboardPage() {
       </div>
 
       <div className="grid gap-6 xl:grid-cols-3">
-        <div className="xl:col-span-2 rounded-xl border border-border bg-surface">
-          <div className="flex items-center justify-between border-b border-border px-6 py-4">
-            <h3 className="font-semibold text-surface-foreground">Document Pipeline</h3>
-            <span className="rounded-full bg-primary-50 border border-primary-200 px-2.5 py-0.5 text-xs font-medium text-primary-700 dark:border-primary-600/40 dark:bg-primary-950/50 dark:text-primary-300">
+        <div className="dashboard-panel xl:col-span-2 overflow-hidden rounded-2xl">
+          <div className="flex items-center justify-between border-b border-border/80 bg-gradient-to-r from-primary-50/50 via-transparent to-accent-50/25 px-6 py-4 dark:from-primary-950/35 dark:via-transparent dark:to-accent-950/20">
+            <div>
+              <h3 className="font-semibold text-surface-foreground">Document Pipeline</h3>
+              <p className="mt-0.5 text-xs text-muted-foreground">Latest uploads and OCR status</p>
+            </div>
+            <span className="rounded-full border border-primary-200/90 bg-primary-50 px-2.5 py-1 text-xs font-semibold text-primary-800 shadow-sm dark:border-primary-600/40 dark:bg-primary-950/55 dark:text-primary-200">
               {viewPipeline.length} items
             </span>
           </div>
-          <div className="divide-y divide-border">
+          <div className="divide-y divide-border/80">
             {viewPipeline.length === 0 && !loading && (
-              <div className="px-6 py-10 text-center text-sm text-muted-foreground">No documents yet.</div>
+              <div className="px-6 py-12 text-center text-sm text-muted-foreground">No documents yet.</div>
             )}
             {viewPipeline.map((item) => (
-              <div key={item.id} className="flex items-center gap-4 px-6 py-4 hover:bg-primary-50/50 dark:hover:bg-muted/50 transition-colors duration-150 cursor-default">
+              <div
+                key={item.id}
+                className="flex cursor-default items-center gap-4 px-6 py-4 transition-colors duration-150 hover:bg-primary-50/60 dark:hover:bg-muted/40"
+              >
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-surface-foreground truncate">{item.clientName}</p>
                   <p className="text-sm text-muted-foreground">{item.documentType}</p>
@@ -401,12 +424,18 @@ export function DashboardPage() {
           </div>
         </div>
 
-        <div className="rounded-xl border border-border bg-surface">
-          <div className="border-b border-border px-6 py-4">
+        <div className="dashboard-panel overflow-hidden rounded-2xl">
+          <div className="border-b border-border/80 bg-gradient-to-r from-primary-50/40 via-transparent to-primary-50/30 px-6 py-4 dark:from-primary-950/30 dark:to-primary-950/15">
             <h3 className="font-semibold text-surface-foreground">Revenue Trend</h3>
           </div>
           <div className="p-6">
             <svg viewBox="0 0 120 100" preserveAspectRatio="none" className="h-40 w-full" role="img" aria-label="Revenue trend chart">
+              <defs>
+                <linearGradient id="dashboard-rev-bar" x1="0" y1="1" x2="0" y2="0" gradientUnits="objectBoundingBox">
+                  <stop offset="0%" stopColor="var(--color-primary-700)" />
+                  <stop offset="100%" stopColor="var(--color-accent-500)" />
+                </linearGradient>
+              </defs>
               {revenueHeights.map((h, i) => (
                 <rect
                   key={i}
@@ -414,9 +443,9 @@ export function DashboardPage() {
                   y={100 - h}
                   width={7}
                   height={h}
-                  rx={1.5}
-                  fill="var(--color-primary-500)"
-                  className="cursor-pointer hover:opacity-90 transition-opacity duration-200"
+                  rx={2}
+                  fill="url(#dashboard-rev-bar)"
+                  className="cursor-pointer opacity-95 transition-[opacity,filter] duration-200 hover:opacity-100 hover:brightness-110"
                 />
               ))}
             </svg>
@@ -425,8 +454,8 @@ export function DashboardPage() {
               <span>Jun</span>
               <span>Dec</span>
             </div>
-            <div className="mt-5 flex items-center gap-3 rounded-lg bg-accent-50 border border-accent-200 p-3 dark:border-accent-600/40 dark:bg-accent-950/40">
-              <TrendingUp className="h-5 w-5 text-accent-600 shrink-0" />
+            <div className="mt-5 flex items-center gap-3 rounded-xl border border-accent-200/90 bg-gradient-to-br from-accent-50 to-accent-100/50 p-3.5 shadow-sm dark:border-accent-600/35 dark:from-accent-950/50 dark:to-accent-950/25">
+              <TrendingUp className="h-5 w-5 shrink-0 text-accent-600 dark:text-accent-400" aria-hidden />
               <div>
                 <p className="text-sm font-semibold text-accent-700 dark:text-accent-300">
                   {demoAuthActive ? "+12.5% Growth" : "Illustrative trend"}

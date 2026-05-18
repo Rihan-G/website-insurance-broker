@@ -37,7 +37,7 @@ export function HomeMarketingNav() {
   const closeMobile = () => setMobileOpen(false);
 
   return (
-    <nav className="fixed top-0 z-50 w-full border-b border-primary-100 dark:border-border bg-white/80 dark:bg-surface/90 backdrop-blur-lg">
+    <nav className="fixed top-0 z-50 w-full border-b border-primary-100/90 bg-white/85 shadow-[0_4px_30px_-12px_rgba(3,105,161,0.18)] backdrop-blur-lg dark:border-border dark:bg-surface/90 dark:shadow-[0_8px_32px_-8px_rgba(0,0,0,0.55)]">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6">
         <div className="flex min-w-0 items-center gap-2.5">
           <ShieldCheck className="h-7 w-7 shrink-0 text-accent-500" aria-hidden />

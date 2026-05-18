@@ -258,7 +258,7 @@ export function AppLayout() {
 
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Top header — glass effect */}
-        <header className="flex h-16 items-center gap-4 border-b border-border/60 bg-white/70 backdrop-blur-md px-6 lg:px-8 shadow-sm dark:border-border dark:bg-surface/75 dark:shadow-none">
+        <header className="flex h-16 items-center gap-4 border-b border-border/70 bg-white/85 px-6 shadow-[0_1px_0_rgba(255,255,255,0.65)_inset,0_8px_28px_-16px_rgba(3,105,161,0.12)] backdrop-blur-xl lg:px-8 dark:border-border dark:bg-surface/75 dark:shadow-[0_1px_0_rgba(255,255,255,0.05)_inset,0_12px_40px_-12px_rgba(0,0,0,0.5)]">
           <button
             onClick={() => setSidebarOpen(true)}
             className="rounded-xl p-1.5 text-muted-foreground hover:bg-primary-50 dark:hover:bg-muted cursor-pointer lg:hidden transition-colors duration-200"
