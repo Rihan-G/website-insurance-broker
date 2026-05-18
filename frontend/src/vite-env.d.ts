@@ -9,4 +9,10 @@ interface ImportMetaEnv {
   readonly VITE_STAFF_PORTAL_URL?: string;
   /** Client portal origin, no trailing slash (required on staff portal for my-policies hand-off). */
   readonly VITE_CLIENT_PORTAL_URL?: string;
+  /** Google Gemini API key for voice transcription / future AI features (server-safe: use Edge Functions in production). */
+  readonly VITE_GEMINI_API_KEY?: string;
+  /** Generic AI provider key hook (optional). */
+  readonly VITE_AI_API_KEY?: string;
+  /** OpenAI-compatible API key (optional). */
+  readonly VITE_OPENAI_API_KEY?: string;
 }

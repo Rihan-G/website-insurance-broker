@@ -15,7 +15,7 @@ const adminDemo = DEMO_ACCOUNTS[0];
 const trustSignals = [
   "Role-based access for administrators",
   "256-bit TLS · audit-ready session trail",
-  "Mauritius holiday calendar & office planning",
+  "Team calendar for tasks and renewals, with Mauritius public holidays as reference",
   "Multi-currency display (MUR, USD, GBP, EUR)",
 ];
 
@@ -112,7 +112,7 @@ export function AdminLoginPage() {
             <span className="text-gradient-warm">control centre</span>
           </h1>
           <p className="max-w-md text-sm leading-relaxed text-primary-200">
-            After sign-in you get the full dashboard: Mauritius holiday calendar, expiry monitor, analytics, audit log, and
+            After sign-in you get the full dashboard: team calendar (your schedule plus Mauritius holiday reference), expiry monitor, analytics, audit log, and
             the same theme toggle and currency switcher you use here.
           </p>
 
@@ -149,7 +149,7 @@ export function AdminLoginPage() {
               to="/dashboard/calendar"
               className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold text-accent-300 hover:text-white"
             >
-              Open full holiday calendar in dashboard
+              Open calendar in dashboard
               <ArrowRight className="h-3.5 w-3.5" aria-hidden />
             </Link>
             <p className="mt-2 text-[11px] text-primary-400">You will be asked to sign in first if your session has expired.</p>
@@ -208,7 +208,7 @@ export function AdminLoginPage() {
 
             {/* Mobile mini calendar strip */}
             <div className="mb-6 rounded-xl border border-white/10 bg-black/20 p-3 lg:hidden">
-              <p className="text-[10px] font-bold uppercase tracking-wide text-primary-400">Next holidays</p>
+              <p className="text-[10px] font-bold uppercase tracking-wide text-primary-400">Upcoming public holidays (ref.)</p>
               <p className="mt-1 line-clamp-2 text-xs text-primary-200">
                 {upcoming.map((h) => `${formatHolidayDate(h.date)}: ${h.name}`).join(" · ")}
               </p>

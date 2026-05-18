@@ -214,9 +214,9 @@ export function HolidayCalendarPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-surface-foreground sm:text-3xl">Calendar &amp; schedule</h2>
+          <h2 className="text-2xl font-bold text-surface-foreground sm:text-3xl">Schedule &amp; calendar</h2>
           <p className="text-muted-foreground text-sm sm:text-base max-w-2xl">
-            Mauritius holidays plus an editable office or personal schedule. Larger grid for readability — entries stay in this browser until Supabase sync exists.
+            Your general work calendar: tasks, meetings, renewals, and reminders. A Mauritius public-holiday reference is included below the month view for planning — your own entries stay in this browser until Supabase sync exists.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -242,14 +242,14 @@ export function HolidayCalendarPage() {
           <>
             <Users className="h-4 w-4 shrink-0 text-primary-600 dark:text-primary-400" aria-hidden />
             <span>
-              <span className="font-medium text-surface-foreground">Office calendar</span> — administrators and brokers share the same entries. Click a day to add or edit notes for that date.
+              <span className="font-medium text-surface-foreground">Shared desk calendar</span> — administrators and brokers see the same schedule. Click any day to add or edit entries.
             </span>
           </>
         ) : (
           <>
             <User className="h-4 w-4 shrink-0 text-primary-600 dark:text-primary-400" aria-hidden />
             <span>
-              <span className="font-medium text-surface-foreground">Your dates</span> — renewals, reminders, and meetings are private to this profile on this device.
+              <span className="font-medium text-surface-foreground">Your calendar</span> — appointments and reminders are private to this profile on this device.
             </span>
           </>
         )}
@@ -272,126 +272,11 @@ export function HolidayCalendarPage() {
         </div>
       )}
 
-      <div className="rounded-xl border border-primary-200 bg-primary-50 p-4 flex gap-3 dark:border-primary-700/50 dark:bg-primary-950/45">
-        <Info className="h-5 w-5 text-primary-600 dark:text-primary-400 mt-0.5 shrink-0" aria-hidden />
-        <div className="text-sm sm:text-base text-primary-800 dark:text-primary-100">
-          <span className="font-medium">Payments &amp; renewals:</span> processing may slow on public holidays. Renewals on a holiday usually roll to the next business day — confirm with your broker.
-        </div>
-      </div>
-
-      <div className="rounded-xl border border-border bg-surface p-4 sm:p-8">
-        <div className="mb-6 flex items-center justify-between gap-3">
-          <button
-            type="button"
-            onClick={() => setCurrentMonth((m) => subMonths(m, 1))}
-            className="cursor-pointer rounded-lg border border-border p-2.5 text-lg hover:bg-muted"
-            aria-label="Previous month"
-          >
-            ‹
-          </button>
-          <div className="flex items-center gap-2">
-            <Calendar className="h-6 w-6 text-primary-600 dark:text-primary-400" aria-hidden />
-            <h3 className="text-lg font-bold text-surface-foreground sm:text-xl">{format(currentMonth, "MMMM yyyy")}</h3>
-          </div>
-          <button
-            type="button"
-            onClick={() => setCurrentMonth((m) => addMonths(m, 1))}
-            className="cursor-pointer rounded-lg border border-border p-2.5 text-lg hover:bg-muted"
-            aria-label="Next month"
-          >
-            ›
-          </button>
-        </div>
-
-        <div className="mb-2 grid grid-cols-7 gap-1.5">
-          {DAYS.map((d) => (
-            <div key={d} className="py-2 text-center text-sm font-semibold text-muted-foreground">
-              {d}
-            </div>
-          ))}
-        </div>
-
-        <div className="grid grid-cols-7 gap-1.5">
-          {Array.from({ length: startPadding }).map((_, i) => (
-            <div key={`pad-${i}`} />
-          ))}
-          {days.map((day) => {
-            const holiday = holidayForDay(day);
-            const dayEvents = portalEventsForDay(day);
-            const isToday = isSameDay(day, new Date());
-            const isWeekend = [0, 6].includes(getDay(day));
-            return (
-              <button
-                type="button"
-                key={day.toISOString()}
-                title={[holiday ? getName(holiday) : "", ...dayEvents.map((e) => e.title)].filter(Boolean).join(" · ")}
-                onClick={() => openAddForDay(day)}
-                className={`relative min-h-[96px] cursor-pointer rounded-xl p-2 text-left text-base transition-colors sm:min-h-[112px] ${
-                  isToday ? "ring-2 ring-primary-500 ring-offset-2 dark:ring-offset-surface" : ""
-                } ${
-                  holiday
-                    ? holiday.type === "public"
-                      ? "bg-primary-100 dark:bg-primary-950/45"
-                      : "bg-amber-50 dark:bg-amber-950/25"
-                    : isWeekend
-                      ? "bg-muted/50 dark:bg-muted/30"
-                      : "hover:bg-muted/30 dark:hover:bg-muted/25"
-                }`}
-              >
-                <span
-                  className={`block text-center text-base font-bold sm:text-lg ${
-                    isToday
-                      ? "text-primary-700 dark:text-primary-200"
-                      : holiday
-                        ? "text-primary-800 dark:text-primary-100"
-                        : isWeekend
-                          ? "text-muted-foreground"
-                          : "text-surface-foreground"
-                  }`}
-                >
-                  {format(day, "d")}
-                </span>
-                {holiday && (
-                  <div className="mt-1 truncate text-center text-xs font-semibold leading-snug text-primary-800 dark:text-primary-200 sm:text-sm">
-                    {getName(holiday).split(" ").slice(0, 3).join(" ")}
-                  </div>
-                )}
-                {dayEvents.length > 0 && (
-                  <div className="mt-2 flex flex-wrap justify-center gap-1">
-                    {dayEvents.slice(0, 5).map((e) => (
-                      <span key={e.id} className={`h-2 w-2 rounded-full sm:h-2.5 sm:w-2.5 ${kindDotClass[e.kind]}`} title={e.title} />
-                    ))}
-                    {dayEvents.length > 5 && (
-                      <span className="text-xs font-medium text-muted-foreground">+{dayEvents.length - 5}</span>
-                    )}
-                  </div>
-                )}
-              </button>
-            );
-          })}
-        </div>
-
-        <div className="mt-5 flex flex-wrap gap-4 text-sm text-muted-foreground">
-          <div className="flex items-center gap-1.5">
-            <div className="h-3 w-3 rounded bg-primary-100 dark:bg-primary-900/50" /> Public holiday
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className="h-3 w-3 rounded border border-amber-200 bg-amber-50 dark:border-amber-700/40 dark:bg-amber-950/30" /> Optional / religious
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className="h-3 w-3 rounded ring-2 ring-primary-500" /> Today
-          </div>
-          <div className="flex items-center gap-1.5">
-            <Briefcase className="h-4 w-4 text-sky-500" aria-hidden /> Schedule markers
-          </div>
-        </div>
-      </div>
-
       <div className="rounded-xl border border-border bg-surface">
         <div className="flex flex-col gap-3 border-b border-border px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h3 className="text-lg font-semibold text-surface-foreground">
-              {isStaff ? "Office schedule" : "My renewals & reminders"}
+              {isStaff ? "Desk schedule" : "My schedule"}
             </h3>
             <p className="text-sm text-muted-foreground">Add, edit, or remove entries. Use reminder time for same-day nudges.</p>
           </div>
@@ -540,10 +425,127 @@ export function HolidayCalendarPage() {
         </div>
       </div>
 
+      <div className="rounded-xl border border-border bg-surface p-4 sm:p-8">
+        <p className="mb-3 text-sm font-medium text-muted-foreground">Month view</p>
+        <div className="mb-6 flex items-center justify-between gap-3">
+          <button
+            type="button"
+            onClick={() => setCurrentMonth((m) => subMonths(m, 1))}
+            className="cursor-pointer rounded-lg border border-border p-2.5 text-lg hover:bg-muted"
+            aria-label="Previous month"
+          >
+            ‹
+          </button>
+          <div className="flex items-center gap-2">
+            <Calendar className="h-6 w-6 text-primary-600 dark:text-primary-400" aria-hidden />
+            <h3 className="text-lg font-bold text-surface-foreground sm:text-xl">{format(currentMonth, "MMMM yyyy")}</h3>
+          </div>
+          <button
+            type="button"
+            onClick={() => setCurrentMonth((m) => addMonths(m, 1))}
+            className="cursor-pointer rounded-lg border border-border p-2.5 text-lg hover:bg-muted"
+            aria-label="Next month"
+          >
+            ›
+          </button>
+        </div>
+
+        <div className="mb-2 grid grid-cols-7 gap-1.5">
+          {DAYS.map((d) => (
+            <div key={d} className="py-2 text-center text-sm font-semibold text-muted-foreground">
+              {d}
+            </div>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-7 gap-1.5">
+          {Array.from({ length: startPadding }).map((_, i) => (
+            <div key={`pad-${i}`} />
+          ))}
+          {days.map((day) => {
+            const holiday = holidayForDay(day);
+            const dayEvents = portalEventsForDay(day);
+            const isToday = isSameDay(day, new Date());
+            const isWeekend = [0, 6].includes(getDay(day));
+            return (
+              <button
+                type="button"
+                key={day.toISOString()}
+                title={[holiday ? getName(holiday) : "", ...dayEvents.map((e) => e.title)].filter(Boolean).join(" · ")}
+                onClick={() => openAddForDay(day)}
+                className={`relative min-h-[96px] cursor-pointer rounded-xl p-2 text-left text-base transition-colors sm:min-h-[112px] ${
+                  isToday ? "ring-2 ring-primary-500 ring-offset-2 dark:ring-offset-surface" : ""
+                } ${
+                  holiday
+                    ? holiday.type === "public"
+                      ? "bg-primary-100 dark:bg-primary-950/45"
+                      : "bg-amber-50 dark:bg-amber-950/25"
+                    : isWeekend
+                      ? "bg-muted/50 dark:bg-muted/30"
+                      : "hover:bg-muted/30 dark:hover:bg-muted/25"
+                }`}
+              >
+                <span
+                  className={`block text-center text-base font-bold sm:text-lg ${
+                    isToday
+                      ? "text-primary-700 dark:text-primary-200"
+                      : holiday
+                        ? "text-primary-800 dark:text-primary-100"
+                        : isWeekend
+                          ? "text-muted-foreground"
+                          : "text-surface-foreground"
+                  }`}
+                >
+                  {format(day, "d")}
+                </span>
+                {holiday && (
+                  <div className="mt-1 truncate text-center text-xs font-semibold leading-snug text-primary-800 dark:text-primary-200 sm:text-sm">
+                    {getName(holiday).split(" ").slice(0, 3).join(" ")}
+                  </div>
+                )}
+                {dayEvents.length > 0 && (
+                  <div className="mt-2 flex flex-wrap justify-center gap-1">
+                    {dayEvents.slice(0, 5).map((e) => (
+                      <span key={e.id} className={`h-2 w-2 rounded-full sm:h-2.5 sm:w-2.5 ${kindDotClass[e.kind]}`} title={e.title} />
+                    ))}
+                    {dayEvents.length > 5 && (
+                      <span className="text-xs font-medium text-muted-foreground">+{dayEvents.length - 5}</span>
+                    )}
+                  </div>
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="mt-5 flex flex-wrap gap-4 text-sm text-muted-foreground">
+          <div className="flex items-center gap-1.5">
+            <div className="h-3 w-3 rounded bg-primary-100 dark:bg-primary-900/50" /> Public holiday (Mauritius ref.)
+          </div>
+          <div className="flex items-center gap-1.5">
+            <div className="h-3 w-3 rounded border border-amber-200 bg-amber-50 dark:border-amber-700/40 dark:bg-amber-950/30" /> Optional / religious
+          </div>
+          <div className="flex items-center gap-1.5">
+            <div className="h-3 w-3 rounded ring-2 ring-primary-500" /> Today
+          </div>
+          <div className="flex items-center gap-1.5">
+            <Briefcase className="h-4 w-4 text-sky-500" aria-hidden /> Schedule markers
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-xl border border-primary-200 bg-primary-50 p-4 flex gap-3 dark:border-primary-700/50 dark:bg-primary-950/45">
+        <Info className="h-5 w-5 text-primary-600 dark:text-primary-400 mt-0.5 shrink-0" aria-hidden />
+        <div className="text-sm sm:text-base text-primary-800 dark:text-primary-100">
+          <span className="font-medium">When public holidays apply:</span> payment processing may slow and renewals on a holiday often roll to the next business day — confirm with your broker.
+        </div>
+      </div>
+
       {monthHolidays.length > 0 ? (
         <div className="rounded-xl border border-border bg-surface">
           <div className="border-b border-border px-6 py-4">
-            <h3 className="font-semibold text-surface-foreground">Holidays in {format(currentMonth, "MMMM yyyy")}</h3>
+            <h3 className="font-semibold text-surface-foreground">Mauritius public holidays (reference) — {format(currentMonth, "MMMM yyyy")}</h3>
+            <p className="mt-1 text-xs text-muted-foreground">Optional layer for office planning; your entries above are independent of this list.</p>
           </div>
           <div className="divide-y divide-border">
             {monthHolidays.map((h) => (
