@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Mic, Square, Upload, FileAudio, Loader2, CheckCircle, Globe, AlertCircle } from "lucide-react";
 import { supabase } from "../lib/supabase";
 import { db } from "../lib/db";
@@ -21,7 +21,8 @@ const languageLabels: Record<string, string> = {
 };
 
 export function VoiceUploadPage() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
+  const [assistantLane, setAssistantLane] = useState<"staff" | "client">("staff");
   const [recording, setRecording] = useState(false);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
@@ -33,6 +34,11 @@ export function VoiceUploadPage() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    if (profile?.role === "client") setAssistantLane("client");
+    else setAssistantLane("staff");
+  }, [profile?.role]);
 
   const startRecording = async () => {
     try {
@@ -109,6 +115,34 @@ export function VoiceUploadPage() {
       <div>
         <h2 className="text-2xl font-bold text-surface-foreground">Voice Note Upload</h2>
         <p className="text-muted-foreground">Record in Kreol Morisien, English, or French — auto-transcribed</p>
+      </div>
+
+      <div className="rounded-xl border border-border bg-muted/25 p-4">
+        <p className="text-sm font-semibold text-surface-foreground">AI assistant lanes (partial)</p>
+        <p className="mt-1 text-xs text-muted-foreground">
+          Separate broker-desk and client-care assistants are planned. This control only switches on-screen guidance for now — transcription behaviour is unchanged.
+        </p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => setAssistantLane("staff")}
+            className={`rounded-lg px-3 py-1.5 text-xs font-semibold ${assistantLane === "staff" ? "bg-primary-600 text-white" : "border border-border bg-surface text-muted-foreground"}`}
+          >
+            Broker desk
+          </button>
+          <button
+            type="button"
+            onClick={() => setAssistantLane("client")}
+            className={`rounded-lg px-3 py-1.5 text-xs font-semibold ${assistantLane === "client" ? "bg-primary-600 text-white" : "border border-border bg-surface text-muted-foreground"}`}
+          >
+            Client care
+          </button>
+        </div>
+        <p className="mt-2 text-xs text-muted-foreground">
+          {assistantLane === "staff"
+            ? "Tip: mention policy numbers, diary dates, and underwriting questions clearly for the desk transcript."
+            : "Tip: speak in short sentences when explaining premiums or payment steps so the client summary stays easy to read."}
+        </p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">

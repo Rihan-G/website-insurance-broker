@@ -37,7 +37,7 @@ const statusStyles: Record<string, string> = {
 };
 
 export function ClientPortalPage() {
-  const { user, profile } = useAuth();
+  const { user, profile, demoAuthActive } = useAuth();
   const [policies, setPolicies] = useState<Policy[]>([]);
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
@@ -49,7 +49,7 @@ export function ClientPortalPage() {
       setLoading(true);
       const [{ data: pols }, { data: pays }, { count }] = await Promise.all([
         supabase.from("policies").select("*").eq("client_id", user.id).order("end_date", { ascending: true }),
-        db.payments().select("*").eq("client_id", user.id).order("created_at", { ascending: false }).limit(5),
+        db.payments().select("*").eq("client_id", user.id).order("created_at", { ascending: false }).limit(50),
         db.inboxMessages().select("id", { count: "exact", head: true }).eq("recipient_id", user.id).eq("is_read", false),
       ]);
       setPolicies((pols as Policy[]) ?? []);
@@ -82,6 +82,11 @@ export function ClientPortalPage() {
     const d = differenceInDays(new Date(p.end_date), now);
     return d >= 0 && d <= 30;
   });
+
+  const amountDueLive = payments
+    .filter((p) => !["paid", "refunded", "cancelled"].includes(p.status))
+    .reduce((s, p) => s + p.amount, 0);
+  const amountDue = demoAuthActive && amountDueLive === 0 ? 12840 : amountDueLive;
 
   if (loading) {
     return (
@@ -116,6 +121,24 @@ export function ClientPortalPage() {
             <p className="text-sm text-muted-foreground">{s.label}</p>
           </div>
         ))}
+      </div>
+
+      <div className="rounded-xl border border-warning-200/90 bg-warning-50/90 p-5 dark:border-warning-800/50 dark:bg-warning-950/30">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h3 className="text-sm font-bold uppercase tracking-wide text-warning-900 dark:text-warning-100">Amount due</h3>
+            <p className="mt-1 text-sm text-muted-foreground dark:text-warning-200/80">
+              Unpaid or in-flight invoices linked to your profile.
+              {demoAuthActive && amountDueLive === 0 && " Demo sample balance while no live rows are returned."}
+            </p>
+          </div>
+          <p className="text-3xl font-extrabold tabular-nums text-warning-900 dark:text-warning-100">
+            MUR {amountDue.toLocaleString()}
+          </p>
+        </div>
+        {amountDue === 0 && (
+          <p className="mt-3 text-sm font-medium text-accent-700 dark:text-accent-300">You have no outstanding balance in the fetched payment list.</p>
+        )}
       </div>
 
       {/* Expiry alerts */}
@@ -227,7 +250,7 @@ export function ClientPortalPage() {
             </div>
           ) : (
             <div className="divide-y divide-border">
-              {payments.map((p) => (
+              {payments.slice(0, 5).map((p) => (
                 <div key={p.id} className="flex items-center gap-4 px-6 py-4">
                   <div className={`rounded-lg p-2 shrink-0 ${p.status === "paid" ? "bg-accent-50" : "bg-warning-50"}`}>
                     {p.status === "paid" ? <CheckCircle className="h-4 w-4 text-accent-600" /> : <Clock className="h-4 w-4 text-warning-600" />}

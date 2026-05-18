@@ -40,6 +40,13 @@ const MOCK_MSGS: MsgRow[] = [
   { id: "m2", from: "You", body: "Thanks — let me know if anything else is needed.", at: new Date(Date.now() - 1000 * 60 * 90), mine: true },
 ];
 
+const MESSAGE_SNIPPETS = [
+  "Please confirm the bank details on file before we issue the renewal debit.",
+  "We still need a copy of your NCB letter dated within the last 12 months.",
+  "Your renewal quote is ready — reply if you would like us to bind cover today.",
+  "Payment was received — thank you. We will email the schedule within one business day.",
+];
+
 export function SecureMessagesPage() {
   const { user, profile, session, demoAuthActive } = useAuth();
   const [threads, setThreads] = useState<ThreadRow[]>([]);
@@ -317,6 +324,20 @@ export function SecureMessagesPage() {
           </div>
 
           <div className="border-t border-border/80 p-3 sm:p-4">
+            <p className="mb-2 text-xs font-medium text-muted-foreground">Quick phrases (tap to append)</p>
+            <div className="mb-3 flex flex-wrap gap-2">
+              {MESSAGE_SNIPPETS.map((snippet) => (
+                <button
+                  key={snippet}
+                  type="button"
+                  className="rounded-full border border-border bg-muted/40 px-3 py-1 text-left text-xs text-surface-foreground hover:bg-muted"
+                  onClick={() => setDraft((d) => (d ? `${d.trim()}\n\n${snippet}` : snippet))}
+                >
+                  {snippet.slice(0, 42)}
+                  {snippet.length > 42 ? "…" : ""}
+                </button>
+              ))}
+            </div>
             <div className="flex gap-2">
               <div className="relative flex-1">
                 <MessageSquare className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
