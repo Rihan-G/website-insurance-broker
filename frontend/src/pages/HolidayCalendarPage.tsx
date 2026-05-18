@@ -10,6 +10,7 @@ import {
   Briefcase,
   Pencil,
   Bell,
+  ListTodo,
 } from "lucide-react";
 import {
   format,
@@ -22,6 +23,7 @@ import {
   getDay,
   parseISO,
   isBefore,
+  isAfter,
   addDays,
   startOfDay,
 } from "date-fns";
@@ -133,6 +135,32 @@ export function HolidayCalendarPage() {
       .sort((a, b) => a.date.localeCompare(b.date) || (a.reminderTime ?? "").localeCompare(b.reminderTime ?? ""));
   }, [portalEvents]);
 
+  const todaysTasks = useMemo(() => {
+    const today = startOfDay(new Date());
+    return portalEvents
+      .filter((e) => e.kind === "task" && isSameDay(parseISO(e.date), today))
+      .sort(
+        (a, b) =>
+          (a.reminderTime ?? "").localeCompare(b.reminderTime ?? "") || a.title.localeCompare(b.title),
+      );
+  }, [portalEvents]);
+
+  const futureTasks = useMemo(() => {
+    const today = startOfDay(new Date());
+    return portalEvents
+      .filter((e) => {
+        if (e.kind !== "task") return false;
+        const d = startOfDay(parseISO(e.date));
+        return isAfter(d, today);
+      })
+      .sort(
+        (a, b) =>
+          a.date.localeCompare(b.date) ||
+          (a.reminderTime ?? "").localeCompare(b.reminderTime ?? "") ||
+          a.title.localeCompare(b.title),
+      );
+  }, [portalEvents]);
+
   const [formOpen, setFormOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draftDate, setDraftDate] = useState(() => format(new Date(), "yyyy-MM-dd"));
@@ -152,6 +180,17 @@ export function HolidayCalendarPage() {
     setEditingId(null);
     setDraftDate(format(day, "yyyy-MM-dd"));
     setDraftKind(isStaff ? "task" : "renewal");
+    setDraftTitle("");
+    setDraftNotes("");
+    setDraftReminderTime("09:00");
+    setFormOpen(true);
+  };
+
+  /** Opens the form with kind Task (used from the task column; desk “Add entry” still uses role defaults). */
+  const openAddTaskForDay = (day: Date) => {
+    setEditingId(null);
+    setDraftDate(format(day, "yyyy-MM-dd"));
+    setDraftKind("task");
     setDraftTitle("");
     setDraftNotes("");
     setDraftReminderTime("09:00");
@@ -425,111 +464,252 @@ export function HolidayCalendarPage() {
         </div>
       </div>
 
-      <div className="rounded-xl border border-border bg-surface p-4 sm:p-8">
-        <p className="mb-3 text-sm font-medium text-muted-foreground">Month view</p>
-        <div className="mb-6 flex items-center justify-between gap-3">
-          <button
-            type="button"
-            onClick={() => setCurrentMonth((m) => subMonths(m, 1))}
-            className="cursor-pointer rounded-lg border border-border p-2.5 text-lg hover:bg-muted"
-            aria-label="Previous month"
+      <div className="grid gap-6 lg:grid-cols-[minmax(280px,340px)_minmax(0,1fr)] lg:items-start">
+        <aside
+          className="order-2 flex flex-col gap-4 lg:order-1 lg:sticky lg:top-6 lg:self-start"
+          aria-label="Tasks for today and upcoming"
+        >
+          <section
+            className="rounded-xl border-2 border-sky-300/70 bg-gradient-to-b from-sky-50 to-surface p-4 shadow-sm dark:border-sky-600/45 dark:from-sky-950/50 dark:to-surface"
+            aria-labelledby="today-tasks-heading"
           >
-            ‹
-          </button>
-          <div className="flex items-center gap-2">
-            <Calendar className="h-6 w-6 text-primary-600 dark:text-primary-400" aria-hidden />
-            <h3 className="text-lg font-bold text-surface-foreground sm:text-xl">{format(currentMonth, "MMMM yyyy")}</h3>
-          </div>
-          <button
-            type="button"
-            onClick={() => setCurrentMonth((m) => addMonths(m, 1))}
-            className="cursor-pointer rounded-lg border border-border p-2.5 text-lg hover:bg-muted"
-            aria-label="Next month"
-          >
-            ›
-          </button>
-        </div>
-
-        <div className="mb-2 grid grid-cols-7 gap-1.5">
-          {DAYS.map((d) => (
-            <div key={d} className="py-2 text-center text-sm font-semibold text-muted-foreground">
-              {d}
-            </div>
-          ))}
-        </div>
-
-        <div className="grid grid-cols-7 gap-1.5">
-          {Array.from({ length: startPadding }).map((_, i) => (
-            <div key={`pad-${i}`} />
-          ))}
-          {days.map((day) => {
-            const holiday = holidayForDay(day);
-            const dayEvents = portalEventsForDay(day);
-            const isToday = isSameDay(day, new Date());
-            const isWeekend = [0, 6].includes(getDay(day));
-            return (
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <h3
+                  id="today-tasks-heading"
+                  className="flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-sky-900 dark:text-sky-100"
+                >
+                  <ListTodo className="h-4 w-4 shrink-0 text-sky-600 dark:text-sky-400" aria-hidden />
+                  Today&apos;s tasks
+                </h3>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Type <span className="font-medium text-surface-foreground">Task</span> only, dated today — separate from the month grid.
+                </p>
+              </div>
               <button
                 type="button"
-                key={day.toISOString()}
-                title={[holiday ? getName(holiday) : "", ...dayEvents.map((e) => e.title)].filter(Boolean).join(" · ")}
-                onClick={() => openAddForDay(day)}
-                className={`relative min-h-[96px] cursor-pointer rounded-xl p-2 text-left text-base transition-colors sm:min-h-[112px] ${
-                  isToday ? "ring-2 ring-primary-500 ring-offset-2 dark:ring-offset-surface" : ""
-                } ${
-                  holiday
-                    ? holiday.type === "public"
-                      ? "bg-primary-100 dark:bg-primary-950/45"
-                      : "bg-amber-50 dark:bg-amber-950/25"
-                    : isWeekend
-                      ? "bg-muted/50 dark:bg-muted/30"
-                      : "hover:bg-muted/30 dark:hover:bg-muted/25"
-                }`}
+                onClick={() => openAddTaskForDay(new Date())}
+                className="shrink-0 rounded-lg border border-sky-300/80 bg-surface p-2 text-sky-700 shadow-sm hover:bg-sky-50 dark:border-sky-600/50 dark:text-sky-200 dark:hover:bg-sky-950/60 cursor-pointer"
+                aria-label="Add task for today"
               >
-                <span
-                  className={`block text-center text-base font-bold sm:text-lg ${
-                    isToday
-                      ? "text-primary-700 dark:text-primary-200"
-                      : holiday
-                        ? "text-primary-800 dark:text-primary-100"
-                        : isWeekend
-                          ? "text-muted-foreground"
-                          : "text-surface-foreground"
-                  }`}
-                >
-                  {format(day, "d")}
-                </span>
-                {holiday && (
-                  <div className="mt-1 truncate text-center text-xs font-semibold leading-snug text-primary-800 dark:text-primary-200 sm:text-sm">
-                    {getName(holiday).split(" ").slice(0, 3).join(" ")}
-                  </div>
-                )}
-                {dayEvents.length > 0 && (
-                  <div className="mt-2 flex flex-wrap justify-center gap-1">
-                    {dayEvents.slice(0, 5).map((e) => (
-                      <span key={e.id} className={`h-2 w-2 rounded-full sm:h-2.5 sm:w-2.5 ${kindDotClass[e.kind]}`} title={e.title} />
-                    ))}
-                    {dayEvents.length > 5 && (
-                      <span className="text-xs font-medium text-muted-foreground">+{dayEvents.length - 5}</span>
-                    )}
-                  </div>
-                )}
+                <Plus className="h-4 w-4" aria-hidden />
               </button>
-            );
-          })}
-        </div>
+            </div>
+            <ul className="mt-3 space-y-2">
+              {todaysTasks.length === 0 ? (
+                <li className="rounded-lg border border-dashed border-sky-200/90 bg-surface/60 px-3 py-6 text-center text-sm text-muted-foreground dark:border-sky-800/60">
+                  No tasks for today. Use + or pick a day on the calendar.
+                </li>
+              ) : (
+                todaysTasks.map((e) => (
+                  <li
+                    key={e.id}
+                    className="rounded-lg border border-border bg-surface/90 p-3 shadow-sm dark:bg-surface/70"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0 flex-1">
+                        <p className="font-semibold text-surface-foreground">{e.title}</p>
+                        {e.reminderTime && (
+                          <p className="mt-0.5 inline-flex items-center gap-1 text-xs font-medium text-accent-700 dark:text-accent-300">
+                            <Bell className="h-3 w-3 shrink-0" aria-hidden />
+                            {e.reminderTime}
+                          </p>
+                        )}
+                        {e.notes && (
+                          <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{e.notes}</p>
+                        )}
+                      </div>
+                      <div className="flex shrink-0 gap-1">
+                        <button
+                          type="button"
+                          onClick={() => openEdit(e)}
+                          className="rounded-lg border border-border p-1.5 text-muted-foreground hover:bg-muted cursor-pointer"
+                          aria-label={`Edit ${e.title}`}
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => removeEvent(e.id)}
+                          className="rounded-lg border border-border p-1.5 text-muted-foreground hover:bg-danger-50 hover:text-danger-700 dark:hover:bg-danger-600/15 dark:hover:text-danger-300 cursor-pointer"
+                          aria-label={`Remove ${e.title}`}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  </li>
+                ))
+              )}
+            </ul>
+          </section>
 
-        <div className="mt-5 flex flex-wrap gap-4 text-sm text-muted-foreground">
-          <div className="flex items-center gap-1.5">
-            <div className="h-3 w-3 rounded bg-primary-100 dark:bg-primary-900/50" /> Public holiday (Mauritius ref.)
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className="h-3 w-3 rounded border border-amber-200 bg-amber-50 dark:border-amber-700/40 dark:bg-amber-950/30" /> Optional / religious
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className="h-3 w-3 rounded ring-2 ring-primary-500" /> Today
-          </div>
-          <div className="flex items-center gap-1.5">
-            <Briefcase className="h-4 w-4 text-sky-500" aria-hidden /> Schedule markers
+          <section
+            className="rounded-xl border border-border bg-surface p-4 shadow-sm"
+            aria-labelledby="future-tasks-heading"
+          >
+            <h3
+              id="future-tasks-heading"
+              className="flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-muted-foreground"
+            >
+              <ListTodo className="h-4 w-4 shrink-0 text-sky-500" aria-hidden />
+              Future tasks
+            </h3>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Tasks dated after today — soonest dates at the top.
+            </p>
+            <ul className="mt-3 max-h-[min(28rem,55vh)] space-y-2 overflow-y-auto overscroll-y-contain pr-0.5">
+              {futureTasks.length === 0 ? (
+                <li className="rounded-lg border border-dashed border-border bg-muted/20 px-3 py-6 text-center text-sm text-muted-foreground">
+                  No upcoming tasks. Add a Task entry with a future date in the schedule above or from the calendar.
+                </li>
+              ) : (
+                futureTasks.map((e) => (
+                  <li key={e.id} className="rounded-lg border border-border bg-muted/15 p-3 dark:bg-muted/10">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs font-semibold uppercase tracking-wide text-primary-600 dark:text-primary-400">
+                          {format(parseISO(e.date), "EEE d MMM")}
+                        </p>
+                        <p className="mt-0.5 font-semibold text-surface-foreground">{e.title}</p>
+                        {e.reminderTime && (
+                          <p className="mt-0.5 text-xs text-muted-foreground">Reminder {e.reminderTime}</p>
+                        )}
+                      </div>
+                      <div className="flex shrink-0 gap-1">
+                        <button
+                          type="button"
+                          onClick={() => openEdit(e)}
+                          className="rounded-lg border border-border p-1.5 text-muted-foreground hover:bg-muted cursor-pointer"
+                          aria-label={`Edit ${e.title}`}
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => removeEvent(e.id)}
+                          className="rounded-lg border border-border p-1.5 text-muted-foreground hover:bg-danger-50 hover:text-danger-700 dark:hover:bg-danger-600/15 dark:hover:text-danger-300 cursor-pointer"
+                          aria-label={`Remove ${e.title}`}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  </li>
+                ))
+              )}
+            </ul>
+          </section>
+        </aside>
+
+        <div className="order-1 min-w-0 lg:order-2">
+          <div className="rounded-xl border border-border bg-surface p-4 sm:p-8">
+            <p className="mb-3 text-sm font-medium text-muted-foreground">Month view</p>
+            <div className="mb-6 flex items-center justify-between gap-3">
+              <button
+                type="button"
+                onClick={() => setCurrentMonth((m) => subMonths(m, 1))}
+                className="cursor-pointer rounded-lg border border-border p-2.5 text-lg hover:bg-muted"
+                aria-label="Previous month"
+              >
+                ‹
+              </button>
+              <div className="flex items-center gap-2">
+                <Calendar className="h-6 w-6 text-primary-600 dark:text-primary-400" aria-hidden />
+                <h3 className="text-lg font-bold text-surface-foreground sm:text-xl">{format(currentMonth, "MMMM yyyy")}</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setCurrentMonth((m) => addMonths(m, 1))}
+                className="cursor-pointer rounded-lg border border-border p-2.5 text-lg hover:bg-muted"
+                aria-label="Next month"
+              >
+                ›
+              </button>
+            </div>
+
+            <div className="mb-2 grid grid-cols-7 gap-1.5">
+              {DAYS.map((d) => (
+                <div key={d} className="py-2 text-center text-sm font-semibold text-muted-foreground">
+                  {d}
+                </div>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-7 gap-1.5">
+              {Array.from({ length: startPadding }).map((_, i) => (
+                <div key={`pad-${i}`} />
+              ))}
+              {days.map((day) => {
+                const holiday = holidayForDay(day);
+                const dayEvents = portalEventsForDay(day);
+                const isToday = isSameDay(day, new Date());
+                const isWeekend = [0, 6].includes(getDay(day));
+                return (
+                  <button
+                    type="button"
+                    key={day.toISOString()}
+                    title={[holiday ? getName(holiday) : "", ...dayEvents.map((e) => e.title)].filter(Boolean).join(" · ")}
+                    onClick={() => openAddForDay(day)}
+                    className={`relative min-h-[96px] cursor-pointer rounded-xl p-2 text-left text-base transition-colors sm:min-h-[112px] ${
+                      isToday ? "ring-2 ring-primary-500 ring-offset-2 dark:ring-offset-surface" : ""
+                    } ${
+                      holiday
+                        ? holiday.type === "public"
+                          ? "bg-primary-100 dark:bg-primary-950/45"
+                          : "bg-amber-50 dark:bg-amber-950/25"
+                        : isWeekend
+                          ? "bg-muted/50 dark:bg-muted/30"
+                          : "hover:bg-muted/30 dark:hover:bg-muted/25"
+                    }`}
+                  >
+                    <span
+                      className={`block text-center text-base font-bold sm:text-lg ${
+                        isToday
+                          ? "text-primary-700 dark:text-primary-200"
+                          : holiday
+                            ? "text-primary-800 dark:text-primary-100"
+                            : isWeekend
+                              ? "text-muted-foreground"
+                              : "text-surface-foreground"
+                      }`}
+                    >
+                      {format(day, "d")}
+                    </span>
+                    {holiday && (
+                      <div className="mt-1 truncate text-center text-xs font-semibold leading-snug text-primary-800 dark:text-primary-200 sm:text-sm">
+                        {getName(holiday).split(" ").slice(0, 3).join(" ")}
+                      </div>
+                    )}
+                    {dayEvents.length > 0 && (
+                      <div className="mt-2 flex flex-wrap justify-center gap-1">
+                        {dayEvents.slice(0, 5).map((e) => (
+                          <span key={e.id} className={`h-2 w-2 rounded-full sm:h-2.5 sm:w-2.5 ${kindDotClass[e.kind]}`} title={e.title} />
+                        ))}
+                        {dayEvents.length > 5 && (
+                          <span className="text-xs font-medium text-muted-foreground">+{dayEvents.length - 5}</span>
+                        )}
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="mt-5 flex flex-wrap gap-4 text-sm text-muted-foreground">
+              <div className="flex items-center gap-1.5">
+                <div className="h-3 w-3 rounded bg-primary-100 dark:bg-primary-900/50" /> Public holiday (Mauritius ref.)
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="h-3 w-3 rounded border border-amber-200 bg-amber-50 dark:border-amber-700/40 dark:bg-amber-950/30" /> Optional / religious
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="h-3 w-3 rounded ring-2 ring-primary-500" /> Today
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Briefcase className="h-4 w-4 text-sky-500" aria-hidden /> Schedule markers
+              </div>
+            </div>
           </div>
         </div>
       </div>
