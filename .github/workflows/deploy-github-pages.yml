@@ -12,8 +12,15 @@
 #
 # This workflow runs only on pushes to main — merge your PR before expecting updates.
 #
-# VITE_ALLOW_DEMO_LOGIN enables the same in-browser demo accounts as local dev
-# (no real Supabase required to try the portal on Pages).
+# Supabase (optional repository secrets — Settings → Secrets and variables → Actions):
+#   VITE_SUPABASE_URL              e.g. https://xxxx.supabase.co
+#   VITE_SUPABASE_ANON_KEY         legacy anon JWT, or use publishable key below
+#   VITE_SUPABASE_PUBLISHABLE_KEY  preferred sb_publishable_… key (either key is enough)
+# In the Supabase dashboard, add your GitHub Pages URL under Authentication → URL configuration
+# (Site URL and Redirect URLs) so email links and OAuth return to this app.
+# If these are unset, the app falls back to local defaults and demo sign-in stays available
+# (see frontend/src/lib/demoAuth.ts). Set VITE_ALLOW_DEMO_LOGIN to "true" or "false" to
+# override demo behaviour when using a real project.
 name: Deploy GitHub Pages
 
 on:
@@ -65,7 +72,10 @@ jobs:
 
       - name: Build for GitHub Pages
         env:
-          VITE_ALLOW_DEMO_LOGIN: "true"
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+          VITE_ALLOW_DEMO_LOGIN: ${{ secrets.VITE_ALLOW_DEMO_LOGIN }}
         run: pnpm build
 
       - name: SPA fallback + Jekyll bypass

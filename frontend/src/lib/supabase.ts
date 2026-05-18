@@ -3,7 +3,7 @@ import type { Database } from "../types/database";
 import { getPortalFlavor } from "./portalFlavor";
 
 /** See https://supabase.com/docs/guides/api/api-keys — publishable (sb_publishable_…) or legacy anon JWT. */
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "http://localhost:54321";
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL?.trim() || "http://localhost:54321";
 const supabaseKey =
   import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY?.trim() ||
   import.meta.env.VITE_SUPABASE_ANON_KEY?.trim() ||

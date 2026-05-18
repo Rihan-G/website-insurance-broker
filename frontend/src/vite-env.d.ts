@@ -1,6 +1,14 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
+  /** Supabase project URL (build-time; set in CI secrets for GitHub Pages). */
+  readonly VITE_SUPABASE_URL?: string;
+  /** Legacy anon JWT (build-time). */
+  readonly VITE_SUPABASE_ANON_KEY?: string;
+  /** Preferred publishable key `sb_publishable_…` (build-time). */
+  readonly VITE_SUPABASE_PUBLISHABLE_KEY?: string;
+  /** `"true"` | `"false"` — forces demo on/off; omit to derive from whether Supabase keys look configured. */
+  readonly VITE_ALLOW_DEMO_LOGIN?: string;
   /** Set to `"false"` to hide the “Administrator sign-in” link on the public login page. */
   readonly VITE_SHOW_STAFF_LOGIN_LINK?: string;
   /** `unified` (default) | `client` | `staff` — split deploys use isolated Supabase auth storage. */
