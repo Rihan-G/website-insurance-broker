@@ -83,6 +83,15 @@ export const DEMO_ACCOUNTS = [
   },
 ] as const;
 
+export type DemoAccount = (typeof DEMO_ACCOUNTS)[number];
+
+/** Resolve bundled demo account by portal role (admin, broker, client). */
+export function getDemoAccountByRole(role: DemoAccount["profile"]["role"]): DemoAccount {
+  const hit = DEMO_ACCOUNTS.find((a) => a.profile.role === role);
+  if (!hit) return DEMO_ACCOUNTS[2];
+  return hit;
+}
+
 export type DemoBundle = { user: User; profile: Profile };
 
 function buildUser(profile: Profile): User {

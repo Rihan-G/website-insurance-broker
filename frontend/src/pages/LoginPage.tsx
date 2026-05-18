@@ -2,7 +2,7 @@ import { useState, type FormEvent } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { ShieldCheck, Eye, EyeOff, Lock, CheckCircle, Sparkles } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
-import { DEMO_ACCOUNTS } from "../lib/demoAuth";
+import { DEMO_ACCOUNTS, getDemoAccountByRole } from "../lib/demoAuth";
 import { COMPANY_NAME_SHORT } from "../lib/branding";
 import { ParticleField } from "../components/ParticleField";
 import { ThemeToggle } from "../components/ThemeToggle";
@@ -25,6 +25,9 @@ export function LoginPage() {
   const [loading, setLoading] = useState(false);
   const { signIn, signUp, demoAuthAvailable } = useAuth();
   const navigate = useNavigate();
+
+  const showDemoCredentialButtons =
+    import.meta.env.DEV || import.meta.env.VITE_ALLOW_DEMO_LOGIN === "true";
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -134,7 +137,7 @@ export function LoginPage() {
           </div>
 
           {/* Card */}
-          <div className="glass-card rounded-2xl p-8">
+          <div className="glass-card overflow-visible rounded-2xl p-8">
             <div className="mb-6 flex items-center gap-3">
               <div className="rounded-lg bg-primary-100 dark:bg-primary-900/40 p-2">
                 <Lock className="h-5 w-5 text-primary-600 dark:text-primary-400" />
@@ -239,17 +242,67 @@ export function LoginPage() {
               </p>
             )}
 
-            {demoAuthAvailable && !isSignUp && (
-              <div className="mt-5 rounded-xl border border-border bg-muted/40 p-4 text-left text-xs text-muted-foreground">
-                <p className="font-semibold text-surface-foreground">Local demo accounts</p>
-                <ul className="mt-2 space-y-2 font-mono text-[11px] leading-relaxed">
-                  {DEMO_ACCOUNTS.map((acc) => (
-                    <li key={acc.profile.id}>
-                      <span className="text-surface-foreground">{acc.profile.role}:</span> {acc.email}{" "}
-                      <span className="text-muted-foreground">/ {acc.password}</span>
-                    </li>
-                  ))}
-                </ul>
+            {showDemoCredentialButtons && !isSignUp && (
+              <div className="relative z-20 mt-6 space-y-3 rounded-xl border-2 border-primary-500/35 bg-primary-50 p-4 shadow-sm dark:border-primary-500/40 dark:bg-primary-950/55 dark:shadow-primary-950/20">
+                <p className="text-sm font-bold text-primary-950 dark:text-primary-50">Demo credentials</p>
+                <p className="text-xs leading-relaxed text-primary-800/90 dark:text-primary-200/90">
+                  Use the buttons below to fill email and password, then press &quot;Sign In Securely&quot;. Same flow as the administrator page.
+                </p>
+                {!demoAuthAvailable && (
+                  <p className="rounded-lg bg-amber-100 px-3 py-2 text-xs font-medium text-amber-950 dark:bg-amber-950/50 dark:text-amber-100">
+                    Demo sign-in is off: set <span className="font-mono">VITE_ALLOW_DEMO_LOGIN=true</span> (or use Vite dev with a placeholder Supabase key) so these accounts authenticate without real users.
+                  </p>
+                )}
+                <div className="flex flex-col gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const a = getDemoAccountByRole("client");
+                      setEmail(a.email);
+                      setPassword(a.password);
+                    }}
+                    className="w-full rounded-lg bg-accent-600 px-3 py-2.5 text-center text-sm font-semibold text-white shadow-md shadow-accent-900/20 hover:bg-accent-500 cursor-pointer transition-colors"
+                  >
+                    Fill client demo login
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const a = getDemoAccountByRole("broker");
+                      setEmail(a.email);
+                      setPassword(a.password);
+                    }}
+                    className="w-full rounded-lg border-2 border-primary-600 bg-white px-3 py-2.5 text-center text-sm font-semibold text-primary-800 hover:bg-primary-50 cursor-pointer transition-colors dark:border-primary-400 dark:bg-primary-900/40 dark:text-primary-100 dark:hover:bg-primary-900/70"
+                  >
+                    Fill broker demo login
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const a = getDemoAccountByRole("admin");
+                      setEmail(a.email);
+                      setPassword(a.password);
+                    }}
+                    className="w-full rounded-lg border border-border bg-muted/80 px-3 py-2.5 text-center text-sm font-semibold text-surface-foreground hover:bg-muted cursor-pointer transition-colors dark:bg-surface/60"
+                  >
+                    Fill admin demo login
+                  </button>
+                </div>
+                {demoAuthAvailable && (
+                  <details className="group rounded-lg border border-primary-200/60 bg-white/60 p-2 text-xs dark:border-primary-800/50 dark:bg-black/20">
+                    <summary className="cursor-pointer font-medium text-primary-900 dark:text-primary-200">
+                      Show all demo emails / passwords
+                    </summary>
+                    <ul className="mt-2 space-y-1.5 border-t border-primary-200/40 pt-2 font-mono text-[11px] text-primary-900 dark:border-primary-800/40 dark:text-primary-200">
+                      {DEMO_ACCOUNTS.map((acc) => (
+                        <li key={acc.profile.id}>
+                          <span className="font-semibold capitalize">{acc.profile.role}:</span> {acc.email}{" "}
+                          <span className="opacity-75">/ {acc.password}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </details>
+                )}
               </div>
             )}
           </div>

@@ -3,10 +3,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { ShieldCheck, Eye, EyeOff, Lock } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { ThemeToggle } from "../components/ThemeToggle";
-import { DEMO_ACCOUNTS } from "../lib/demoAuth";
+import { getDemoAccountByRole } from "../lib/demoAuth";
 import { COMPANY_NAME_SHORT } from "../lib/branding";
 
-const adminDemo = DEMO_ACCOUNTS[0];
+const adminDemo = getDemoAccountByRole("admin");
 
 export function AdminLoginPage() {
   const [email, setEmail] = useState("");
@@ -130,7 +130,7 @@ export function AdminLoginPage() {
               <button
                 type="button"
                 onClick={fillAdminDemo}
-                className="mt-3 text-sm font-medium text-accent-400 underline-offset-2 hover:underline"
+                className="mt-3 w-full rounded-lg bg-accent-600 px-3 py-2.5 text-sm font-semibold text-white shadow-md shadow-black/20 hover:bg-accent-500 cursor-pointer transition-colors"
               >
                 Fill demo credentials
               </button>
