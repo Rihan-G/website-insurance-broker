@@ -244,18 +244,26 @@ export function AdminLoginPage() {
       </div>
 
       {/* Right — form */}
-      <div className="relative flex flex-1 flex-col items-center justify-center overflow-hidden px-6 py-12 lg:bg-gradient-to-br lg:from-primary-50 lg:via-white lg:to-accent-50/35 lg:px-10 dark:lg:from-[#0a1018] dark:lg:via-background dark:lg:to-primary-950/40">
-        <div className="absolute right-5 top-5 z-10 flex items-center gap-2 sm:right-8 sm:top-8">
+      <div className="relative isolate flex min-h-0 flex-1 flex-col items-center overflow-y-auto overflow-x-hidden px-6 py-10 max-lg:justify-start max-lg:pt-20 max-lg:pb-10 lg:min-h-screen lg:justify-center lg:overflow-hidden lg:bg-gradient-to-br lg:from-primary-50 lg:via-white lg:to-accent-50/35 lg:px-10 lg:py-12 dark:lg:from-[#0a1018] dark:lg:via-background dark:lg:to-primary-950/40">
+        <div className="absolute right-4 top-4 z-30 flex items-center gap-2 sm:right-6 sm:top-6 lg:right-8 lg:top-8">
           <CurrencySwitcher variant={chromeOnDark ? "dark" : "light"} />
           <ThemeToggle variant={chromeOnDark ? "onDark" : "default"} />
         </div>
 
-        <div className="pointer-events-none absolute inset-0 hidden opacity-60 lg:block dot-grid-light" />
-        <div className="pointer-events-none absolute right-0 top-0 hidden h-96 w-96 -translate-y-1/2 translate-x-1/2 rounded-full bg-primary-100/40 blur-3xl lg:block dark:bg-primary-900/20" />
-        <div className="pointer-events-none absolute bottom-0 left-0 hidden h-80 w-80 translate-y-1/2 -translate-x-1/2 rounded-full bg-accent-100/30 blur-3xl lg:block dark:bg-accent-900/15" />
+        <div className="pointer-events-none absolute inset-0 z-0 hidden opacity-60 lg:block dot-grid-light" />
+        <div className="pointer-events-none absolute right-0 top-0 z-0 hidden h-96 w-96 -translate-y-1/2 translate-x-1/2 rounded-full bg-primary-100/40 blur-3xl lg:block dark:bg-primary-900/20" />
+        <div className="pointer-events-none absolute bottom-0 left-0 z-0 hidden h-80 w-80 translate-y-1/2 -translate-x-1/2 rounded-full bg-accent-100/30 blur-3xl lg:block dark:bg-accent-900/15" />
 
-        <div className="lg:hidden absolute inset-0 bg-gradient-to-br from-primary-950 via-primary-900 to-gray-950" />
-        <div className="relative z-[1] w-full max-w-md">
+        {/* Mobile / tablet: fixed dark base + gradient (z-0). Avoid overflow-hidden + vertical center clipping tall forms. */}
+        <div
+          className="pointer-events-none absolute inset-0 z-0 bg-primary-950 lg:hidden"
+          aria-hidden
+        />
+        <div
+          className="pointer-events-none absolute inset-0 z-0 bg-gradient-to-br from-primary-950 via-primary-900 to-gray-950 lg:hidden"
+          aria-hidden
+        />
+        <div className="relative z-10 w-full max-w-md">
           <div className="mb-8 flex flex-col items-center text-center lg:items-start lg:text-left">
             <div className="mb-4 inline-flex rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-sm lg:hidden">
               <ShieldCheck className="h-12 w-12 text-accent-400" />
@@ -268,7 +276,7 @@ export function AdminLoginPage() {
             </p>
           </div>
 
-          <div className="relative overflow-hidden rounded-2xl border border-white/10 p-8 shadow-2xl ring-1 ring-white/5 glass-dark lg:border-border lg:bg-white/90 lg:shadow-xl lg:ring-primary-900/[0.04] lg:backdrop-blur-xl dark:lg:border-white/10 dark:lg:bg-surface/95 dark:lg:ring-white/[0.06]">
+          <div className="relative overflow-hidden rounded-2xl border border-white/10 p-6 shadow-2xl ring-1 ring-white/5 glass-dark sm:p-8 lg:border-border lg:bg-white/90 lg:p-8 lg:shadow-xl lg:ring-primary-900/[0.04] lg:backdrop-blur-xl dark:lg:border-white/10 dark:lg:bg-surface/95 dark:lg:ring-white/[0.06]">
             <div
               className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary-500/0 via-primary-500/70 to-accent-500/0 dark:via-primary-400/80 lg:opacity-100"
               aria-hidden
