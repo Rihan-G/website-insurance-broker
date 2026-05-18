@@ -1,84 +1,267 @@
-import { useMemo, useState } from "react";
-import { Lock, Send, MessageSquare } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Lock, Send, MessageSquare, Plus, Database } from "lucide-react";
 import { format } from "date-fns";
 import toast from "react-hot-toast";
+import { useAuth } from "../context/AuthContext";
+import { db } from "../lib/db";
 
-interface Thread {
+type ThreadRow = {
   id: string;
-  title: string;
+  subject: string;
   policyRef: string;
   lastAt: Date;
   unread: number;
   preview: string;
-}
+  clientId: string;
+};
 
-interface ChatMessage {
+type MsgRow = {
   id: string;
-  from: "You" | "Broker";
+  from: string;
   body: string;
   at: Date;
-}
+  mine: boolean;
+};
 
-const THREADS: Thread[] = [
+const MOCK_THREADS: ThreadRow[] = [
   {
-    id: "t1",
-    title: "Motor renewal — MUA",
+    id: "mock-t1",
+    subject: "Motor renewal — MUA",
     policyRef: "MOT-2024-8841",
     lastAt: new Date(Date.now() - 1000 * 60 * 45),
     unread: 1,
     preview: "We received your NCB certificate…",
-  },
-  {
-    id: "t2",
-    title: "Home claim query",
-    policyRef: "HOM-2023-1202",
-    lastAt: new Date(Date.now() - 1000 * 60 * 60 * 26),
-    unread: 0,
-    preview: "Please upload photos of the damaged gate.",
+    clientId: "",
   },
 ];
 
-const MOCK_CHAT: Record<string, ChatMessage[]> = {
-  t1: [
-    { id: "m1", from: "Broker", body: "Good afternoon — we received your NCB certificate.", at: new Date(Date.now() - 1000 * 60 * 120) },
-    { id: "m2", from: "You", body: "Thanks — let me know if anything else is needed.", at: new Date(Date.now() - 1000 * 60 * 90) },
-    { id: "m3", from: "Broker", body: "All set on our side. Renewal quote follows tomorrow.", at: new Date(Date.now() - 1000 * 60 * 45) },
-  ],
-  t2: [
-    { id: "m1", from: "Broker", body: "Please upload clear photos of the damaged gate (wide + close-up).", at: new Date(Date.now() - 1000 * 60 * 60 * 26) },
-  ],
-};
+const MOCK_MSGS: MsgRow[] = [
+  { id: "m1", from: "Broker", body: "Good afternoon — we received your NCB certificate.", at: new Date(Date.now() - 1000 * 60 * 120), mine: false },
+  { id: "m2", from: "You", body: "Thanks — let me know if anything else is needed.", at: new Date(Date.now() - 1000 * 60 * 90), mine: true },
+];
 
 export function SecureMessagesPage() {
-  const [active, setActive] = useState(THREADS[0]!.id);
+  const { user, profile, session, demoAuthActive } = useAuth();
+  const [threads, setThreads] = useState<ThreadRow[]>([]);
+  const [active, setActive] = useState<string | null>(null);
+  const [messages, setMessages] = useState<MsgRow[]>([]);
   const [draft, setDraft] = useState("");
+  const [live, setLive] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [showNew, setShowNew] = useState(false);
+  const [newSubject, setNewSubject] = useState("");
+  const [newBody, setNewBody] = useState("");
+  const [policies, setPolicies] = useState<Array<{ id: string; policy_number: string; client_id: string }>>([]);
+  const [newPolicyId, setNewPolicyId] = useState<string>("");
 
-  const thread = useMemo(() => THREADS.find((t) => t.id === active) ?? THREADS[0]!, [active]);
-  const messages = MOCK_CHAT[active] ?? [];
+  const loadThreads = useCallback(async () => {
+    if (!user) {
+      setThreads([]);
+      setLoading(false);
+      return;
+    }
+    if (demoAuthActive || !session) {
+      setThreads(MOCK_THREADS);
+      setActive(MOCK_THREADS[0]?.id ?? null);
+      setLive(false);
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    const q = db.secureThreads().select("id, subject, client_id, updated_at, policy_id, policies(policy_number)").order("updated_at", { ascending: false });
+    const { data, error } = profile?.role === "client" ? await q.eq("client_id", user.id) : await q;
+    if (error || !data) {
+      setThreads(MOCK_THREADS);
+      setActive(MOCK_THREADS[0]?.id ?? null);
+      setLive(false);
+      setLoading(false);
+      if (error) toast.error("Could not load threads — demo data.");
+      return;
+    }
+    const mapped: ThreadRow[] = (data as Array<Record<string, unknown>>).map((t) => {
+      const pol = t.policies as { policy_number?: string } | null;
+      return {
+        id: t.id as string,
+        subject: t.subject as string,
+        policyRef: pol?.policy_number ?? "—",
+        lastAt: new Date(t.updated_at as string),
+        unread: 0,
+        preview: "",
+        clientId: t.client_id as string,
+      };
+    });
+    setThreads(mapped);
+    setActive(mapped[0]?.id ?? null);
+    setLive(true);
+    setLoading(false);
+  }, [user, profile?.role, session, demoAuthActive]);
 
-  const send = () => {
-    if (!draft.trim()) return;
-    toast.success("Message queued — end-to-end encryption would apply in production (demo).");
-    setDraft("");
+  useEffect(() => {
+    void loadThreads();
+  }, [loadThreads]);
+
+  useEffect(() => {
+    if (!user || demoAuthActive || !session) return;
+    const q = db.policies().select("id, policy_number, client_id").order("policy_number");
+    void (profile?.role === "client" ? q.eq("client_id", user.id) : q).then(({ data }) => {
+      if (data?.length) {
+        setPolicies(data as Array<{ id: string; policy_number: string; client_id: string }>);
+        setNewPolicyId((data[0] as { id: string }).id);
+      }
+    });
+  }, [user, profile?.role, session, demoAuthActive]);
+
+  const loadMessages = useCallback(async () => {
+    if (!active || demoAuthActive || !session) {
+      setMessages(active?.startsWith("mock") ? MOCK_MSGS : []);
+      return;
+    }
+    const { data, error } = await db
+      .secureMessages()
+      .select("id, body, created_at, sender_id, sender:profiles!secure_messages_sender_id_fkey(full_name)")
+      .eq("thread_id", active)
+      .order("created_at", { ascending: true });
+    if (error || !data) {
+      setMessages([]);
+      return;
+    }
+    setMessages(
+      (data as Array<Record<string, unknown>>).map((m) => {
+        const snd = m.sender as { full_name?: string } | null;
+        const sid = m.sender_id as string;
+        return {
+          id: m.id as string,
+          from: sid === user.id ? "You" : snd?.full_name ?? "User",
+          body: m.body as string,
+          at: new Date(m.created_at as string),
+          mine: sid === user.id,
+        };
+      }),
+    );
+  }, [active, user?.id, session, demoAuthActive]);
+
+  useEffect(() => {
+    void loadMessages();
+  }, [loadMessages]);
+
+  const thread = useMemo(() => threads.find((t) => t.id === active) ?? threads[0], [threads, active]);
+
+  const send = async () => {
+    if (!draft.trim() || !user || !active) return;
+    if (demoAuthActive || !session) {
+      toast.success("Message queued (demo).");
+      setDraft("");
+      return;
+    }
+    const { error } = await db.secureMessages().insert({ thread_id: active, sender_id: user.id, body: draft.trim() });
+    if (error) toast.error(error.message);
+    else {
+      toast.success("Sent.");
+      setDraft("");
+      void loadMessages();
+      void loadThreads();
+    }
+  };
+
+  const createThread = async () => {
+    if (!user || !newSubject.trim() || !newBody.trim()) {
+      toast.error("Subject and first message are required.");
+      return;
+    }
+    const clientId =
+      profile?.role === "client"
+        ? user.id
+        : (policies.find((p) => p.id === newPolicyId)?.client_id ?? "");
+    if (!clientId) {
+      toast.error("Choose a policy so we know which client owns the thread.");
+      return;
+    }
+    if (demoAuthActive || !session) {
+      toast.success("Thread created (demo).");
+      setShowNew(false);
+      return;
+    }
+    const pid = newPolicyId || null;
+    const { data: ins, error } = await db
+      .secureThreads()
+      .insert({ client_id: clientId, subject: newSubject.trim(), policy_id: pid })
+      .select("id")
+      .single();
+    if (error || !ins) {
+      toast.error(error?.message ?? "Failed to create thread");
+      return;
+    }
+    const tid = (ins as { id: string }).id;
+    await db.secureMessages().insert({ thread_id: tid, sender_id: user.id, body: newBody.trim() });
+    toast.success("Thread started.");
+    setNewSubject("");
+    setNewBody("");
+    setShowNew(false);
+    await loadThreads();
+    setActive(tid);
   };
 
   return (
     <div className="space-y-6">
-      <div>
-        <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary-600/90 dark:text-primary-400/90">Encrypted threads</p>
-        <h2 className="mt-1 text-2xl font-bold tracking-tight text-surface-foreground sm:text-3xl">Secure messaging</h2>
-        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-          Policy-scoped threads with audit trail. Shown with demo content; wire to your messaging backend when ready.
-        </p>
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary-600/90 dark:text-primary-400/90">Encrypted threads</p>
+          <h2 className="mt-1 text-2xl font-bold tracking-tight text-surface-foreground sm:text-3xl">Secure messaging</h2>
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+            Backed by <code className="text-xs">secure_threads</code> and <code className="text-xs">secure_messages</code>. Demo login uses local mock threads.
+          </p>
+        </div>
+        <span
+          className={`inline-flex w-fit items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold ${
+            live ? "border-accent-200 bg-accent-50 text-accent-800 dark:border-accent-700 dark:bg-accent-950/40 dark:text-accent-200" : "border-border bg-muted text-muted-foreground"
+          }`}
+        >
+          <Database className="h-3.5 w-3.5" aria-hidden />
+          {loading ? "Loading…" : live ? "Live data" : "Demo / offline"}
+        </span>
       </div>
+
+      {showNew && (
+        <div className="dashboard-panel rounded-2xl p-5 space-y-3">
+          <h3 className="font-semibold text-surface-foreground">New thread</h3>
+          <input
+            className="w-full rounded-xl border border-border px-3 py-2 text-sm"
+            placeholder="Subject"
+            value={newSubject}
+            onChange={(e) => setNewSubject(e.target.value)}
+          />
+          {policies.length > 0 && (
+            <select className="w-full rounded-xl border border-border px-3 py-2 text-sm" value={newPolicyId} onChange={(e) => setNewPolicyId(e.target.value)}>
+              {policies.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.policy_number}
+                </option>
+              ))}
+            </select>
+          )}
+          <textarea className="w-full rounded-xl border border-border px-3 py-2 text-sm min-h-[80px]" placeholder="First message" value={newBody} onChange={(e) => setNewBody(e.target.value)} />
+          <div className="flex justify-end gap-2">
+            <button type="button" className="rounded-lg border border-border px-3 py-1.5 text-sm" onClick={() => setShowNew(false)}>
+              Cancel
+            </button>
+            <button type="button" className="rounded-lg bg-primary-600 px-3 py-1.5 text-sm font-semibold text-white" onClick={() => void createThread()}>
+              Create
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="flex flex-col gap-4 lg:flex-row lg:items-stretch">
         <aside className="dashboard-panel w-full shrink-0 rounded-2xl lg:max-w-xs">
-          <div className="border-b border-border/80 px-4 py-3">
+          <div className="flex items-center justify-between border-b border-border/80 px-4 py-3">
             <h3 className="text-sm font-semibold text-surface-foreground">Threads</h3>
+            <button type="button" className="inline-flex items-center gap-1 rounded-lg bg-primary-600 px-2 py-1 text-xs font-semibold text-white" onClick={() => setShowNew((s) => !s)}>
+              <Plus className="h-3.5 w-3.5" aria-hidden />
+              New
+            </button>
           </div>
           <ul className="max-h-[min(60vh,28rem)] divide-y divide-border/80 overflow-y-auto">
-            {THREADS.map((t) => (
+            {threads.map((t) => (
               <li key={t.id}>
                 <button
                   type="button"
@@ -87,14 +270,11 @@ export function SecureMessagesPage() {
                     t.id === active ? "bg-primary-50/80 dark:bg-primary-950/40" : "hover:bg-muted/50"
                   }`}
                 >
-                  <span className="font-semibold text-surface-foreground">{t.title}</span>
+                  <span className="font-semibold text-surface-foreground">{t.subject}</span>
                   <span className="text-xs text-muted-foreground">{t.policyRef}</span>
-                  <span className="line-clamp-2 text-xs text-muted-foreground">{t.preview}</span>
                   <span className="flex items-center justify-between text-[11px] text-muted-foreground">
                     {format(t.lastAt, "MMM d, HH:mm")}
-                    {t.unread > 0 && (
-                      <span className="rounded-full bg-primary-600 px-1.5 py-0.5 text-[10px] font-bold text-white">{t.unread}</span>
-                    )}
+                    {t.unread > 0 && <span className="rounded-full bg-primary-600 px-1.5 py-0.5 text-[10px] font-bold text-white">{t.unread}</span>}
                   </span>
                 </button>
               </li>
@@ -105,8 +285,8 @@ export function SecureMessagesPage() {
         <section className="dashboard-panel flex min-h-[min(70vh,32rem)] flex-1 flex-col rounded-2xl">
           <div className="flex items-start justify-between gap-3 border-b border-border/80 px-4 py-3 sm:px-6">
             <div>
-              <h3 className="font-semibold text-surface-foreground">{thread.title}</h3>
-              <p className="text-xs text-muted-foreground">{thread.policyRef}</p>
+              <h3 className="font-semibold text-surface-foreground">{thread?.subject ?? "—"}</h3>
+              <p className="text-xs text-muted-foreground">{thread?.policyRef}</p>
             </div>
             <div className="flex items-center gap-1.5 rounded-full border border-accent-200/80 bg-accent-50/90 px-2.5 py-1 text-[11px] font-semibold text-accent-800 dark:border-accent-700/50 dark:bg-accent-950/40 dark:text-accent-200">
               <Lock className="h-3.5 w-3.5" aria-hidden />
@@ -119,14 +299,12 @@ export function SecureMessagesPage() {
               <div
                 key={m.id}
                 className={`max-w-[90%] rounded-2xl px-4 py-2.5 text-sm sm:max-w-[75%] ${
-                  m.from === "You"
-                    ? "ml-auto bg-primary-600 text-white"
-                    : "mr-auto border border-border bg-muted/40 text-surface-foreground dark:bg-muted/25"
+                  m.mine ? "ml-auto bg-primary-600 text-white" : "mr-auto border border-border bg-muted/40 text-surface-foreground dark:bg-muted/25"
                 }`}
               >
                 <p className="text-[10px] font-semibold uppercase tracking-wide opacity-80">{m.from}</p>
                 <p className="mt-1 leading-relaxed">{m.body}</p>
-                <p className={`mt-1 text-[10px] ${m.from === "You" ? "text-primary-100" : "text-muted-foreground"}`}>{format(m.at, "HH:mm")}</p>
+                <p className={`mt-1 text-[10px] ${m.mine ? "text-primary-100" : "text-muted-foreground"}`}>{format(m.at, "HH:mm")}</p>
               </div>
             ))}
           </div>
@@ -140,10 +318,10 @@ export function SecureMessagesPage() {
                   placeholder="Type a secure reply…"
                   value={draft}
                   onChange={(e) => setDraft(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && (e.preventDefault(), send())}
+                  onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && (e.preventDefault(), void send())}
                 />
               </div>
-              <button type="button" onClick={send} className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-700">
+              <button type="button" onClick={() => void send()} className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-700">
                 <Send className="h-4 w-4" aria-hidden />
                 Send
               </button>

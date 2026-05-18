@@ -1,9 +1,11 @@
-import { useState } from "react";
-import { Bell, BellRing, CheckCheck, FileText, CreditCard, Shield } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { Bell, BellRing, CheckCheck, FileText, CreditCard, Shield, Database } from "lucide-react";
 import { format } from "date-fns";
 import toast from "react-hot-toast";
+import { useAuth } from "../context/AuthContext";
+import { db } from "../lib/db";
 
-type NotifKind = "document" | "payment" | "security";
+type NotifKind = "document" | "payment" | "security" | "system";
 
 interface NotifItem {
   id: string;
@@ -18,11 +20,12 @@ const ICONS: Record<NotifKind, typeof Bell> = {
   document: FileText,
   payment: CreditCard,
   security: Shield,
+  system: Bell,
 };
 
-const INITIAL: NotifItem[] = [
+const MOCK: NotifItem[] = [
   {
-    id: "n1",
+    id: "mock-1",
     kind: "document",
     title: "Document processed",
     body: "Your motor policy schedule OCR finished with 96% confidence.",
@@ -30,35 +33,81 @@ const INITIAL: NotifItem[] = [
     read: false,
   },
   {
-    id: "n2",
+    id: "mock-2",
     kind: "payment",
     title: "Payment received",
     body: "MUR 4,200 allocated to policy MOT-2024-8841.",
     at: new Date(Date.now() - 1000 * 60 * 60 * 3),
     read: false,
   },
-  {
-    id: "n3",
-    kind: "security",
-    title: "New device sign-in",
-    body: "Chrome on Windows from Port Louis — if this was not you, reset your password.",
-    at: new Date(Date.now() - 1000 * 60 * 60 * 30),
-    read: true,
-  },
 ];
 
 export function NotificationsPage() {
-  const [items, setItems] = useState(INITIAL);
+  const { user, session, demoAuthActive } = useAuth();
+  const [items, setItems] = useState<NotifItem[]>([]);
+  const [live, setLive] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  const load = useCallback(async () => {
+    if (!user) {
+      setItems([]);
+      setLoading(false);
+      return;
+    }
+    if (demoAuthActive || !session) {
+      setItems(MOCK);
+      setLive(false);
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    const { data, error } = await db
+      .portalNotifications()
+      .select("*")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false });
+    if (error) {
+      setItems(MOCK);
+      setLive(false);
+      toast.error("Could not load notifications — showing demo data.");
+    } else {
+      setItems(
+        (data ?? []).map((n: Record<string, unknown>) => ({
+          id: n.id as string,
+          kind: n.kind as NotifKind,
+          title: n.title as string,
+          body: n.body as string,
+          at: new Date(n.created_at as string),
+          read: Boolean(n.read),
+        })),
+      );
+      setLive(true);
+    }
+    setLoading(false);
+  }, [user, session, demoAuthActive]);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
 
   const unread = items.filter((i) => !i.read).length;
 
-  const markRead = (id: string) => {
+  const markRead = async (id: string) => {
     setItems((prev) => prev.map((i) => (i.id === id ? { ...i, read: true } : i)));
+    if (!live || demoAuthActive || !session || id.startsWith("mock")) return;
+    const { error } = await db.portalNotifications().update({ read: true }).eq("id", id).eq("user_id", user!.id);
+    if (error) toast.error(error.message);
   };
 
-  const markAll = () => {
+  const markAll = async () => {
     setItems((prev) => prev.map((i) => ({ ...i, read: true })));
-    toast.success("All notifications marked read (demo).");
+    if (!live || demoAuthActive || !session) {
+      toast.success("All notifications marked read (demo).");
+      return;
+    }
+    const { error } = await db.portalNotifications().update({ read: true }).eq("user_id", user!.id);
+    if (error) toast.error(error.message);
+    else toast.success("All marked read.");
   };
 
   return (
@@ -68,58 +117,74 @@ export function NotificationsPage() {
           <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary-600/90 dark:text-primary-400/90">Activity</p>
           <h2 className="mt-1 text-2xl font-bold tracking-tight text-surface-foreground sm:text-3xl">Notifications</h2>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-            In-app feed for documents, payments, and security signals. Hook to Supabase realtime or your event bus when ready.
+            Reads from <code className="text-xs">portal_notifications</code> for your signed-in user.
           </p>
         </div>
-        {unread > 0 && (
-          <button
-            type="button"
-            onClick={markAll}
-            className="inline-flex items-center gap-2 self-start rounded-xl border border-border bg-surface px-4 py-2 text-sm font-semibold text-surface-foreground shadow-sm hover:bg-muted/60"
+        <div className="flex flex-wrap items-center gap-2">
+          <span
+            className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold ${
+              live ? "border-accent-200 bg-accent-50 text-accent-800 dark:border-accent-700 dark:bg-accent-950/40 dark:text-accent-200" : "border-border bg-muted text-muted-foreground"
+            }`}
           >
-            <CheckCheck className="h-4 w-4" aria-hidden />
-            Mark all read
-          </button>
-        )}
+            <Database className="h-3.5 w-3.5" aria-hidden />
+            {loading ? "Loading…" : live ? "Live" : "Demo"}
+          </span>
+          {unread > 0 && (
+            <button
+              type="button"
+              onClick={() => void markAll()}
+              className="inline-flex items-center gap-2 self-start rounded-xl border border-border bg-surface px-4 py-2 text-sm font-semibold text-surface-foreground shadow-sm hover:bg-muted/60"
+            >
+              <CheckCheck className="h-4 w-4" aria-hidden />
+              Mark all read
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="dashboard-panel rounded-2xl divide-y divide-border/80">
-        {items.map((n) => {
-          const Icon = ICONS[n.kind];
-          return (
-            <button
-              key={n.id}
-              type="button"
-              onClick={() => markRead(n.id)}
-              className={`flex w-full gap-4 px-5 py-4 text-left transition-colors hover:bg-primary-50/40 dark:hover:bg-muted/25 ${
-                !n.read ? "bg-primary-50/30 dark:bg-primary-950/20" : ""
-              }`}
-            >
-              <div
-                className={`mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border ${
-                  n.kind === "security"
-                    ? "border-danger-200 bg-danger-50 text-danger-700 dark:border-danger-800 dark:bg-danger-950/40 dark:text-danger-300"
-                    : "border-border bg-muted/50 text-primary-700 dark:text-primary-300"
+        {loading ? (
+          <div className="p-8 text-center text-sm text-muted-foreground">Loading…</div>
+        ) : items.length === 0 ? (
+          <div className="p-8 text-center text-sm text-muted-foreground">No notifications yet.</div>
+        ) : (
+          items.map((n) => {
+            const Icon = ICONS[n.kind] ?? Bell;
+            return (
+              <button
+                key={n.id}
+                type="button"
+                onClick={() => void markRead(n.id)}
+                className={`flex w-full gap-4 px-5 py-4 text-left transition-colors hover:bg-primary-50/40 dark:hover:bg-muted/25 ${
+                  !n.read ? "bg-primary-50/30 dark:bg-primary-950/20" : ""
                 }`}
               >
-                <Icon className="h-5 w-5" aria-hidden />
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-center gap-2">
-                  <p className="font-semibold text-surface-foreground">{n.title}</p>
-                  {!n.read && (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-primary-600 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
-                      <BellRing className="h-3 w-3" aria-hidden />
-                      New
-                    </span>
-                  )}
+                <div
+                  className={`mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border ${
+                    n.kind === "security"
+                      ? "border-danger-200 bg-danger-50 text-danger-700 dark:border-danger-800 dark:bg-danger-950/40 dark:text-danger-300"
+                      : "border-border bg-muted/50 text-primary-700 dark:text-primary-300"
+                  }`}
+                >
+                  <Icon className="h-5 w-5" aria-hidden />
                 </div>
-                <p className="mt-1 text-sm text-muted-foreground">{n.body}</p>
-                <p className="mt-2 text-xs font-medium text-muted-foreground">{format(n.at, "MMM d, yyyy · HH:mm")}</p>
-              </div>
-            </button>
-          );
-        })}
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="font-semibold text-surface-foreground">{n.title}</p>
+                    {!n.read && (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-primary-600 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
+                        <BellRing className="h-3 w-3" aria-hidden />
+                        New
+                      </span>
+                    )}
+                  </div>
+                  <p className="mt-1 text-sm text-muted-foreground">{n.body}</p>
+                  <p className="mt-2 text-xs font-medium text-muted-foreground">{format(n.at, "MMM d, yyyy · HH:mm")}</p>
+                </div>
+              </button>
+            );
+          })
+        )}
       </div>
     </div>
   );

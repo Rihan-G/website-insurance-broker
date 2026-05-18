@@ -363,6 +363,134 @@ export interface Database {
         };
         Update: Partial<{ status: string; sent_at: string | null; external_id: string | null }>;
       };
+      renewal_preferences: {
+        Row: {
+          policy_id: string;
+          client_id: string;
+          remind_email: boolean;
+          remind_sms: boolean;
+          remind_whatsapp: boolean;
+          last_reminder_at: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          policy_id: string;
+          client_id: string;
+          remind_email?: boolean;
+          remind_sms?: boolean;
+          remind_whatsapp?: boolean;
+          last_reminder_at?: string | null;
+        };
+        Update: Partial<{
+          remind_email: boolean;
+          remind_sms: boolean;
+          remind_whatsapp: boolean;
+          last_reminder_at: string | null;
+          updated_at: string;
+        }>;
+      };
+      claim_intakes: {
+        Row: {
+          id: string;
+          client_id: string;
+          created_by: string;
+          policy_number: string | null;
+          incident_at: string | null;
+          location: string | null;
+          description: string | null;
+          third_parties: string | null;
+          status: "draft" | "submitted" | "in_review" | "closed";
+          created_at: string;
+        };
+        Insert: {
+          client_id: string;
+          created_by: string;
+          policy_number?: string | null;
+          incident_at?: string | null;
+          location?: string | null;
+          description?: string | null;
+          third_parties?: string | null;
+          status?: string;
+        };
+        Update: Partial<{ status: string }>;
+      };
+      secure_threads: {
+        Row: {
+          id: string;
+          policy_id: string | null;
+          client_id: string;
+          subject: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          policy_id?: string | null;
+          client_id: string;
+          subject: string;
+        };
+        Update: Partial<{ subject: string; policy_id: string | null; updated_at: string }>;
+      };
+      secure_messages: {
+        Row: {
+          id: string;
+          thread_id: string;
+          sender_id: string;
+          body: string;
+          created_at: string;
+        };
+        Insert: {
+          thread_id: string;
+          sender_id: string;
+          body: string;
+        };
+        Update: never;
+      };
+      portal_notifications: {
+        Row: {
+          id: string;
+          user_id: string;
+          kind: "document" | "payment" | "security" | "system";
+          title: string;
+          body: string;
+          read: boolean;
+          created_at: string;
+        };
+        Insert: {
+          user_id: string;
+          kind: string;
+          title: string;
+          body: string;
+          read?: boolean;
+        };
+        Update: Partial<{ read: boolean }>;
+      };
+      broker_tasks: {
+        Row: {
+          id: string;
+          title: string;
+          client_id: string | null;
+          assignee_id: string | null;
+          due_at: string | null;
+          status: "open" | "in_progress" | "done";
+          created_by: string;
+          created_at: string;
+        };
+        Insert: {
+          title: string;
+          client_id?: string | null;
+          assignee_id?: string | null;
+          due_at?: string | null;
+          status?: string;
+          created_by: string;
+        };
+        Update: Partial<{
+          title: string;
+          client_id: string | null;
+          assignee_id: string | null;
+          due_at: string | null;
+          status: string;
+        }>;
+      };
     };
   };
 }

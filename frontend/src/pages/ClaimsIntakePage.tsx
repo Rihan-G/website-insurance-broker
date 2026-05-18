@@ -1,11 +1,16 @@
-import { useState } from "react";
-import { ChevronRight, FileWarning, ShieldCheck, Upload } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ChevronRight, FileWarning, ShieldCheck, Upload, Database } from "lucide-react";
 import toast from "react-hot-toast";
+import { useAuth } from "../context/AuthContext";
+import { db } from "../lib/db";
 
 const STEPS = ["Incident", "Parties", "Details", "Review"] as const;
 
 export function ClaimsIntakePage() {
+  const { user, profile, session, demoAuthActive } = useAuth();
   const [step, setStep] = useState(0);
+  const [clients, setClients] = useState<Array<{ id: string; full_name: string }>>([]);
+  const [targetClientId, setTargetClientId] = useState("");
   const [form, setForm] = useState({
     policyNumber: "",
     when: "",
@@ -15,19 +20,61 @@ export function ClaimsIntakePage() {
     thirdParties: "",
   });
 
+  useEffect(() => {
+    if (!user || demoAuthActive || !session || profile?.role === "client") {
+      if (profile?.role === "client") setTargetClientId(user?.id ?? "");
+      return;
+    }
+    void db
+      .profiles()
+      .select("id, full_name")
+      .eq("role", "client")
+      .order("full_name")
+      .then(({ data, error }) => {
+        if (!error && data) {
+          setClients(data as Array<{ id: string; full_name: string }>);
+          if (data[0]) setTargetClientId((data[0] as { id: string }).id);
+        }
+      });
+  }, [user, profile?.role, session, demoAuthActive]);
+
   const next = () => setStep((s) => Math.min(s + 1, STEPS.length - 1));
   const back = () => setStep((s) => Math.max(s - 1, 0));
 
-  const submit = () => {
-    toast.success("Claim intake saved — your broker will follow up (demo).");
+  const submit = async () => {
+    const cid = profile?.role === "client" ? user?.id : targetClientId;
+    if (!cid || !user) {
+      toast.error("Select a client.");
+      return;
+    }
+    if (demoAuthActive || !session) {
+      toast.success("Claim intake saved — your broker will follow up (demo).");
+      setStep(0);
+      setForm({ policyNumber: "", when: "", where: "", description: "", contactPhone: "", thirdParties: "" });
+      return;
+    }
+    const { error } = await db.claimIntakes().insert({
+      client_id: cid,
+      created_by: user.id,
+      policy_number: form.policyNumber || null,
+      incident_at: form.when ? new Date(form.when).toISOString() : null,
+      location: form.where || null,
+      description: form.description || null,
+      third_parties: form.thirdParties || null,
+      status: "submitted",
+    });
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success("Claim intake submitted.");
     setStep(0);
-    setForm({
-      policyNumber: "",
-      when: "",
-      where: "",
-      description: "",
-      contactPhone: "",
-      thirdParties: "",
+    setForm({ policyNumber: "", when: "", where: "", description: "", contactPhone: "", thirdParties: "" });
+    await db.portalNotifications().insert({
+      user_id: cid,
+      kind: "system",
+      title: "Claim intake received",
+      body: `A claim intake was submitted for policy ref ${form.policyNumber || "(none)"}.`,
     });
   };
 
@@ -36,13 +83,36 @@ export function ClaimsIntakePage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary-600/90 dark:text-primary-400/90">First notice of loss</p>
-        <h2 className="mt-1 text-2xl font-bold tracking-tight text-surface-foreground sm:text-3xl">Claims intake</h2>
-        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-          Guided FNOL wizard for clients and staff. Attachments and insurer routing would connect to your claims workflow in production.
-        </p>
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary-600/90 dark:text-primary-400/90">First notice of loss</p>
+          <h2 className="mt-1 text-2xl font-bold tracking-tight text-surface-foreground sm:text-3xl">Claims intake</h2>
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+            Submits to <code className="text-xs">claim_intakes</code> when signed in with Supabase. Demo mode keeps everything local.
+          </p>
+        </div>
+        <span
+          className={`inline-flex w-fit items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold ${
+            !demoAuthActive && session ? "border-accent-200 bg-accent-50 text-accent-800 dark:border-accent-700 dark:bg-accent-950/40 dark:text-accent-200" : "border-border bg-muted text-muted-foreground"
+          }`}
+        >
+          <Database className="h-3.5 w-3.5" aria-hidden />
+          {demoAuthActive || !session ? "Demo / offline" : "Writes to Supabase"}
+        </span>
       </div>
+
+      {profile && profile.role !== "client" && session && !demoAuthActive && (
+        <label className="block max-w-md">
+          <span className="mb-1.5 block text-sm font-semibold text-surface-foreground">Client</span>
+          <select className={field} value={targetClientId} onChange={(e) => setTargetClientId(e.target.value)}>
+            {clients.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.full_name}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
 
       <div className="dashboard-panel rounded-2xl p-6 sm:p-8">
         <div className="mb-8 flex flex-wrap items-center gap-2">
@@ -52,11 +122,7 @@ export function ClaimsIntakePage() {
                 type="button"
                 onClick={() => setStep(i)}
                 className={`flex h-9 min-w-[2.25rem] items-center justify-center rounded-full text-xs font-bold ${
-                  i === step
-                    ? "bg-primary-600 text-white shadow-md"
-                    : i < step
-                      ? "bg-accent-100 text-accent-800 dark:bg-accent-950/50 dark:text-accent-300"
-                      : "bg-muted text-muted-foreground"
+                  i === step ? "bg-primary-600 text-white shadow-md" : i < step ? "bg-accent-100 text-accent-800 dark:bg-accent-950/50 dark:text-accent-300" : "bg-muted text-muted-foreground"
                 }`}
               >
                 {i + 1}
@@ -71,7 +137,7 @@ export function ClaimsIntakePage() {
           <div className="space-y-4">
             <div className="flex items-start gap-3 rounded-xl border border-warning-200/80 bg-warning-50/80 p-4 text-sm text-warning-900 dark:border-warning-700/40 dark:bg-warning-950/30 dark:text-warning-200">
               <FileWarning className="mt-0.5 h-5 w-5 shrink-0" aria-hidden />
-              <p>If anyone is injured, call emergency services first. You can save a draft here and complete details later.</p>
+              <p>If anyone is injured, call emergency services first.</p>
             </div>
             <label className="block">
               <span className="mb-1.5 block text-sm font-semibold text-surface-foreground">Policy number</span>
@@ -118,7 +184,7 @@ export function ClaimsIntakePage() {
           <div className="space-y-3 text-sm">
             <div className="flex items-center gap-2 rounded-lg border border-border bg-muted/20 px-4 py-3">
               <ShieldCheck className="h-5 w-5 text-accent-600" aria-hidden />
-              <span className="text-surface-foreground">Review and submit — you can edit earlier steps before sending.</span>
+              <span className="text-surface-foreground">Review and submit.</span>
             </div>
             <ul className="space-y-2 rounded-xl border border-border/80 p-4 text-muted-foreground">
               <li>
@@ -148,7 +214,7 @@ export function ClaimsIntakePage() {
               Continue
             </button>
           ) : (
-            <button type="button" onClick={submit} className="rounded-xl bg-accent-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent-700">
+            <button type="button" onClick={() => void submit()} className="rounded-xl bg-accent-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent-700">
               Submit intake
             </button>
           )}
