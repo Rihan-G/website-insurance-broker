@@ -102,11 +102,13 @@ export function SecureMessagesPage() {
 
   useEffect(() => {
     if (!user || demoAuthActive || !session) return;
+    const uid = user.id;
     const q = db.policies().select("id, policy_number, client_id").order("policy_number");
-    void (profile?.role === "client" ? q.eq("client_id", user.id) : q).then(({ data }) => {
+    void (profile?.role === "client" ? q.eq("client_id", uid) : q).then((res: { data: unknown }) => {
+      const data = res.data as Array<{ id: string; policy_number: string; client_id: string }> | null | undefined;
       if (data?.length) {
-        setPolicies(data as Array<{ id: string; policy_number: string; client_id: string }>);
-        setNewPolicyId((data[0] as { id: string }).id);
+        setPolicies(data);
+        setNewPolicyId(data[0]!.id);
       }
     });
   }, [user, profile?.role, session, demoAuthActive]);
@@ -114,6 +116,11 @@ export function SecureMessagesPage() {
   const loadMessages = useCallback(async () => {
     if (!active || demoAuthActive || !session) {
       setMessages(active?.startsWith("mock") ? MOCK_MSGS : []);
+      return;
+    }
+    const uid = user?.id;
+    if (!uid) {
+      setMessages([]);
       return;
     }
     const { data, error } = await db
@@ -131,10 +138,10 @@ export function SecureMessagesPage() {
         const sid = m.sender_id as string;
         return {
           id: m.id as string,
-          from: sid === user.id ? "You" : snd?.full_name ?? "User",
+          from: sid === uid ? "You" : snd?.full_name ?? "User",
           body: m.body as string,
           at: new Date(m.created_at as string),
-          mine: sid === user.id,
+          mine: sid === uid,
         };
       }),
     );
