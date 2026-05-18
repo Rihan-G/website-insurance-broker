@@ -49,9 +49,10 @@ The **Deploy GitHub Pages** workflow sets `VITE_GH_PAGES_BASE` to `/<repository 
 
 The Pages build sets **`VITE_ALLOW_DEMO_LOGIN=true`**, so you can sign in with the **local demo accounts** shown on the login page (same emails/passwords as in `frontend/src/lib/demoAuth.ts`), for example:
 
+- **Admin (primary):** `admin@demo.sindicombrokers.local` / `AdminDemo!SindicomBrokers`
+- **Admin (temporary / walkthrough):** `temp-admin@demo.sindicombrokers.local` / `TempAdminDemo!SindicomBrokers` — same dashboard powers; optional overrides: `VITE_DEMO_TEMP_ADMIN_EMAIL`, `VITE_DEMO_TEMP_ADMIN_PASSWORD`
 - **Broker:** `broker@demo.sindicombrokers.local` / `BrokerDemo!SindicomBrokers`
 - **Client:** `client@demo.sindicombrokers.local` / `ClientDemo!SindicomBrokers`
-- **Admin:** `admin@demo.sindicombrokers.local` / `AdminDemo!SindicomBrokers`
 
 Many screens use **mock data** when demo mode is active; any feature that still calls Supabase with real IDs may show empty data or errors until you add a real project and rebuild with `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`.
 

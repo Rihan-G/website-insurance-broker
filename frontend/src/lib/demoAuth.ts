@@ -13,6 +13,8 @@ export type DemoAuthPayload = {
 export const DEMO_STORAGE_KEY = "sb_demo_auth_v1";
 
 const ADMIN_ID = "11111111-1111-4111-8111-111111111111";
+/** Second in-browser admin for demos / walkthroughs (rotate via env on public builds). */
+const TEMP_ADMIN_ID = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
 const BROKER_ID = "22222222-2222-4222-8222-222222222222";
 const CLIENT_ID = "33333333-3333-4333-8333-333333333333";
 
@@ -27,6 +29,26 @@ export const DEMO_ACCOUNTS = [
       id: ADMIN_ID,
       email: (import.meta.env.VITE_DEMO_ADMIN_EMAIL as string | undefined) ?? "admin@demo.sindicombrokers.local",
       full_name: "Demo Administrator",
+      role: "admin" as const,
+      phone: null,
+      totp_secret: null,
+      totp_enabled: false,
+      last_login_at: now(),
+      avatar_url: null,
+      bio: null,
+      commission_rate: null,
+      created_at: now(),
+      updated_at: now(),
+    } satisfies Profile,
+  },
+  {
+    email: (import.meta.env.VITE_DEMO_TEMP_ADMIN_EMAIL as string | undefined) ?? "temp-admin@demo.sindicombrokers.local",
+    password:
+      (import.meta.env.VITE_DEMO_TEMP_ADMIN_PASSWORD as string | undefined) ?? "TempAdminDemo!SindicomBrokers",
+    profile: {
+      id: TEMP_ADMIN_ID,
+      email: (import.meta.env.VITE_DEMO_TEMP_ADMIN_EMAIL as string | undefined) ?? "temp-admin@demo.sindicombrokers.local",
+      full_name: "Temporary Demo Administrator",
       role: "admin" as const,
       phone: null,
       totp_secret: null,
@@ -131,9 +153,12 @@ export function matchDemoLogin(email: string, password: string): DemoBundle | nu
 }
 
 export function bundleFromPayload(p: DemoAuthPayload): DemoBundle {
+  const byId = DEMO_ACCOUNTS.find((a) => a.profile.id === p.userId)?.profile;
   const tmpl =
+    byId ??
     DEMO_ACCOUNTS.find((a) => a.profile.role === p.role)?.profile ??
-    DEMO_ACCOUNTS[2].profile;
+    DEMO_ACCOUNTS.find((a) => a.profile.role === "client")?.profile ??
+    DEMO_ACCOUNTS[DEMO_ACCOUNTS.length - 1]!.profile;
   const profile: Profile = {
     ...tmpl,
     id: p.userId,

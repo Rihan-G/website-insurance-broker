@@ -29,7 +29,9 @@ import { DEMO_ACCOUNTS } from "../lib/demoAuth";
 import { COMPANY_NAME_SHORT } from "../lib/branding";
 import { formatHolidayDate, upcomingMauritiusHolidays, type MauritiusHoliday } from "../lib/mauritiusHolidays";
 
-const adminDemo = DEMO_ACCOUNTS[0];
+const adminDemoAccounts = DEMO_ACCOUNTS.filter((a) => a.profile.role === "admin");
+const adminPrimaryDemo = adminDemoAccounts[0]!;
+const adminTempDemo = adminDemoAccounts[1];
 
 const trustSignals = [
   "Role-based access for administrators",
@@ -97,8 +99,14 @@ export function AdminLoginPage() {
   };
 
   const fillAdminDemo = () => {
-    setEmail(adminDemo.email);
-    setPassword(adminDemo.password);
+    setEmail(adminPrimaryDemo.email);
+    setPassword(adminPrimaryDemo.password);
+  };
+
+  const fillTempAdminDemo = () => {
+    if (!adminTempDemo) return;
+    setEmail(adminTempDemo.email);
+    setPassword(adminTempDemo.password);
   };
 
   return (
@@ -340,11 +348,19 @@ export function AdminLoginPage() {
 
             {demoAuthAvailable && (
               <div className="mt-6 rounded-xl border border-white/10 bg-black/20 p-4 text-left text-xs text-primary-200 lg:border-border/80 lg:bg-gradient-to-b lg:from-muted/60 lg:to-muted/30 lg:text-muted-foreground dark:lg:border-white/10 dark:lg:from-muted/25 dark:lg:to-transparent">
-                <p className="font-semibold text-white lg:text-surface-foreground">Local demo accounts</p>
+                <p className="font-semibold text-white lg:text-surface-foreground">Administrator demo sign-in</p>
+                <p className="mt-1 text-[11px] text-primary-400 lg:text-muted-foreground">
+                  Two in-browser admin accounts (no Supabase). Override with{" "}
+                  <span className="font-mono">VITE_DEMO_*</span> / <span className="font-mono">VITE_DEMO_TEMP_ADMIN_*</span>{" "}
+                  env vars on public builds.
+                </p>
                 <ul className="mt-2 space-y-2 font-mono text-[11px] leading-relaxed">
-                  {DEMO_ACCOUNTS.map((acc) => (
+                  {adminDemoAccounts.map((acc, i) => (
                     <li key={acc.profile.id}>
-                      <span className="text-white lg:text-surface-foreground">{acc.profile.role}:</span> {acc.email}{" "}
+                      <span className="text-white lg:text-surface-foreground">
+                        {i === 0 ? "Primary admin" : "Temporary admin"}:
+                      </span>{" "}
+                      {acc.email}{" "}
                       <span className="text-primary-300 lg:text-muted-foreground">/ {acc.password}</span>
                     </li>
                   ))}
@@ -353,13 +369,24 @@ export function AdminLoginPage() {
                   This page accepts <span className="font-semibold text-accent-300 lg:text-primary-600">administrator</span>{" "}
                   sign-in only; use the standard portal for broker or client roles.
                 </p>
-                <button
-                  type="button"
-                  onClick={fillAdminDemo}
-                  className="mt-3 text-sm font-medium text-accent-400 underline-offset-2 hover:underline lg:text-primary-600 dark:lg:text-primary-400"
-                >
-                  Fill administrator demo
-                </button>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={fillAdminDemo}
+                    className="rounded-lg border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-semibold text-white hover:bg-white/20 lg:border-border lg:bg-muted/50 lg:text-surface-foreground lg:hover:bg-muted"
+                  >
+                    Fill primary admin
+                  </button>
+                  {adminTempDemo && (
+                    <button
+                      type="button"
+                      onClick={fillTempAdminDemo}
+                      className="rounded-lg border border-accent-500/40 bg-accent-500/15 px-3 py-1.5 text-xs font-semibold text-accent-200 hover:bg-accent-500/25 lg:border-accent-600/40 lg:bg-accent-50 lg:text-accent-900 lg:hover:bg-accent-100 dark:lg:text-accent-100 dark:lg:bg-accent-950/50"
+                    >
+                      Fill temporary admin
+                    </button>
+                  )}
+                </div>
               </div>
             )}
 
