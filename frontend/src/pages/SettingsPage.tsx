@@ -1,10 +1,90 @@
-import { useState } from "react";
-import { Save, Bell, Lock, Globe, Palette } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Save, Bell, Lock, Globe, Palette, Sparkles, Loader2 } from "lucide-react";
+import toast from "react-hot-toast";
 import { useTheme, type ThemePreference } from "../context/ThemeContext";
+import { useAuth } from "../context/AuthContext";
 import { COMPANY_NAME } from "../lib/branding";
+import {
+  aiEdgeLikelyAvailable,
+  fetchAiKeyStatus,
+  pingAiProvider,
+  type AiStatusResponse,
+} from "../lib/aiEdge";
 
 export function SettingsPage() {
   const { preference, setPreference } = useTheme();
+  const { profile, loading: authLoading } = useAuth();
+  const isAdmin = profile?.role === "admin";
+  const isBroker = profile?.role === "broker";
+  const canViewStaffAi = isAdmin || isBroker;
+
+  const [aiStatus, setAiStatus] = useState<AiStatusResponse | null>(null);
+  const [aiStatusLoading, setAiStatusLoading] = useState(false);
+  const [aiStatusError, setAiStatusError] = useState<string | null>(null);
+  const [pingingBroker, setPingingBroker] = useState(false);
+  const [pingingClient, setPingingClient] = useState(false);
+
+  useEffect(() => {
+    if (!canViewStaffAi || authLoading) return;
+    let cancelled = false;
+    setAiStatusLoading(true);
+    setAiStatusError(null);
+    void fetchAiKeyStatus().then(({ data, error }) => {
+      if (cancelled) return;
+      setAiStatusLoading(false);
+      if (error) {
+        setAiStatus(null);
+        setAiStatusError(error.message);
+        return;
+      }
+      setAiStatus(data);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [canViewStaffAi, authLoading]);
+
+  const refreshAiStatus = () => {
+    if (!canViewStaffAi) return;
+    setAiStatusLoading(true);
+    setAiStatusError(null);
+    void fetchAiKeyStatus().then(({ data, error }) => {
+      setAiStatusLoading(false);
+      if (error) {
+        setAiStatus(null);
+        setAiStatusError(error.message);
+        toast.error("Could not load AI key status.");
+        return;
+      }
+      setAiStatus(data);
+      toast.success("AI status refreshed.");
+    });
+  };
+
+  const runBrokerPing = async () => {
+    setPingingBroker(true);
+    const { data, error } = await pingAiProvider("broker");
+    setPingingBroker(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    if (data?.ok) toast.success("Broker AI endpoint responded successfully.");
+    else toast.error(data?.message ?? `Broker ping failed (${data?.upstreamStatus ?? "unknown"})`);
+  };
+
+  const runClientPing = async () => {
+    setPingingClient(true);
+    const { data, error } = await pingAiProvider("client");
+    setPingingClient(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    if (data?.ok) toast.success("Client AI endpoint responded successfully.");
+    else toast.error(data?.message ?? `Client ping failed (${data?.upstreamStatus ?? "unknown"})`);
+  };
+
   const [notifications, setNotifications] = useState({
     email: true,
     sms: false,
@@ -67,6 +147,110 @@ export function SettingsPage() {
               </div>
             </div>
           </div>
+
+          {canViewStaffAi && (
+            <div className="rounded-xl border border-border bg-surface p-6">
+              <h3 className="flex items-center gap-2 text-lg font-semibold text-surface-foreground">
+                <div className="rounded-lg bg-primary-50 p-1.5">
+                  <Sparkles className="h-5 w-5 text-primary-600" />
+                </div>
+                AI integration
+                {isAdmin && (
+                  <span className="ml-auto rounded-md bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
+                    Admin
+                  </span>
+                )}
+              </h3>
+              <p className="mt-2 text-sm text-muted-foreground">
+                API keys are stored only as{" "}
+                <span className="font-medium text-surface-foreground">Supabase Edge Function secrets</span>{" "}
+                (<code className="rounded bg-muted px-1 py-0.5 text-xs">AI_API_KEY_BROKER</code>,{" "}
+                <code className="rounded bg-muted px-1 py-0.5 text-xs">AI_API_KEY_CLIENT</code>). They are never
+                entered in the browser.
+              </p>
+              {!aiEdgeLikelyAvailable() && (
+                <p className="mt-3 rounded-lg border border-border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
+                  Connect a real Supabase project (not the local placeholder URL) to load status and run connection
+                  tests from here.
+                </p>
+              )}
+              {aiStatusError && (
+                <p className="mt-3 text-sm text-danger-600">{aiStatusError}</p>
+              )}
+              <div className="mt-4 space-y-4">
+                <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border px-4 py-3">
+                  <div>
+                    <p className="text-sm font-medium text-surface-foreground">Staff (broker) key</p>
+                    <p className="text-xs text-muted-foreground">Used for internal workflows</p>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    {aiStatusLoading ? (
+                      <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                    ) : (
+                      <span
+                        className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                          aiStatus?.brokerKeyConfigured
+                            ? "bg-accent-100 text-accent-800 dark:bg-accent-950/50 dark:text-accent-200"
+                            : "bg-muted text-muted-foreground"
+                        }`}
+                      >
+                        {aiStatus?.brokerKeyConfigured ? "Configured" : "Not set"}
+                      </span>
+                    )}
+                    <button
+                      type="button"
+                      disabled={pingingBroker || aiStatusLoading}
+                      onClick={() => void runBrokerPing()}
+                      className="rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-surface-foreground hover:bg-muted disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed transition-colors"
+                    >
+                      {pingingBroker ? "Testing…" : "Test connection"}
+                    </button>
+                  </div>
+                </div>
+                <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border px-4 py-3">
+                  <div>
+                    <p className="text-sm font-medium text-surface-foreground">Client-facing key</p>
+                    <p className="text-xs text-muted-foreground">Separate key for client-safe features</p>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    {aiStatusLoading ? (
+                      <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                    ) : (
+                      <span
+                        className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                          aiStatus?.clientKeyConfigured
+                            ? "bg-accent-100 text-accent-800 dark:bg-accent-950/50 dark:text-accent-200"
+                            : "bg-muted text-muted-foreground"
+                        }`}
+                      >
+                        {aiStatus?.clientKeyConfigured ? "Configured" : "Not set"}
+                      </span>
+                    )}
+                    {isAdmin ? (
+                      <button
+                        type="button"
+                        disabled={pingingClient || aiStatusLoading}
+                        onClick={() => void runClientPing()}
+                        className="rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-surface-foreground hover:bg-muted disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed transition-colors"
+                      >
+                        {pingingClient ? "Testing…" : "Test connection"}
+                      </button>
+                    ) : (
+                      <span className="text-xs text-muted-foreground">Admin tests client key</span>
+                    )}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => void refreshAiStatus()}
+                  disabled={aiStatusLoading}
+                  className="text-xs font-medium text-primary-600 hover:text-primary-700 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
+                >
+                  Refresh status
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Notifications */}
           <div className="rounded-xl border border-border bg-surface p-6">
