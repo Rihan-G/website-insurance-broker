@@ -86,7 +86,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
       className="fixed inset-0 z-[200] flex items-start justify-center bg-black/50 p-4 pt-[min(20vh,8rem)] backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
-      aria-label="Jump to page"
+      aria-label="Command palette"
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) close();
       }}
@@ -103,7 +103,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
             autoComplete="off"
             autoCorrect="off"
             spellCheck={false}
-            placeholder="Jump to page…"
+            placeholder="Jump to page or quick action…"
             value={q}
             onChange={(e) => setQ(e.target.value)}
             onKeyDown={onKeyDown}

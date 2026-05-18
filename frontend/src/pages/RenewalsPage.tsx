@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { addDays, differenceInCalendarDays, format, parseISO } from "date-fns";
-import { CalendarClock, Mail, MessageCircle, Smartphone, Bell, Database } from "lucide-react";
+import { CalendarClock, Mail, MessageCircle, Smartphone, Bell, Database, Download } from "lucide-react";
 import toast from "react-hot-toast";
+import { CarePageEmpty } from "../components/CarePageEmpty";
 import { useAuth } from "../context/AuthContext";
 import { db } from "../lib/db";
 import type { Policy } from "../types";
@@ -44,6 +45,42 @@ function daysLabel(d: number) {
   if (d === 0) return { text: "Today", tone: "text-warning-600 dark:text-warning-400" };
   if (d <= 30) return { text: `${d}d`, tone: "text-warning-600 dark:text-warning-400" };
   return { text: `${d}d`, tone: "text-accent-600 dark:text-accent-400" };
+}
+
+function csvEscape(cell: string) {
+  return `"${cell.replace(/"/g, '""')}"`;
+}
+
+function downloadRenewalsCsv(sorted: Row[]) {
+  const today = new Date();
+  const header = ["Policy", "Product", "Insurer", "Renewal date", "Days summary", "Email", "SMS", "WhatsApp"];
+  const lines = [
+    header.map(csvEscape).join(","),
+    ...sorted.map((r) => {
+      const days = differenceInCalendarDays(r.renewalDate, today);
+      const summary = daysLabel(days).text;
+      const row = [
+        r.policyNumber,
+        r.product,
+        r.insurer,
+        format(r.renewalDate, "yyyy-MM-dd"),
+        summary,
+        r.channels.email ? "yes" : "no",
+        r.channels.sms ? "yes" : "no",
+        r.channels.whatsapp ? "yes" : "no",
+      ];
+      return row.map(csvEscape).join(",");
+    }),
+  ];
+  const csv = lines.join("\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `renewals-export-${format(today, "yyyy-MM-dd")}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast.success(`Exported ${sorted.length} polic${sorted.length === 1 ? "y" : "ies"}.`);
 }
 
 export function RenewalsPage() {
@@ -193,13 +230,31 @@ export function RenewalsPage() {
             <CalendarClock className="h-5 w-5 text-primary-600 dark:text-primary-400" aria-hidden />
             <h3 className="font-semibold text-surface-foreground">Upcoming renewals</h3>
           </div>
-          <span className="rounded-full border border-border bg-muted/50 px-2.5 py-1 text-xs font-medium text-muted-foreground">{sorted.length} policies</span>
+          <div className="flex flex-wrap items-center gap-2">
+            {sorted.length > 0 && (
+              <button
+                type="button"
+                onClick={() => downloadRenewalsCsv(sorted)}
+                className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-surface-foreground shadow-sm hover:bg-muted/60"
+              >
+                <Download className="h-3.5 w-3.5" aria-hidden />
+                Export CSV
+              </button>
+            )}
+            <span className="rounded-full border border-border bg-muted/50 px-2.5 py-1 text-xs font-medium text-muted-foreground">{sorted.length} policies</span>
+          </div>
         </div>
         <div className="overflow-x-auto">
           {loading ? (
             <div className="px-6 py-12 text-center text-sm text-muted-foreground">Loading policies…</div>
           ) : sorted.length === 0 ? (
-            <div className="px-6 py-12 text-center text-sm text-muted-foreground">No policies found. Add policies in Supabase or use demo login.</div>
+            <div className="px-6 py-10">
+              <CarePageEmpty
+                icon={CalendarClock}
+                title="No renewal policies to show"
+                description="Add policies with end dates in Supabase, or use demo login to preview the runway table and CSV export."
+              />
+            </div>
           ) : (
             <table className="w-full min-w-[640px] text-left text-sm">
               <thead className="border-b border-border/80 bg-muted/30 text-xs font-semibold uppercase tracking-wide text-muted-foreground">

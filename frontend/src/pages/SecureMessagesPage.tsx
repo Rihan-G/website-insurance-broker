@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Lock, Send, MessageSquare, Plus, Database } from "lucide-react";
+import { Lock, Send, MessageSquare, Plus, Database, MessagesSquare } from "lucide-react";
 import { format } from "date-fns";
 import toast from "react-hot-toast";
+import { CarePageEmpty } from "../components/CarePageEmpty";
 import { useAuth } from "../context/AuthContext";
 import { db } from "../lib/db";
 
@@ -268,24 +269,34 @@ export function SecureMessagesPage() {
             </button>
           </div>
           <ul className="max-h-[min(60vh,28rem)] divide-y divide-border/80 overflow-y-auto">
-            {threads.map((t) => (
-              <li key={t.id}>
-                <button
-                  type="button"
-                  onClick={() => setActive(t.id)}
-                  className={`flex w-full flex-col gap-1 px-4 py-3 text-left text-sm transition-colors ${
-                    t.id === active ? "bg-primary-50/80 dark:bg-primary-950/40" : "hover:bg-muted/50"
-                  }`}
-                >
-                  <span className="font-semibold text-surface-foreground">{t.subject}</span>
-                  <span className="text-xs text-muted-foreground">{t.policyRef}</span>
-                  <span className="flex items-center justify-between text-[11px] text-muted-foreground">
-                    {format(t.lastAt, "MMM d, HH:mm")}
-                    {t.unread > 0 && <span className="rounded-full bg-primary-600 px-1.5 py-0.5 text-[10px] font-bold text-white">{t.unread}</span>}
-                  </span>
-                </button>
+            {!loading && threads.length === 0 ? (
+              <li className="p-4">
+                <CarePageEmpty
+                  icon={MessagesSquare}
+                  title="No secure threads yet"
+                  description="Start a new thread with the button above, or connect Supabase to load encrypted conversations for this account."
+                />
               </li>
-            ))}
+            ) : (
+              threads.map((t) => (
+                <li key={t.id}>
+                  <button
+                    type="button"
+                    onClick={() => setActive(t.id)}
+                    className={`flex w-full flex-col gap-1 px-4 py-3 text-left text-sm transition-colors ${
+                      t.id === active ? "bg-primary-50/80 dark:bg-primary-950/40" : "hover:bg-muted/50"
+                    }`}
+                  >
+                    <span className="font-semibold text-surface-foreground">{t.subject}</span>
+                    <span className="text-xs text-muted-foreground">{t.policyRef}</span>
+                    <span className="flex items-center justify-between text-[11px] text-muted-foreground">
+                      {format(t.lastAt, "MMM d, HH:mm")}
+                      {t.unread > 0 && <span className="rounded-full bg-primary-600 px-1.5 py-0.5 text-[10px] font-bold text-white">{t.unread}</span>}
+                    </span>
+                  </button>
+                </li>
+              ))
+            )}
           </ul>
         </aside>
 

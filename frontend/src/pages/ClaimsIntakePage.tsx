@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useState } from "react";
 import { ChevronRight, Crosshair, FileWarning, MapPin, ShieldCheck, Upload, Database } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
+import { insertAuditLog } from "../lib/auditLog";
 import { db } from "../lib/db";
 import type { IncidentPin } from "../types/incidentMap";
 
@@ -74,20 +75,32 @@ export function ClaimsIntakePage() {
       setIncidentPin(null);
       return;
     }
-    const { error } = await db.claimIntakes().insert({
-      client_id: cid,
-      created_by: user.id,
-      policy_number: form.policyNumber || null,
-      incident_at: form.when ? new Date(form.when).toISOString() : null,
-      location: buildStoredLocation(form.where, incidentPin),
-      description: form.description || null,
-      third_parties: form.thirdParties || null,
-      status: "submitted",
-    });
+    const { data: created, error } = await db
+      .claimIntakes()
+      .insert({
+        client_id: cid,
+        created_by: user.id,
+        policy_number: form.policyNumber || null,
+        incident_at: form.when ? new Date(form.when).toISOString() : null,
+        location: buildStoredLocation(form.where, incidentPin),
+        description: form.description || null,
+        third_parties: form.thirdParties || null,
+        status: "submitted",
+      })
+      .select("id")
+      .single();
     if (error) {
       toast.error(error.message);
       return;
     }
+    const intakeId = (created as { id: string } | null)?.id ?? "unknown";
+    void insertAuditLog({
+      userId: user.id,
+      action: "claim_intake_submitted",
+      resourceType: "claim_intake",
+      resourceId: intakeId,
+      details: { client_id: cid, policy_number: form.policyNumber || null },
+    });
     toast.success("Claim intake submitted.");
     setStep(0);
     setForm({ policyNumber: "", when: "", where: "", description: "", contactPhone: "", thirdParties: "" });

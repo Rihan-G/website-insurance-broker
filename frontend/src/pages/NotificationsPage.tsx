@@ -1,11 +1,16 @@
-import { useCallback, useEffect, useState } from "react";
-import { Bell, BellRing, CheckCheck, FileText, CreditCard, Shield, Database } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import { Bell, BellRing, CheckCheck, FileText, CreditCard, Shield, Database, Inbox } from "lucide-react";
 import { format } from "date-fns";
 import toast from "react-hot-toast";
+import { CarePageEmpty } from "../components/CarePageEmpty";
 import { useAuth } from "../context/AuthContext";
 import { db } from "../lib/db";
 
 type NotifKind = "document" | "payment" | "security" | "system";
+
+type ReadFilter = "all" | "unread";
+type KindFilter = "all" | NotifKind;
 
 interface NotifItem {
   id: string;
@@ -40,13 +45,33 @@ const MOCK: NotifItem[] = [
     at: new Date(Date.now() - 1000 * 60 * 60 * 3),
     read: false,
   },
+  {
+    id: "mock-3",
+    kind: "security",
+    title: "New device sign-in",
+    body: "A new browser session was recorded from Chrome on Windows.",
+    at: new Date(Date.now() - 1000 * 60 * 60 * 26),
+    read: true,
+  },
+];
+
+const KIND_LABELS: { value: KindFilter; label: string }[] = [
+  { value: "all", label: "All types" },
+  { value: "document", label: "Documents" },
+  { value: "payment", label: "Payments" },
+  { value: "security", label: "Security" },
+  { value: "system", label: "System" },
 ];
 
 export function NotificationsPage() {
   const { user, session, demoAuthActive } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [items, setItems] = useState<NotifItem[]>([]);
   const [live, setLive] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [readFilter, setReadFilter] = useState<ReadFilter>("all");
+  const [kindFilter, setKindFilter] = useState<KindFilter>("all");
+  const markAllFromUrlDone = useRef(false);
 
   const load = useCallback(async () => {
     if (!user) {
@@ -90,16 +115,7 @@ export function NotificationsPage() {
     void load();
   }, [load]);
 
-  const unread = items.filter((i) => !i.read).length;
-
-  const markRead = async (id: string) => {
-    setItems((prev) => prev.map((i) => (i.id === id ? { ...i, read: true } : i)));
-    if (!live || demoAuthActive || !session || id.startsWith("mock")) return;
-    const { error } = await db.portalNotifications().update({ read: true }).eq("id", id).eq("user_id", user!.id);
-    if (error) toast.error(error.message);
-  };
-
-  const markAll = async () => {
+  const markAll = useCallback(async () => {
     setItems((prev) => prev.map((i) => ({ ...i, read: true })));
     if (!live || demoAuthActive || !session) {
       toast.success("All notifications marked read (demo).");
@@ -108,6 +124,44 @@ export function NotificationsPage() {
     const { error } = await db.portalNotifications().update({ read: true }).eq("user_id", user!.id);
     if (error) toast.error(error.message);
     else toast.success("All marked read.");
+  }, [live, demoAuthActive, session, user]);
+
+  useEffect(() => {
+    if (loading) return;
+    if (searchParams.get("markAll") !== "1") {
+      markAllFromUrlDone.current = false;
+      return;
+    }
+    if (markAllFromUrlDone.current) return;
+    markAllFromUrlDone.current = true;
+    void (async () => {
+      await markAll();
+      setSearchParams(
+        (prev) => {
+          const next = new URLSearchParams(prev);
+          next.delete("markAll");
+          return next;
+        },
+        { replace: true },
+      );
+      markAllFromUrlDone.current = false;
+    })();
+  }, [loading, searchParams, markAll, setSearchParams]);
+
+  const unread = items.filter((i) => !i.read).length;
+
+  const visible = useMemo(() => {
+    let list = items;
+    if (readFilter === "unread") list = list.filter((i) => !i.read);
+    if (kindFilter !== "all") list = list.filter((i) => i.kind === kindFilter);
+    return list;
+  }, [items, readFilter, kindFilter]);
+
+  const markRead = async (id: string) => {
+    setItems((prev) => prev.map((i) => (i.id === id ? { ...i, read: true } : i)));
+    if (!live || demoAuthActive || !session || id.startsWith("mock")) return;
+    const { error } = await db.portalNotifications().update({ read: true }).eq("id", id).eq("user_id", user!.id);
+    if (error) toast.error(error.message);
   };
 
   return (
@@ -142,13 +196,70 @@ export function NotificationsPage() {
         </div>
       </div>
 
+      {!loading && items.length > 0 && (
+        <div className="flex flex-col gap-3 rounded-2xl border border-border/80 bg-muted/20 px-4 py-4 sm:flex-row sm:flex-wrap sm:items-end">
+          <div className="flex flex-col gap-1 text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+            <span>Read state</span>
+            <div className="flex flex-wrap gap-2">
+              {(
+                [
+                  ["all", "All"],
+                  ["unread", "Unread only"],
+                ] as const
+              ).map(([key, label]) => (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => setReadFilter(key)}
+                  className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${
+                    readFilter === key
+                      ? "border-primary-500 bg-primary-600 text-white"
+                      : "border-border bg-surface text-surface-foreground hover:bg-muted/60"
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <label className="flex min-w-[11rem] flex-col gap-1 text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+            Type
+            <select
+              className="rounded-xl border border-border bg-surface px-3 py-2 text-sm font-medium text-surface-foreground"
+              value={kindFilter}
+              onChange={(e) => setKindFilter(e.target.value as KindFilter)}
+            >
+              {KIND_LABELS.map((k) => (
+                <option key={k.value} value={k.value}>
+                  {k.label}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+      )}
+
       <div className="dashboard-panel rounded-2xl divide-y divide-border/80">
         {loading ? (
           <div className="p-8 text-center text-sm text-muted-foreground">Loading…</div>
         ) : items.length === 0 ? (
-          <div className="p-8 text-center text-sm text-muted-foreground">No notifications yet.</div>
+          <div className="p-6">
+            <CarePageEmpty
+              icon={Inbox}
+              title="No notifications yet"
+              description="When your broker or the portal generates alerts, they will appear here. Connect Supabase or use demo mode to preview sample items."
+            />
+          </div>
+        ) : visible.length === 0 ? (
+          <div className="p-6">
+            <CarePageEmpty
+              icon={Bell}
+              title="No notifications match these filters"
+              description="Switch back to “All” read state or clear the type filter to see your full activity feed."
+            />
+          </div>
         ) : (
-          items.map((n) => {
+          visible.map((n) => {
             const Icon = ICONS[n.kind] ?? Bell;
             return (
               <button
