@@ -15,4 +15,6 @@ interface ImportMetaEnv {
   readonly VITE_AI_API_KEY?: string;
   /** OpenAI-compatible API key (optional). */
   readonly VITE_OPENAI_API_KEY?: string;
+  /** Optional full URL to a GitHub compare view or PR (Renewals staff panel link). */
+  readonly VITE_GITHUB_PR_COMPARE?: string;
 }
