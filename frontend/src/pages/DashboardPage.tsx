@@ -386,7 +386,7 @@ export function DashboardPage() {
   const isClientLive = profile?.role === "client" && !demoAuthActive;
 
   return (
-    <div className="space-y-8">
+    <div className="min-w-0 space-y-8">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="space-y-1">
           <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary-600/80 dark:text-primary-400/90">Overview</p>

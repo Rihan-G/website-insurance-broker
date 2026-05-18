@@ -190,7 +190,7 @@ export function AppLayout() {
   })).filter((group) => group.items.length > 0);
 
   return (
-    <div className="relative flex h-screen dashboard-bg">
+    <div className="relative flex h-screen min-h-0 w-full max-w-full flex-col overflow-x-hidden dashboard-bg lg:flex-row lg:overflow-hidden">
       <a
         href="#main-content"
         className="absolute -top-16 left-4 z-[9999] rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white shadow-lg transition-[top] duration-200 focus:top-4 focus:outline-none focus:ring-2 focus:ring-ring"
@@ -203,7 +203,9 @@ export function AppLayout() {
       )}
 
       {/* ── Sidebar — Glassmorphism + Aurora gradient ── */}
-      <aside className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col transition-transform duration-300 lg:static lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} relative overflow-hidden`}>
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 flex w-64 shrink-0 flex-col overflow-hidden transition-transform duration-300 lg:static lg:min-h-screen lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
+      >
         {/* Sidebar gradient base */}
         <div className="absolute inset-0 bg-gradient-to-b from-primary-950 via-primary-900 to-primary-950" />
         {/* Visible aurora orbs in sidebar */}
@@ -311,7 +313,7 @@ export function AppLayout() {
         </div>
       </aside>
 
-      <div className="flex flex-1 flex-col overflow-hidden">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col basis-0 overflow-hidden lg:min-h-0">
         {/* Top header — glass effect */}
         <header className="flex h-16 items-center gap-4 border-b border-border/70 bg-white/85 px-6 shadow-[0_1px_0_rgba(255,255,255,0.65)_inset,0_8px_28px_-16px_rgba(3,105,161,0.12)] backdrop-blur-xl lg:px-8 dark:border-border dark:bg-surface/75 dark:shadow-[0_1px_0_rgba(255,255,255,0.05)_inset,0_12px_40px_-12px_rgba(0,0,0,0.5)]">
           <button
@@ -351,7 +353,7 @@ export function AppLayout() {
           ref={mainRef}
           id="main-content"
           tabIndex={-1}
-          className="flex-1 overflow-y-auto p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] lg:p-8 lg:pb-[max(2rem,env(safe-area-inset-bottom))] outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+          className="min-w-0 flex-1 overflow-y-auto overflow-x-hidden p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] lg:p-8 lg:pb-[max(2rem,env(safe-area-inset-bottom))] outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
         >
           <DashboardAccessSentinel>
             <Outlet />

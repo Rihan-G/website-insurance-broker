@@ -29,6 +29,9 @@ export function LoginPage() {
   const staffBase = staffPortalBaseUrl();
   const adminHref = getPortalFlavor() === "client" && staffBase ? `${staffBase}/admin` : "/admin";
 
+  const brokerDemo = DEMO_ACCOUNTS.find((a) => a.profile.role === "broker")!;
+  const clientDemo = DEMO_ACCOUNTS.find((a) => a.profile.role === "client")!;
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError("");
@@ -36,6 +39,20 @@ export function LoginPage() {
     const result = isSignUp ? await signUp(email, password, fullName) : await signIn(email, password);
     if (result.error) { setError(result.error.message); setLoading(false); }
     else navigate("/dashboard");
+  };
+
+  const fillClientDemo = () => {
+    setIsSignUp(false);
+    setError("");
+    setEmail(clientDemo.email);
+    setPassword(clientDemo.password);
+  };
+
+  const fillBrokerDemo = () => {
+    setIsSignUp(false);
+    setError("");
+    setEmail(brokerDemo.email);
+    setPassword(brokerDemo.password);
   };
 
   return (
@@ -270,6 +287,22 @@ export function LoginPage() {
                     </li>
                   ))}
                 </ul>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={fillClientDemo}
+                    className="rounded-lg border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-surface-foreground shadow-sm hover:bg-muted cursor-pointer"
+                  >
+                    Fill client demo
+                  </button>
+                  <button
+                    type="button"
+                    onClick={fillBrokerDemo}
+                    className="rounded-lg border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-surface-foreground shadow-sm hover:bg-muted cursor-pointer"
+                  >
+                    Fill broker demo
+                  </button>
+                </div>
               </div>
             )}
           </div>
