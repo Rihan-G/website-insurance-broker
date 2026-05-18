@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useId } from "react";
 import { Link } from "react-router-dom";
 import type { ComponentType } from "react";
 import {
@@ -97,7 +97,7 @@ function StatCard({
 }) {
   return (
     <div
-      className={`card-hover card-glow group relative overflow-hidden rounded-2xl border p-6 ${
+      className={`card-hover card-glow group relative min-w-0 overflow-hidden rounded-2xl border p-6 ${
         accent
           ? "border-primary-400/25 bg-gradient-to-br from-primary-600 via-primary-700 to-primary-900 text-white shadow-lg shadow-primary-950/15 ring-1 ring-white/10"
           : "dashboard-panel border-border/90 ring-1 ring-primary-950/[0.03] dark:ring-white/[0.05]"
@@ -111,10 +111,14 @@ function StatCard({
         }`}
       />
       <div className="relative">
-        <div className="flex items-center justify-between gap-3">
-          <p className={`text-[13px] font-semibold uppercase tracking-wide ${accent ? "text-primary-100/95" : "text-muted-foreground"}`}>{title}</p>
+        <div className="flex min-w-0 items-center justify-between gap-3">
+          <p
+            className={`min-w-0 truncate text-[13px] font-semibold uppercase tracking-wide ${accent ? "text-primary-100/95" : "text-muted-foreground"}`}
+          >
+            {title}
+          </p>
           <div
-            className={`rounded-xl p-2.5 shadow-sm ${
+            className={`shrink-0 rounded-xl p-2.5 shadow-sm ${
               accent ? "bg-white/15 ring-1 ring-white/25 backdrop-blur-sm" : `${iconBg} ring-1 ring-black/[0.04] dark:ring-white/10`
             }`}
           >
@@ -166,6 +170,7 @@ function StatGridSkeleton() {
 }
 
 export function DashboardPage() {
+  const revenueGradientId = `dashboard-rev-bar-${useId().replace(/:/g, "")}`;
   const { format } = useCurrency();
   const { user, profile, session, demoAuthActive } = useAuth();
   const staffDashboard = profile?.role === "admin" || profile?.role === "broker";
@@ -427,9 +432,9 @@ export function DashboardPage() {
         </span>
       </div>
 
-      <div className="dashboard-panel rounded-2xl p-5">
+      <div className="dashboard-panel min-w-0 rounded-2xl p-5">
         <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Workflow shortcuts</p>
-        <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="mt-3 grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5">
           {(
             [
               { to: "/dashboard/renewals", label: "Renewals", hint: "Runway & reminders", Icon: CalendarClock },
@@ -442,7 +447,7 @@ export function DashboardPage() {
             <Link
               key={to}
               to={to}
-              className="card-hover group flex gap-3 rounded-xl border border-border/90 bg-surface p-4 shadow-sm dark:border-border"
+              className="card-hover group flex min-w-0 gap-3 rounded-xl border border-border/90 bg-surface p-4 shadow-sm dark:border-border"
             >
               <div className="rounded-lg bg-primary-50 p-2 text-primary-700 dark:bg-primary-950/50 dark:text-primary-300">
                 <Icon className="h-5 w-5" aria-hidden />
@@ -477,7 +482,7 @@ export function DashboardPage() {
         ))}
       </div>
 
-      <section className="dashboard-panel rounded-2xl p-5" aria-label="Care snapshot">
+      <section className="dashboard-panel min-w-0 rounded-2xl p-5" aria-label="Care snapshot">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">At a glance</p>
@@ -551,7 +556,7 @@ export function DashboardPage() {
         )}
       </section>
 
-      <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid min-w-0 gap-5 sm:grid-cols-2 xl:grid-cols-4">
         {showStatSkeleton ? (
           <StatGridSkeleton />
         ) : profile?.role === "client" ? (
@@ -682,7 +687,7 @@ export function DashboardPage() {
           <div className="p-6">
             <svg viewBox="0 0 120 100" preserveAspectRatio="none" className="h-40 w-full" role="img" aria-label="Revenue trend chart">
               <defs>
-                <linearGradient id="dashboard-rev-bar" x1="0" y1="1" x2="0" y2="0" gradientUnits="objectBoundingBox">
+                <linearGradient id={revenueGradientId} x1="0" y1="1" x2="0" y2="0" gradientUnits="objectBoundingBox">
                   <stop offset="0%" stopColor="var(--color-primary-700)" />
                   <stop offset="100%" stopColor="var(--color-accent-500)" />
                 </linearGradient>
@@ -695,7 +700,7 @@ export function DashboardPage() {
                   width={7}
                   height={h}
                   rx={2}
-                  fill="url(#dashboard-rev-bar)"
+                  fill={`url(#${revenueGradientId})`}
                   className="cursor-pointer opacity-95 transition-[opacity,filter] duration-200 hover:opacity-100 hover:brightness-110"
                 />
               ))}

@@ -2,7 +2,7 @@ import { useState, type FormEvent } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { ShieldCheck, Eye, EyeOff, Lock, CheckCircle, Sparkles, AlertTriangle } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
-import { DEMO_ACCOUNTS } from "../lib/demoAuth";
+import { DEMO_ACCOUNTS, getDemoCredentialsByRole } from "../lib/demoAuth";
 import { COMPANY_NAME_SHORT } from "../lib/branding";
 import { getPortalFlavor, staffPortalBaseUrl } from "../lib/portalFlavor";
 import { ParticleField } from "../components/ParticleField";
@@ -36,6 +36,20 @@ export function LoginPage() {
     const result = isSignUp ? await signUp(email, password, fullName) : await signIn(email, password);
     if (result.error) { setError(result.error.message); setLoading(false); }
     else navigate("/dashboard");
+  };
+
+  const signInDemoRole = async (role: "client" | "broker" | "admin") => {
+    const acc = getDemoCredentialsByRole(role);
+    if (!acc) return;
+    setError("");
+    setLoading(true);
+    const result = await signIn(acc.email, acc.password);
+    if (result.error) {
+      setError(result.error.message);
+      setLoading(false);
+      return;
+    }
+    navigate("/dashboard");
   };
 
   return (
@@ -115,7 +129,7 @@ export function LoginPage() {
       </div>
 
       {/* ── Right panel — Auth form ── */}
-      <div className="relative flex flex-1 items-center justify-center overflow-hidden bg-gradient-to-br from-primary-50 via-white to-accent-50/35 dark:from-[#0a1018] dark:via-background dark:to-primary-950/40 px-6 lg:px-16">
+      <div className="relative flex min-h-0 flex-1 items-center justify-center overflow-x-hidden overflow-y-auto bg-gradient-to-br from-primary-50 via-white to-accent-50/35 dark:from-[#0a1018] dark:via-background dark:to-primary-950/40 px-6 py-10 lg:px-16">
         <div className="absolute top-5 right-5 z-20 lg:top-8 lg:right-8">
           <ThemeToggle />
         </div>
@@ -136,8 +150,56 @@ export function LoginPage() {
             <p className="text-sm text-muted-foreground mt-1">Insurance Portal</p>
           </div>
 
+          {!isSignUp && demoAuthAvailable && (
+            <div
+              className="mb-4 rounded-2xl border-2 border-primary-500/40 bg-white/95 p-4 shadow-lg ring-1 ring-primary-600/10 backdrop-blur-sm dark:border-primary-500/35 dark:bg-surface/95 dark:ring-primary-400/15"
+              role="region"
+              aria-label="Demo sign-in"
+            >
+              <p className="text-center text-xs font-bold uppercase tracking-wider text-primary-800 dark:text-primary-200">
+                Try the portal (demo)
+              </p>
+              <p className="mt-1 text-center text-[11px] leading-snug text-muted-foreground">
+                One tap — no Supabase account required in this mode.
+              </p>
+              <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
+                <button
+                  type="button"
+                  disabled={loading}
+                  onClick={() => void signInDemoRole("client")}
+                  className="rounded-xl border border-emerald-300/90 bg-emerald-100/90 px-3 py-3 text-center text-sm font-bold text-emerald-950 shadow-sm transition hover:bg-emerald-200/90 disabled:opacity-50 dark:border-emerald-600/50 dark:bg-emerald-950/50 dark:text-emerald-50 dark:hover:bg-emerald-900/60"
+                >
+                  Client demo
+                </button>
+                <button
+                  type="button"
+                  disabled={loading}
+                  onClick={() => void signInDemoRole("broker")}
+                  className="rounded-xl border border-primary-300/90 bg-primary-100/90 px-3 py-3 text-center text-sm font-bold text-primary-950 shadow-sm transition hover:bg-primary-200/90 disabled:opacity-50 dark:border-primary-600/50 dark:bg-primary-950/50 dark:text-primary-50 dark:hover:bg-primary-900/60"
+                >
+                  Broker demo
+                </button>
+                <button
+                  type="button"
+                  disabled={loading}
+                  onClick={() => void signInDemoRole("admin")}
+                  className="rounded-xl border border-violet-300/90 bg-violet-100/90 px-3 py-3 text-center text-sm font-bold text-violet-950 shadow-sm transition hover:bg-violet-200/90 disabled:opacity-50 dark:border-violet-600/50 dark:bg-violet-950/50 dark:text-violet-50 dark:hover:bg-violet-900/60"
+                >
+                  Admin demo
+                </button>
+              </div>
+            </div>
+          )}
+
+          {!isSignUp && !demoAuthAvailable && import.meta.env.PROD && (
+            <p className="mb-4 rounded-xl border border-amber-300/80 bg-amber-50/95 px-4 py-3 text-center text-xs leading-snug text-amber-950 shadow-sm dark:border-amber-700/50 dark:bg-amber-950/40 dark:text-amber-100">
+              Demo quick sign-in is off for this build. Set{" "}
+              <span className="font-mono text-[11px]">VITE_ALLOW_DEMO_LOGIN=true</span> when building to enable Client / Broker / Admin demo buttons.
+            </p>
+          )}
+
           {/* Card */}
-          <div className="glass-card relative overflow-hidden rounded-2xl p-8 ring-1 ring-primary-900/[0.04] dark:ring-white/[0.06]">
+          <div className="glass-card relative overflow-x-hidden overflow-y-visible rounded-2xl p-8 ring-1 ring-primary-900/[0.04] dark:ring-white/[0.06]">
             <div
               className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary-500/0 via-primary-500/70 to-accent-500/0 dark:via-primary-400/80"
               aria-hidden
@@ -260,8 +322,8 @@ export function LoginPage() {
             )}
 
             {demoAuthAvailable && !isSignUp && (
-              <div className="mt-5 rounded-xl border border-border/80 bg-gradient-to-b from-muted/60 to-muted/30 p-4 text-left text-xs text-muted-foreground shadow-inner dark:from-muted/25 dark:to-transparent">
-                <p className="font-semibold text-surface-foreground">Local demo accounts</p>
+              <details className="mt-5 rounded-xl border border-border/80 bg-gradient-to-b from-muted/60 to-muted/30 p-4 text-left text-xs text-muted-foreground shadow-inner dark:from-muted/25 dark:to-transparent">
+                <summary className="cursor-pointer font-semibold text-surface-foreground">All demo credentials (copy/paste)</summary>
                 <ul className="mt-2 space-y-2 font-mono text-[11px] leading-relaxed">
                   {DEMO_ACCOUNTS.map((acc) => (
                     <li key={acc.profile.id}>
@@ -270,7 +332,7 @@ export function LoginPage() {
                     </li>
                   ))}
                 </ul>
-              </div>
+              </details>
             )}
           </div>
 
