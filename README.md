@@ -4,7 +4,7 @@ A modern insurance broker management platform built with React, TypeScript, and 
 
 ## Demo
 
-https://github.com/user-attachments/assets/dashboard_walkthrough.mp4
+### Screenshots
 
 | Login | Dashboard | Documents |
 |:---:|:---:|:---:|
@@ -13,6 +13,18 @@ https://github.com/user-attachments/assets/dashboard_walkthrough.mp4
 | Upload | Clients | Settings |
 |:---:|:---:|:---:|
 | ![Upload](docs/demo/upload_page.webp) | ![Clients](docs/demo/clients_page.webp) | ![Settings](docs/demo/settings_page.webp) |
+
+### Screen recordings (MP4)
+
+Short walkthrough clips in the repo (open or download from GitHub — use **Raw** if the player does not load):
+
+| Recording | File |
+|------------|------|
+| Dashboard walkthrough | [`docs/demo/dashboard_walkthrough.mp4`](./docs/demo/dashboard_walkthrough.mp4) |
+| Login flow | [`docs/demo/login_page_demo.mp4`](./docs/demo/login_page_demo.mp4) |
+| UI redesign tour | [`docs/demo/redesigned_walkthrough.mp4`](./docs/demo/redesigned_walkthrough.mp4) |
+
+**Tip:** On the repository page, browse to `docs/demo/`, click an `.mp4`, then use **Download** or **View raw** for playback outside the diff viewer.
 
 ## Live site (GitHub Pages + iPhone)
 
