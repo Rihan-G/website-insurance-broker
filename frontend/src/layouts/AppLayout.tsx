@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
 import { Outlet, NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, FileText, Upload, Users, Settings, LogOut, Menu, X,
@@ -125,6 +126,20 @@ const navLabels: Record<string, string> = {
 };
 
 type VisibleNavGroup = { label: string; items: NavItem[] };
+
+function subscribeLgBreakpoint(cb: () => void) {
+  const mq = window.matchMedia("(min-width: 1024px)");
+  mq.addEventListener("change", cb);
+  return () => mq.removeEventListener("change", cb);
+}
+
+function lgBreakpointMatches(): boolean {
+  return window.matchMedia("(min-width: 1024px)").matches;
+}
+
+function lgBreakpointServerSnapshot(): boolean {
+  return false;
+}
 
 function DashboardSidebarPanel({
   onNavLinkClick,
@@ -275,6 +290,7 @@ export function AppLayout() {
   const location = useLocation();
   const mainRef = useRef<HTMLElement>(null);
   const [notifBadge, setNotifBadge] = useState<number | null>(null);
+  const isLg = useSyncExternalStore(subscribeLgBreakpoint, lgBreakpointMatches, lgBreakpointServerSnapshot);
   useAutoLogout();
 
   useEffect(() => {
@@ -282,14 +298,26 @@ export function AppLayout() {
   }, [location.pathname]);
 
   useEffect(() => {
-    const mq = window.matchMedia("(min-width: 1024px)");
-    const closeOnDesktop = () => {
-      if (mq.matches) setSidebarOpen(false);
+    if (isLg) setSidebarOpen(false);
+  }, [isLg]);
+
+  useEffect(() => {
+    if (isLg || !sidebarOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
     };
-    closeOnDesktop();
-    mq.addEventListener("change", closeOnDesktop);
-    return () => mq.removeEventListener("change", closeOnDesktop);
-  }, []);
+  }, [isLg, sidebarOpen]);
+
+  useEffect(() => {
+    if (!sidebarOpen || isLg) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setSidebarOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [sidebarOpen, isLg]);
 
   useEffect(() => {
     if (demoAuthActive || !session?.user?.id) {
@@ -341,23 +369,65 @@ export function AppLayout() {
     }),
   })).filter((group) => group.items.length > 0);
 
-  return (
-    <div className="relative flex w-full flex-1 flex-col overflow-hidden bg-background min-h-0 min-h-screen-dynamic lg:flex-row">
-      {/* Desktop: persistent rail */}
-      <aside className="relative hidden h-full min-h-0 w-64 shrink-0 flex-col overflow-hidden border-r border-white/5 lg:flex lg:flex-col">
-        <DashboardSidebarPanel
-          onNavLinkClick={() => {}}
-          onSignOut={handleSignOut}
-          visibleGroups={visibleGroups}
-          collapsedGroups={collapsedGroups}
-          toggleGroup={toggleGroup}
-          notifBadge={notifBadge}
-          profile={profile}
-        />
-      </aside>
+  const mobileNavOverlay =
+    !isLg && sidebarOpen
+      ? createPortal(
+          <>
+            <div
+              className="fixed inset-0 z-[200] bg-black/50 backdrop-blur-sm"
+              aria-hidden
+              onClick={() => setSidebarOpen(false)}
+            />
+            <aside
+              id="app-sidebar"
+              role="dialog"
+              aria-modal="true"
+              aria-label="Navigation"
+              className="fixed inset-y-0 left-0 z-[201] flex min-h-0 w-[min(100%,24rem)] flex-col overflow-hidden border-r border-white/10 bg-primary-950 pt-[env(safe-area-inset-top)] shadow-[4px_0_24px_rgba(0,0,0,0.35)]"
+            >
+              <button
+                type="button"
+                onClick={() => setSidebarOpen(false)}
+                className="absolute right-3 top-[max(0.5rem,env(safe-area-inset-top))] z-[5] rounded-xl p-2 text-primary-100 transition-colors hover:bg-white/10"
+                aria-label="Close navigation"
+              >
+                <X className="h-5 w-5" aria-hidden />
+              </button>
+              <DashboardSidebarPanel
+                onNavLinkClick={() => setSidebarOpen(false)}
+                onSignOut={handleSignOut}
+                visibleGroups={visibleGroups}
+                collapsedGroups={collapsedGroups}
+                toggleGroup={toggleGroup}
+                notifBadge={notifBadge}
+                profile={profile}
+              />
+            </aside>
+          </>,
+          document.body,
+        )
+      : null;
 
-      {/* Mobile + desktop: dashboard canvas; mobile nav is absolutely layered on top (not in the flex row). */}
-      <div className="relative isolate flex min-h-0 min-w-0 w-full max-w-full flex-1 flex-col overflow-hidden max-lg:pt-[env(safe-area-inset-top)]">
+  return (
+    <>
+    <div className="relative flex w-full flex-1 flex-col overflow-hidden bg-background min-h-0 min-h-screen-dynamic lg:flex-row">
+      {/* Desktop only: never mount the w-64 rail in the DOM below lg (avoids flex/overflow quirks on mobile Chrome). */}
+      {isLg ? (
+        <aside className="relative flex h-full min-h-0 w-64 shrink-0 flex-col overflow-hidden border-r border-white/5">
+          <DashboardSidebarPanel
+            onNavLinkClick={() => {}}
+            onSignOut={handleSignOut}
+            visibleGroups={visibleGroups}
+            collapsedGroups={collapsedGroups}
+            toggleGroup={toggleGroup}
+            notifBadge={notifBadge}
+            profile={profile}
+          />
+        </aside>
+      ) : null}
+
+      {/* Dashboard canvas: full width on mobile; nav is a fixed portal (Figma-style sheet), not a flex sibling. */}
+      <div className="relative flex min-h-0 min-w-0 w-full max-w-full flex-1 flex-col overflow-hidden max-lg:pt-[env(safe-area-inset-top)]">
         <a
           href="#main-content"
           className="absolute -top-16 left-4 z-[9999] rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white shadow-lg transition-[top] duration-200 focus:top-4 focus:outline-none focus:ring-2 focus:ring-ring"
@@ -370,7 +440,7 @@ export function AppLayout() {
           <button
             type="button"
             aria-expanded={sidebarOpen}
-            aria-controls="app-sidebar"
+            aria-controls={!isLg && sidebarOpen ? "app-sidebar" : undefined}
             onClick={() => setSidebarOpen((open) => !open)}
             className="shrink-0 rounded-xl p-1.5 text-muted-foreground hover:bg-primary-50 dark:hover:bg-muted cursor-pointer lg:hidden transition-colors duration-200"
           >
@@ -414,33 +484,9 @@ export function AppLayout() {
             <Outlet />
           </DashboardAccessSentinel>
         </main>
-
-        {sidebarOpen && (
-          <div
-            className="absolute inset-0 z-[45] bg-black/50 backdrop-blur-sm lg:hidden"
-            aria-hidden
-            onClick={() => setSidebarOpen(false)}
-          />
-        )}
-
-        <aside
-          id="app-sidebar"
-          aria-hidden={!sidebarOpen}
-          className={`absolute inset-y-0 left-0 z-[50] flex w-64 max-w-[85vw] flex-col overflow-hidden border-r border-white/10 bg-primary-950 shadow-[4px_0_24px_rgba(0,0,0,0.35)] transition-transform duration-300 ease-out lg:hidden ${
-            sidebarOpen ? "translate-x-0" : "-translate-x-full pointer-events-none"
-          }`}
-        >
-          <DashboardSidebarPanel
-            onNavLinkClick={() => setSidebarOpen(false)}
-            onSignOut={handleSignOut}
-            visibleGroups={visibleGroups}
-            collapsedGroups={collapsedGroups}
-            toggleGroup={toggleGroup}
-            notifBadge={notifBadge}
-            profile={profile}
-          />
-        </aside>
       </div>
     </div>
+    {mobileNavOverlay}
+    </>
   );
 }
