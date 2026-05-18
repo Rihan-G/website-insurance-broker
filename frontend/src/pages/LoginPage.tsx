@@ -150,6 +150,54 @@ export function LoginPage() {
             <p className="text-sm text-muted-foreground mt-1">Insurance Portal</p>
           </div>
 
+          {!isSignUp && demoAuthAvailable && (
+            <div
+              className="mb-4 rounded-2xl border-2 border-primary-500/40 bg-white/95 p-4 shadow-lg ring-1 ring-primary-600/10 backdrop-blur-sm dark:border-primary-500/35 dark:bg-surface/95 dark:ring-primary-400/15"
+              role="region"
+              aria-label="Demo sign-in"
+            >
+              <p className="text-center text-xs font-bold uppercase tracking-wider text-primary-800 dark:text-primary-200">
+                Try the portal (demo)
+              </p>
+              <p className="mt-1 text-center text-[11px] leading-snug text-muted-foreground">
+                One tap — no Supabase account required in this mode.
+              </p>
+              <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
+                <button
+                  type="button"
+                  disabled={loading}
+                  onClick={() => void signInDemoRole("client")}
+                  className="rounded-xl border border-emerald-300/90 bg-emerald-100/90 px-3 py-3 text-center text-sm font-bold text-emerald-950 shadow-sm transition hover:bg-emerald-200/90 disabled:opacity-50 dark:border-emerald-600/50 dark:bg-emerald-950/50 dark:text-emerald-50 dark:hover:bg-emerald-900/60"
+                >
+                  Client demo
+                </button>
+                <button
+                  type="button"
+                  disabled={loading}
+                  onClick={() => void signInDemoRole("broker")}
+                  className="rounded-xl border border-primary-300/90 bg-primary-100/90 px-3 py-3 text-center text-sm font-bold text-primary-950 shadow-sm transition hover:bg-primary-200/90 disabled:opacity-50 dark:border-primary-600/50 dark:bg-primary-950/50 dark:text-primary-50 dark:hover:bg-primary-900/60"
+                >
+                  Broker demo
+                </button>
+                <button
+                  type="button"
+                  disabled={loading}
+                  onClick={() => void signInDemoRole("admin")}
+                  className="rounded-xl border border-violet-300/90 bg-violet-100/90 px-3 py-3 text-center text-sm font-bold text-violet-950 shadow-sm transition hover:bg-violet-200/90 disabled:opacity-50 dark:border-violet-600/50 dark:bg-violet-950/50 dark:text-violet-50 dark:hover:bg-violet-900/60"
+                >
+                  Admin demo
+                </button>
+              </div>
+            </div>
+          )}
+
+          {!isSignUp && !demoAuthAvailable && import.meta.env.PROD && (
+            <p className="mb-4 rounded-xl border border-amber-300/80 bg-amber-50/95 px-4 py-3 text-center text-xs leading-snug text-amber-950 shadow-sm dark:border-amber-700/50 dark:bg-amber-950/40 dark:text-amber-100">
+              Demo quick sign-in is off for this build. Set{" "}
+              <span className="font-mono text-[11px]">VITE_ALLOW_DEMO_LOGIN=true</span> when building to enable Client / Broker / Admin demo buttons.
+            </p>
+          )}
+
           {/* Card */}
           <div className="glass-card relative overflow-x-hidden overflow-y-visible rounded-2xl p-8 ring-1 ring-primary-900/[0.04] dark:ring-white/[0.06]">
             <div
@@ -178,45 +226,6 @@ export function LoginPage() {
                 <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-danger-600 dark:text-danger-400" aria-hidden />
                 <span>{error}</span>
               </div>
-            )}
-
-            {!isSignUp && demoAuthAvailable && (
-              <div className="mb-5 space-y-2.5">
-                <p className="text-center text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Demo sign-in</p>
-                <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-                  <button
-                    type="button"
-                    disabled={loading}
-                    onClick={() => void signInDemoRole("client")}
-                    className="rounded-xl border border-emerald-200/90 bg-emerald-50/90 px-3 py-2.5 text-center text-xs font-bold text-emerald-900 shadow-sm transition hover:bg-emerald-100 disabled:opacity-50 dark:border-emerald-700/50 dark:bg-emerald-950/40 dark:text-emerald-100 dark:hover:bg-emerald-900/50"
-                  >
-                    Client demo
-                  </button>
-                  <button
-                    type="button"
-                    disabled={loading}
-                    onClick={() => void signInDemoRole("broker")}
-                    className="rounded-xl border border-primary-200/90 bg-primary-50/90 px-3 py-2.5 text-center text-xs font-bold text-primary-900 shadow-sm transition hover:bg-primary-100 disabled:opacity-50 dark:border-primary-700/50 dark:bg-primary-950/40 dark:text-primary-100 dark:hover:bg-primary-900/50"
-                  >
-                    Broker demo
-                  </button>
-                  <button
-                    type="button"
-                    disabled={loading}
-                    onClick={() => void signInDemoRole("admin")}
-                    className="rounded-xl border border-violet-200/90 bg-violet-50/90 px-3 py-2.5 text-center text-xs font-bold text-violet-900 shadow-sm transition hover:bg-violet-100 disabled:opacity-50 dark:border-violet-700/50 dark:bg-violet-950/40 dark:text-violet-100 dark:hover:bg-violet-900/50"
-                  >
-                    Admin demo
-                  </button>
-                </div>
-                <p className="text-center text-[11px] text-muted-foreground">No Supabase account required in this mode.</p>
-              </div>
-            )}
-
-            {!isSignUp && !demoAuthAvailable && import.meta.env.PROD && (
-              <p className="mb-4 rounded-lg border border-amber-200/80 bg-amber-50/90 px-3 py-2 text-center text-[11px] text-amber-950 dark:border-amber-800/50 dark:bg-amber-950/30 dark:text-amber-100">
-                Demo quick sign-in is off. Set <span className="font-mono">VITE_ALLOW_DEMO_LOGIN=true</span> at build time to enable it for previews.
-              </p>
             )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
