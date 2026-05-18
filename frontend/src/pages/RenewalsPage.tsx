@@ -13,6 +13,7 @@ import {
   interpolateRenewalMessage,
   type RenewalInsurerPackId,
 } from "../lib/renewalMessageTemplates";
+import { githubCompareOrPrUrl, githubPrCompareConfigured, githubRepoHomeUrl, githubRepoPullsUrl } from "../lib/repoLinks";
 import { db } from "../lib/db";
 import type { Policy } from "../types";
 
@@ -385,18 +386,45 @@ export function RenewalsPage() {
               ))}
             </ul>
           </details>
-          <p className="flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-border/80 pt-3 text-xs text-muted-foreground">
-            <span className="max-w-prose">You can reorder or rename tokens in the editor; only the names above are substituted automatically today.</span>
-            <a
-              href={import.meta.env.VITE_GITHUB_PR_COMPARE ?? "https://github.com/Rihan-G/website-insurance-broker/compare"}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex shrink-0 items-center gap-1 font-medium text-primary-600 hover:underline dark:text-primary-400"
-            >
-              <ExternalLink className="h-3.5 w-3.5" aria-hidden />
-              {import.meta.env.VITE_GITHUB_PR_COMPARE ? "Open PR / compare (env)" : "Compare on GitHub"}
-            </a>
-          </p>
+          <div className="flex flex-col gap-2 border-t border-border/80 pt-3 text-xs text-muted-foreground">
+            <p className="max-w-prose">You can reorder or rename tokens in the editor; only the names above are substituted automatically today.</p>
+            <p className="flex flex-wrap items-center gap-x-1 gap-y-1 text-[11px]">
+              <span className="text-muted-foreground">Source:</span>
+              <a
+                href={githubRepoHomeUrl()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-0.5 font-medium text-primary-600 hover:underline dark:text-primary-400"
+              >
+                <ExternalLink className="h-3 w-3 shrink-0" aria-hidden />
+                Repository
+              </a>
+              <span className="text-muted-foreground" aria-hidden>
+                ·
+              </span>
+              <a
+                href={githubRepoPullsUrl()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-0.5 font-medium text-primary-600 hover:underline dark:text-primary-400"
+              >
+                <ExternalLink className="h-3 w-3 shrink-0" aria-hidden />
+                Pull requests
+              </a>
+              <span className="text-muted-foreground" aria-hidden>
+                ·
+              </span>
+              <a
+                href={githubCompareOrPrUrl()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-0.5 font-medium text-primary-600 hover:underline dark:text-primary-400"
+              >
+                <ExternalLink className="h-3 w-3 shrink-0" aria-hidden />
+                {githubPrCompareConfigured() ? "Compare / PR (from env)" : "Compare branches"}
+              </a>
+            </p>
+          </div>
         </div>
       )}
 
