@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
 import { Outlet, NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, FileText, Upload, Users, Settings, LogOut, Menu, X,
@@ -18,6 +19,7 @@ import { CurrencySwitcher } from "../components/CurrencySwitcher";
 import { COMPANY_NAME_SHORT, PORTAL_HEADING } from "../lib/branding";
 import { getPortalFlavor } from "../lib/portalFlavor";
 import { supabase } from "../lib/supabase";
+import type { Profile } from "../types";
 import "../lib/i18n";
 
 interface NavItem {
@@ -123,6 +125,162 @@ const navLabels: Record<string, string> = {
   settings: "Settings",
 };
 
+type VisibleNavGroup = { label: string; items: NavItem[] };
+
+function subscribeLgBreakpoint(cb: () => void) {
+  const mq = window.matchMedia("(min-width: 1024px)");
+  mq.addEventListener("change", cb);
+  return () => mq.removeEventListener("change", cb);
+}
+
+function lgBreakpointMatches(): boolean {
+  return window.matchMedia("(min-width: 1024px)").matches;
+}
+
+function lgBreakpointServerSnapshot(): boolean {
+  return false;
+}
+
+function DashboardSidebarPanel({
+  onNavLinkClick,
+  onSignOut,
+  visibleGroups,
+  collapsedGroups,
+  toggleGroup,
+  notifBadge,
+  profile,
+}: {
+  onNavLinkClick: () => void;
+  onSignOut: () => void | Promise<void>;
+  visibleGroups: VisibleNavGroup[];
+  collapsedGroups: Set<string>;
+  toggleGroup: (label: string) => void;
+  notifBadge: number | null;
+  profile: Profile | null;
+}) {
+  const { i18n } = useTranslation();
+
+  return (
+    <>
+      <div className="absolute inset-0 bg-gradient-to-b from-primary-950 via-primary-900 to-primary-950" />
+      <div className="aurora-bg opacity-70">
+        <div className="aurora-orb-1 aurora-sidebar-1" />
+        <div className="aurora-orb-2 aurora-sidebar-2" />
+        <div className="aurora-orb-3 aurora-sidebar-3" />
+      </div>
+      <ParticleField count={10} variant="rise" className="opacity-60" />
+
+      <div className="relative flex h-16 shrink-0 items-center gap-3 border-b border-white/8 px-5">
+        <div className="rounded-lg border border-white/15 bg-white/10 p-1.5 shrink-0">
+          <ShieldCheck className="h-5 w-5 text-accent-400" />
+        </div>
+        <div className="min-w-0">
+          <span className="text-sm font-bold tracking-tight text-white">{COMPANY_NAME_SHORT}</span>
+          <p className="truncate text-xs text-primary-400">Insurance Portal</p>
+        </div>
+      </div>
+
+      <nav className="relative min-h-0 flex-1 overflow-y-auto px-3 py-4 space-y-0.5">
+        {visibleGroups.map((group) => (
+          <div key={group.label} className="mb-1">
+            <button
+              type="button"
+              onClick={() => toggleGroup(group.label)}
+              className="flex w-full cursor-pointer items-center justify-between px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-primary-500 transition-colors duration-200 hover:text-primary-300"
+            >
+              {group.label}
+              <ChevronDown
+                className={`h-3 w-3 transition-transform duration-200 ${collapsedGroups.has(group.label) ? "-rotate-90" : ""}`}
+              />
+            </button>
+            {!collapsedGroups.has(group.label) &&
+              group.items.map((item) => (
+                <NavLink
+                  key={item.name}
+                  to={item.to}
+                  end={item.to === "/dashboard"}
+                  onClick={() => onNavLinkClick()}
+                  className={({ isActive }) =>
+                    `group flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
+                      isActive
+                        ? "border border-white/10 bg-white/15 text-white nav-active-glow"
+                        : "text-primary-300 hover:bg-white/8 hover:text-white"
+                    }`
+                  }
+                >
+                  {({ isActive }) => {
+                    const badgeCount =
+                      item.name === "notifications" && notifBadge != null && notifBadge > 0
+                        ? notifBadge > 99
+                          ? "99+"
+                          : String(notifBadge)
+                        : undefined;
+                    const badgeText = item.badge ?? badgeCount;
+                    return (
+                      <>
+                        <item.icon
+                          className={`h-4 w-4 shrink-0 transition-colors duration-200 ${isActive ? "text-accent-400" : "text-primary-400 group-hover:text-primary-200"}`}
+                        />
+                        <span className="truncate">{navLabels[item.name] ?? item.name}</span>
+                        {badgeText && (
+                          <span className="ml-auto rounded-full bg-danger-500 px-1.5 py-0.5 text-xs font-bold leading-none text-white">
+                            {badgeText}
+                          </span>
+                        )}
+                      </>
+                    );
+                  }}
+                </NavLink>
+              ))}
+          </div>
+        ))}
+      </nav>
+
+      <div className="relative shrink-0 space-y-3 border-t border-white/8 p-4">
+        <div className="flex gap-1 rounded-xl border border-white/10 bg-white/8 p-1">
+          {[
+            ["en", "EN"],
+            ["fr", "FR"],
+            ["mfe", "KR"],
+          ].map(([code, label]) => (
+            <button
+              key={code}
+              type="button"
+              onClick={() => {
+                void i18n.changeLanguage(code ?? "en");
+                localStorage.setItem("sb_lang", code ?? "en");
+              }}
+              className={`flex-1 cursor-pointer rounded-lg py-1 text-xs font-bold transition-all duration-200 ${
+                i18n.language === code ? "bg-primary-500 text-white shadow-sm" : "text-primary-400 hover:text-white"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        <div className="flex items-center gap-3 px-2">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-accent-500 text-xs font-bold text-white shadow-sm">
+            {profile?.full_name?.split(" ").map((n) => n[0]).join("") || "U"}
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-semibold text-white">{profile?.full_name || "User"}</p>
+            <p className="text-xs text-primary-400 capitalize">{profile?.role || "client"}</p>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={() => void onSignOut()}
+          className="flex w-full cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-primary-300 transition-colors duration-200 hover:bg-white/8 hover:text-white"
+        >
+          <LogOut className="h-4 w-4" />
+          Sign Out
+        </button>
+      </div>
+    </>
+  );
+}
+
 export function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [cmdOpen, setCmdOpen] = useState(false);
@@ -131,13 +289,35 @@ export function AppLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const mainRef = useRef<HTMLElement>(null);
-  const { i18n } = useTranslation();
   const [notifBadge, setNotifBadge] = useState<number | null>(null);
+  const isLg = useSyncExternalStore(subscribeLgBreakpoint, lgBreakpointMatches, lgBreakpointServerSnapshot);
   useAutoLogout();
 
   useEffect(() => {
     mainRef.current?.scrollTo(0, 0);
   }, [location.pathname]);
+
+  useEffect(() => {
+    if (isLg) setSidebarOpen(false);
+  }, [isLg]);
+
+  useEffect(() => {
+    if (isLg || !sidebarOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [isLg, sidebarOpen]);
+
+  useEffect(() => {
+    if (!sidebarOpen || isLg) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setSidebarOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [sidebarOpen, isLg]);
 
   useEffect(() => {
     if (demoAuthActive || !session?.user?.id) {
@@ -189,136 +369,83 @@ export function AppLayout() {
     }),
   })).filter((group) => group.items.length > 0);
 
+  const mobileNavOverlay =
+    !isLg && sidebarOpen
+      ? createPortal(
+          <>
+            <div
+              className="fixed inset-0 z-[200] bg-black/50 backdrop-blur-sm"
+              aria-hidden
+              onClick={() => setSidebarOpen(false)}
+            />
+            <aside
+              id="app-sidebar"
+              role="dialog"
+              aria-modal="true"
+              aria-label="Navigation"
+              className="fixed inset-y-0 left-0 z-[201] flex min-h-0 w-[min(100%,24rem)] flex-col overflow-hidden border-r border-white/10 bg-primary-950 pt-[env(safe-area-inset-top)] shadow-[4px_0_24px_rgba(0,0,0,0.35)]"
+            >
+              <button
+                type="button"
+                onClick={() => setSidebarOpen(false)}
+                className="absolute right-3 top-[max(0.5rem,env(safe-area-inset-top))] z-[5] rounded-xl p-2 text-primary-100 transition-colors hover:bg-white/10"
+                aria-label="Close navigation"
+              >
+                <X className="h-5 w-5" aria-hidden />
+              </button>
+              <DashboardSidebarPanel
+                onNavLinkClick={() => setSidebarOpen(false)}
+                onSignOut={handleSignOut}
+                visibleGroups={visibleGroups}
+                collapsedGroups={collapsedGroups}
+                toggleGroup={toggleGroup}
+                notifBadge={notifBadge}
+                profile={profile}
+              />
+            </aside>
+          </>,
+          document.body,
+        )
+      : null;
+
   return (
-    <div className="relative flex h-screen min-h-0 w-full max-w-[100vw] overflow-x-hidden dashboard-bg">
-      <a
-        href="#main-content"
-        className="absolute -top-16 left-4 z-[9999] rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white shadow-lg transition-[top] duration-200 focus:top-4 focus:outline-none focus:ring-2 focus:ring-ring"
-      >
-        Skip to main content
-      </a>
-      <CommandPalette open={cmdOpen} onOpenChange={setCmdOpen} />
-      {sidebarOpen && (
-        <div className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden" onClick={() => setSidebarOpen(false)} />
-      )}
+    <>
+    <div className="relative flex w-full flex-1 flex-col overflow-hidden bg-background min-h-0 min-h-screen-dynamic lg:flex-row">
+      {/* Desktop only: never mount the w-64 rail in the DOM below lg (avoids flex/overflow quirks on mobile Chrome). */}
+      {isLg ? (
+        <aside className="relative flex h-full min-h-0 w-64 shrink-0 flex-col overflow-hidden border-r border-white/5">
+          <DashboardSidebarPanel
+            onNavLinkClick={() => {}}
+            onSignOut={handleSignOut}
+            visibleGroups={visibleGroups}
+            collapsedGroups={collapsedGroups}
+            toggleGroup={toggleGroup}
+            notifBadge={notifBadge}
+            profile={profile}
+          />
+        </aside>
+      ) : null}
 
-      {/* ── Sidebar — Glassmorphism + Aurora gradient ── */}
-      <aside className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col transition-transform duration-300 lg:static lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} relative overflow-hidden`}>
-        {/* Sidebar gradient base */}
-        <div className="absolute inset-0 bg-gradient-to-b from-primary-950 via-primary-900 to-primary-950" />
-        {/* Visible aurora orbs in sidebar */}
-        <div className="aurora-bg opacity-70">
-          <div className="aurora-orb-1 aurora-sidebar-1" />
-          <div className="aurora-orb-2 aurora-sidebar-2" />
-          <div className="aurora-orb-3 aurora-sidebar-3" />
-        </div>
-        {/* Rising particles in sidebar */}
-        <ParticleField count={10} variant="rise" className="opacity-60" />
+      {/* Dashboard canvas: full width on mobile; nav is a fixed portal (Figma-style sheet), not a flex sibling. */}
+      <div className="relative flex min-h-0 min-w-0 w-full max-w-full flex-1 flex-col overflow-hidden max-lg:pt-[env(safe-area-inset-top)]">
+        <a
+          href="#main-content"
+          className="absolute -top-16 left-4 z-[9999] rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white shadow-lg transition-[top] duration-200 focus:top-4 focus:outline-none focus:ring-2 focus:ring-ring"
+        >
+          Skip to main content
+        </a>
+        <CommandPalette open={cmdOpen} onOpenChange={setCmdOpen} />
 
-        {/* Logo */}
-        <div className="relative flex h-16 items-center gap-3 px-5 border-b border-white/8">
-          <div className="rounded-lg bg-white/10 border border-white/15 p-1.5 shrink-0">
-            <ShieldCheck className="h-5 w-5 text-accent-400" />
-          </div>
-          <div className="min-w-0">
-            <span className="text-sm font-bold tracking-tight text-white">{COMPANY_NAME_SHORT}</span>
-            <p className="text-xs text-primary-400 truncate">Insurance Portal</p>
-          </div>
-        </div>
-
-        <nav className="relative flex-1 overflow-y-auto px-3 py-4 space-y-0.5">
-          {visibleGroups.map((group) => (
-            <div key={group.label} className="mb-1">
-              <button
-                onClick={() => toggleGroup(group.label)}
-                className="flex w-full items-center justify-between px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-primary-500 hover:text-primary-300 cursor-pointer transition-colors duration-200"
-              >
-                {group.label}
-                <ChevronDown className={`h-3 w-3 transition-transform duration-200 ${collapsedGroups.has(group.label) ? "-rotate-90" : ""}`} />
-              </button>
-              {!collapsedGroups.has(group.label) && group.items.map((item) => (
-                <NavLink
-                  key={item.name}
-                  to={item.to}
-                  end={item.to === "/dashboard"}
-                  onClick={() => setSidebarOpen(false)}
-                  className={({ isActive }) =>
-                    `group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium cursor-pointer transition-all duration-200 ${
-                      isActive
-                        ? "bg-white/15 text-white nav-active-glow border border-white/10"
-                        : "text-primary-300 hover:bg-white/8 hover:text-white"
-                    }`
-                  }
-                >
-                  {({ isActive }) => {
-                    const badgeCount =
-                      item.name === "notifications" && notifBadge != null && notifBadge > 0
-                        ? notifBadge > 99
-                          ? "99+"
-                          : String(notifBadge)
-                        : undefined;
-                    const badgeText = item.badge ?? badgeCount;
-                    return (
-                    <>
-                      <item.icon className={`h-4 w-4 shrink-0 transition-colors duration-200 ${isActive ? "text-accent-400" : "text-primary-400 group-hover:text-primary-200"}`} />
-                      <span className="truncate">{navLabels[item.name] ?? item.name}</span>
-                      {badgeText && (
-                        <span className="ml-auto rounded-full bg-danger-500 px-1.5 py-0.5 text-xs font-bold text-white leading-none">
-                          {badgeText}
-                        </span>
-                      )}
-                    </>
-                  );
-                  }}
-                </NavLink>
-              ))}
-            </div>
-          ))}
-        </nav>
-
-        <div className="relative border-t border-white/8 p-4 space-y-3">
-          {/* Language switcher */}
-          <div className="flex gap-1 rounded-xl bg-white/8 border border-white/10 p-1">
-            {[["en", "EN"], ["fr", "FR"], ["mfe", "KR"]].map(([code, label]) => (
-              <button
-                key={code}
-                onClick={() => { void i18n.changeLanguage(code ?? "en"); localStorage.setItem("sb_lang", code ?? "en"); }}
-                className={`flex-1 rounded-lg py-1 text-xs font-bold cursor-pointer transition-all duration-200 ${
-                  i18n.language === code ? "bg-primary-500 text-white shadow-sm" : "text-primary-400 hover:text-white"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-
-          <div className="flex items-center gap-3 px-2">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-accent-500 text-xs font-bold text-white shadow-sm">
-              {profile?.full_name?.split(" ").map((n) => n[0]).join("") || "U"}
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-semibold text-white">{profile?.full_name || "User"}</p>
-              <p className="text-xs text-primary-400 capitalize">{profile?.role || "client"}</p>
-            </div>
-          </div>
+        <header className="relative z-10 flex h-16 min-w-0 shrink-0 items-center gap-4 border-b border-border/70 bg-white/85 px-6 shadow-[0_1px_0_rgba(255,255,255,0.65)_inset,0_8px_28px_-16px_rgba(3,105,161,0.12)] backdrop-blur-xl lg:px-8 dark:border-border dark:bg-surface/75 dark:shadow-[0_1px_0_rgba(255,255,255,0.05)_inset,0_12px_40px_-12px_rgba(0,0,0,0.5)]">
           <button
-            onClick={handleSignOut}
-            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-primary-300 hover:bg-white/8 hover:text-white cursor-pointer transition-all duration-200"
-          >
-            <LogOut className="h-4 w-4" />
-            Sign Out
-          </button>
-        </div>
-      </aside>
-
-      <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
-        {/* Top header — glass effect */}
-        <header className="flex h-16 min-w-0 items-center gap-4 border-b border-border/70 bg-white/85 px-6 shadow-[0_1px_0_rgba(255,255,255,0.65)_inset,0_8px_28px_-16px_rgba(3,105,161,0.12)] backdrop-blur-xl lg:px-8 dark:border-border dark:bg-surface/75 dark:shadow-[0_1px_0_rgba(255,255,255,0.05)_inset,0_12px_40px_-12px_rgba(0,0,0,0.5)]">
-          <button
-            onClick={() => setSidebarOpen(true)}
+            type="button"
+            aria-expanded={sidebarOpen}
+            aria-controls={!isLg && sidebarOpen ? "app-sidebar" : undefined}
+            onClick={() => setSidebarOpen((open) => !open)}
             className="shrink-0 rounded-xl p-1.5 text-muted-foreground hover:bg-primary-50 dark:hover:bg-muted cursor-pointer lg:hidden transition-colors duration-200"
           >
-            {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            {sidebarOpen ? <X className="h-5 w-5" aria-hidden /> : <Menu className="h-5 w-5" aria-hidden />}
+            <span className="sr-only">{sidebarOpen ? "Close navigation" : "Open navigation"}</span>
           </button>
           <div className="flex min-w-0 flex-1 items-center gap-2">
             <ShieldCheck className="h-5 w-5 shrink-0 text-primary-500 hidden sm:block" />
@@ -351,7 +478,7 @@ export function AppLayout() {
           ref={mainRef}
           id="main-content"
           tabIndex={-1}
-          className="min-w-0 flex-1 overflow-x-hidden overflow-y-auto p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] lg:p-8 lg:pb-[max(2rem,env(safe-area-inset-bottom))] outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+          className="dashboard-bg relative z-0 min-h-0 min-w-0 w-full max-w-full flex-1 touch-pan-y overflow-x-hidden overflow-y-auto overscroll-y-contain p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] lg:p-8 lg:pb-[max(2rem,env(safe-area-inset-bottom))] outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
         >
           <DashboardAccessSentinel>
             <Outlet />
@@ -359,5 +486,7 @@ export function AppLayout() {
         </main>
       </div>
     </div>
+    {mobileNavOverlay}
+    </>
   );
 }

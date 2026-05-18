@@ -58,6 +58,8 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color-scheme: light;
+  /* iOS Safari: allow body/#root to size to the visible viewport in portrait */
+  height: 100%;
 }
 
 html.dark {
@@ -68,13 +70,39 @@ body {
   background-color: var(--color-background);
   color: var(--color-surface-foreground);
   transition: background-color 0.2s ease, color 0.2s ease;
+  min-height: 100%;
+  min-height: -webkit-fill-available;
 }
 
 /* Prevent horizontal “empty gutter + clipped content” on narrow viewports (flex + wide descendants). */
 #root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  min-height: -webkit-fill-available;
   min-height: 100dvh;
   width: 100%;
   overflow-x: clip;
+}
+
+/*
+ * Full-viewport shells on mobile (iOS WebKit + Chrome): vh/dvh alone are unreliable in portrait;
+ * -webkit-fill-available matches how native-style web UIs fill the screen (see WebKit blog).
+ */
+.min-h-screen-dynamic {
+  min-height: 100vh;
+  min-height: 100dvh;
+  min-height: -webkit-fill-available;
+}
+.h-screen-dynamic {
+  height: 100vh;
+  height: 100dvh;
+  height: -webkit-fill-available;
+}
+.max-h-screen-dynamic {
+  max-height: 100vh;
+  max-height: 100dvh;
+  max-height: -webkit-fill-available;
 }
 
 /* Dark theme tokens — complements @theme defaults */

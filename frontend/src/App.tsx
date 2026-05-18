@@ -59,7 +59,11 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
       </div>
     );
   }
-  return user ? <>{children}</> : <Navigate to="/login" />;
+  return user ? (
+    <div className="flex min-h-0 w-full flex-1 flex-col">{children}</div>
+  ) : (
+    <Navigate to="/login" />
+  );
 }
 
 export default function App() {

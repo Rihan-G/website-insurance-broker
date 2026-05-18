@@ -18,8 +18,9 @@ function routerBasename(): string | undefined {
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <ThemeProvider>
-      <BrowserRouter basename={routerBasename()}>
+    <div className="flex min-h-0 w-full flex-1 flex-col min-h-screen-dynamic">
+      <ThemeProvider>
+        <BrowserRouter basename={routerBasename()}>
         <CurrencyProvider>
           <AuthProvider>
             <App />
@@ -40,7 +41,8 @@ createRoot(document.getElementById("root")!).render(
             />
           </AuthProvider>
         </CurrencyProvider>
-      </BrowserRouter>
-    </ThemeProvider>
+        </BrowserRouter>
+      </ThemeProvider>
+    </div>
   </StrictMode>,
 );
