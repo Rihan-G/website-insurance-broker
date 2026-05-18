@@ -13,6 +13,7 @@ import { useTranslation } from "react-i18next";
 import { ParticleField } from "../components/ParticleField";
 import { ThemeToggle } from "../components/ThemeToggle";
 import { CommandPalette } from "../components/CommandPalette";
+import { ClientStaffRouteSentinel } from "../components/ClientStaffRouteSentinel";
 import { CurrencySwitcher } from "../components/CurrencySwitcher";
 import { COMPANY_NAME_SHORT, PORTAL_HEADING } from "../lib/branding";
 import { supabase } from "../lib/supabase";
@@ -331,7 +332,7 @@ export function AppLayout() {
             <ThemeToggle />
             <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-accent-50 border border-accent-200/60 px-3 py-1 text-xs font-semibold text-accent-700 dark:border-accent-600/40 dark:bg-accent-950/50 dark:text-accent-300">
               <span className="h-1.5 w-1.5 rounded-full bg-accent-500 animate-pulse" />
-              Protected · {profile?.role ?? "client"}
+              Protected · {profile?.role === "client" ? "Member" : profile?.role ?? "client"}
             </span>
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-accent-500 text-xs font-bold text-white shadow-sm sm:hidden">
               {profile?.full_name?.charAt(0) ?? "U"}
@@ -345,7 +346,9 @@ export function AppLayout() {
           tabIndex={-1}
           className="flex-1 overflow-y-auto p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] lg:p-8 lg:pb-[max(2rem,env(safe-area-inset-bottom))] outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
         >
-          <Outlet />
+          <ClientStaffRouteSentinel>
+            <Outlet />
+          </ClientStaffRouteSentinel>
         </main>
       </div>
     </div>

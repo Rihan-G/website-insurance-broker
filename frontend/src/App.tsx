@@ -105,7 +105,14 @@ export default function App() {
         <Route path="claims" element={<ClaimsIntakePage />} />
         <Route path="secure-messages" element={<SecureMessagesPage />} />
         <Route path="notifications" element={<NotificationsPage />} />
-        <Route path="tasks" element={<TasksPage />} />
+        <Route
+          path="tasks"
+          element={
+            <RoleGuard allowedRoles={["admin", "broker"]}>
+              <TasksPage />
+            </RoleGuard>
+          }
+        />
 
         {/* Phase 4 – Advanced */}
         <Route path="quotes" element={<QuoteCalculatorPage />} />

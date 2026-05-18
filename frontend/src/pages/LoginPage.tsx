@@ -235,7 +235,7 @@ export function LoginPage() {
               </button>
             </p>
 
-            {!isSignUp && (
+            {!isSignUp && import.meta.env.VITE_SHOW_STAFF_LOGIN_LINK !== "false" && (
               <p className="mt-5 text-center text-sm text-muted-foreground">
                 <Link
                   to="/admin/login"
