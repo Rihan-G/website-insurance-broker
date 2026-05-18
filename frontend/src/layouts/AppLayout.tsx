@@ -342,7 +342,7 @@ export function AppLayout() {
   })).filter((group) => group.items.length > 0);
 
   return (
-    <div className="relative flex h-screen min-h-0 w-full max-w-[100vw] overflow-x-hidden dashboard-bg">
+    <div className="relative flex h-[100dvh] max-h-[100dvh] min-h-0 w-full min-w-0 max-w-full overflow-x-hidden overflow-y-hidden dashboard-bg">
       <a
         href="#main-content"
         className="absolute -top-16 left-4 z-[9999] rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white shadow-lg transition-[top] duration-200 focus:top-4 focus:outline-none focus:ring-2 focus:ring-ring"
@@ -352,7 +352,7 @@ export function AppLayout() {
       <CommandPalette open={cmdOpen} onOpenChange={setCmdOpen} />
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-40 min-h-[100dvh] w-full bg-black/50 backdrop-blur-sm lg:hidden"
           aria-hidden
           onClick={() => setSidebarOpen(false)}
         />
@@ -374,7 +374,7 @@ export function AppLayout() {
       <aside
         id="app-sidebar"
         aria-hidden={!sidebarOpen}
-        className={`fixed inset-y-0 left-0 z-50 flex h-[100dvh] min-h-0 w-64 max-w-[85vw] flex-col overflow-hidden border-r border-white/5 shadow-2xl transition-transform duration-300 ease-out will-change-transform lg:hidden ${
+        className={`fixed bottom-[env(safe-area-inset-bottom,0px)] left-0 top-[env(safe-area-inset-top,0px)] z-50 flex min-h-0 w-64 max-w-[85vw] flex-col overflow-hidden border-r border-white/5 shadow-2xl transition-transform duration-300 ease-out will-change-transform lg:hidden ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full pointer-events-none"
         }`}
       >
@@ -389,9 +389,9 @@ export function AppLayout() {
         />
       </aside>
 
-      <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden max-lg:box-border max-lg:pt-[env(safe-area-inset-top,0px)]">
         {/* Top header — glass effect */}
-        <header className="flex h-16 min-w-0 items-center gap-4 border-b border-border/70 bg-white/85 px-6 shadow-[0_1px_0_rgba(255,255,255,0.65)_inset,0_8px_28px_-16px_rgba(3,105,161,0.12)] backdrop-blur-xl lg:px-8 dark:border-border dark:bg-surface/75 dark:shadow-[0_1px_0_rgba(255,255,255,0.05)_inset,0_12px_40px_-12px_rgba(0,0,0,0.5)]">
+        <header className="flex h-16 min-w-0 shrink-0 items-center gap-4 border-b border-border/70 bg-white/85 px-6 shadow-[0_1px_0_rgba(255,255,255,0.65)_inset,0_8px_28px_-16px_rgba(3,105,161,0.12)] backdrop-blur-xl lg:px-8 dark:border-border dark:bg-surface/75 dark:shadow-[0_1px_0_rgba(255,255,255,0.05)_inset,0_12px_40px_-12px_rgba(0,0,0,0.5)]">
           <button
             type="button"
             aria-expanded={sidebarOpen}
