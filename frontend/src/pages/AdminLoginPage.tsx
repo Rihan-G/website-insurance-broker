@@ -1,6 +1,25 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ShieldCheck, Eye, EyeOff, Lock, Calendar, Sparkles, CheckCircle, Home, ArrowRight, BarChart3 } from "lucide-react";
+import {
+  ShieldCheck,
+  Eye,
+  EyeOff,
+  Lock,
+  Calendar,
+  Sparkles,
+  CheckCircle,
+  Home,
+  ArrowRight,
+  BarChart3,
+  AlertTriangle,
+  Inbox,
+  CalendarClock,
+  BellRing,
+  MessagesSquare,
+  ListTodo,
+  CreditCard,
+  FileWarning,
+} from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import { ThemeToggle } from "../components/ThemeToggle";
@@ -15,8 +34,14 @@ const adminDemo = DEMO_ACCOUNTS[0];
 const trustSignals = [
   "Role-based access for administrators",
   "256-bit TLS · audit-ready session trail",
-  "Mauritius holiday calendar & office planning",
+  "Mauritius holidays plus shared office calendar (TimeTree-style desk)",
   "Multi-currency display (MUR, USD, GBP, EUR)",
+];
+
+const opsStats = [
+  { value: "Shared", label: "Office calendar" },
+  { value: "Care+", label: "Same hub as clients" },
+  { value: "24/7", label: "Secure sessions" },
 ];
 
 function holidayBadgeClass(h: MauritiusHoliday): string {
@@ -101,6 +126,11 @@ export function AdminLoginPage() {
             </div>
           </div>
 
+          <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3.5 py-1.5 text-xs font-semibold text-accent-300">
+            <ShieldCheck className="h-3.5 w-3.5" aria-hidden />
+            FSC Licensed · Mauritius
+          </div>
+
           <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-semibold text-accent-200">
             <Sparkles className="h-3.5 w-3.5" />
             Dark mode, currencies & calendars — same as the main portal
@@ -127,6 +157,15 @@ export function AdminLoginPage() {
             ))}
           </ul>
 
+          <div className="mt-8 grid grid-cols-3 gap-4">
+            {opsStats.map((s) => (
+              <div key={s.label} className="rounded-xl border border-white/15 bg-white/10 p-4 text-center backdrop-blur-sm">
+                <p className="text-lg font-bold text-white">{s.value}</p>
+                <p className="mt-1 text-[10px] font-medium uppercase tracking-wide text-primary-300">{s.label}</p>
+              </div>
+            ))}
+          </div>
+
           <div className="mt-10 rounded-2xl border border-white/15 bg-black/25 p-5 backdrop-blur-md">
             <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-primary-300">
               <Calendar className="h-4 w-4 text-accent-400" aria-hidden />
@@ -149,7 +188,7 @@ export function AdminLoginPage() {
               to="/dashboard/calendar"
               className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold text-accent-300 hover:text-white"
             >
-              Open full holiday calendar in dashboard
+              Open calendar, holidays & office schedule
               <ArrowRight className="h-3.5 w-3.5" aria-hidden />
             </Link>
             <p className="mt-2 text-[11px] text-primary-400">You will be asked to sign in first if your session has expired.</p>
@@ -171,15 +210,41 @@ export function AdminLoginPage() {
               Analytics (after sign-in)
             </Link>
           </div>
+
+          <p className="mt-4 text-[11px] font-medium uppercase tracking-wide text-primary-500">After sign-in — same Care hub as clients</p>
+          <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">
+            {[
+              { to: "/dashboard/inbox", label: "Inbox", icon: Inbox },
+              { to: "/dashboard/renewals", label: "Renewals", icon: CalendarClock },
+              { to: "/dashboard/tasks", label: "Tasks", icon: ListTodo },
+              { to: "/dashboard/notifications", label: "Notifications", icon: BellRing },
+              { to: "/dashboard/secure-messages", label: "Secure msgs", icon: MessagesSquare },
+              { to: "/dashboard/payments", label: "Payments", icon: CreditCard },
+              { to: "/dashboard/claims", label: "Claims", icon: FileWarning },
+            ].map(({ to, label, icon: Icon }) => (
+              <Link
+                key={label}
+                to={to}
+                className="inline-flex items-center gap-2 rounded-lg border border-white/12 bg-white/5 px-3 py-2 text-xs font-semibold text-primary-100 backdrop-blur-sm transition hover:bg-white/15"
+              >
+                <Icon className="h-3.5 w-3.5 shrink-0 text-accent-300" aria-hidden />
+                {label}
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
 
       {/* Right — form */}
-      <div className="relative flex flex-1 flex-col items-center justify-center px-6 py-12 lg:px-10">
+      <div className="relative flex flex-1 flex-col items-center justify-center overflow-hidden px-6 py-12 lg:bg-gradient-to-br lg:from-primary-50 lg:via-white lg:to-accent-50/35 lg:px-10 dark:lg:from-[#0a1018] dark:lg:via-background dark:lg:to-primary-950/40">
         <div className="absolute right-5 top-5 z-10 flex items-center gap-2 sm:right-8 sm:top-8">
           <CurrencySwitcher variant={chromeOnDark ? "dark" : "light"} />
           <ThemeToggle variant={chromeOnDark ? "onDark" : "default"} />
         </div>
+
+        <div className="pointer-events-none absolute inset-0 hidden opacity-60 lg:block dot-grid-light" />
+        <div className="pointer-events-none absolute right-0 top-0 hidden h-96 w-96 -translate-y-1/2 translate-x-1/2 rounded-full bg-primary-100/40 blur-3xl lg:block dark:bg-primary-900/20" />
+        <div className="pointer-events-none absolute bottom-0 left-0 hidden h-80 w-80 translate-y-1/2 -translate-x-1/2 rounded-full bg-accent-100/30 blur-3xl lg:block dark:bg-accent-900/15" />
 
         <div className="lg:hidden absolute inset-0 bg-gradient-to-br from-primary-950 via-primary-900 to-gray-950" />
         <div className="relative z-[1] w-full max-w-md">
@@ -195,7 +260,11 @@ export function AdminLoginPage() {
             </p>
           </div>
 
-          <div className="glass-dark rounded-2xl border border-white/10 p-8 shadow-2xl lg:border-border lg:bg-surface lg:shadow-lg dark:lg:border-white/10 dark:lg:bg-primary-950/40">
+          <div className="relative overflow-hidden rounded-2xl border border-white/10 p-8 shadow-2xl ring-1 ring-white/5 glass-dark lg:border-border lg:bg-white/90 lg:shadow-xl lg:ring-primary-900/[0.04] lg:backdrop-blur-xl dark:lg:border-white/10 dark:lg:bg-surface/95 dark:lg:ring-white/[0.06]">
+            <div
+              className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary-500/0 via-primary-500/70 to-accent-500/0 dark:via-primary-400/80 lg:opacity-100"
+              aria-hidden
+            />
             <div className="mb-6 flex items-center gap-3">
               <div className="rounded-lg border border-white/10 bg-white/10 p-2 lg:border-border lg:bg-muted/50">
                 <Lock className="h-5 w-5 text-accent-400 lg:text-primary-600 dark:lg:text-accent-400" />
@@ -215,7 +284,13 @@ export function AdminLoginPage() {
             </div>
 
             {error && (
-              <div className="mb-4 rounded-lg border border-red-400/30 bg-red-950/40 p-3 text-sm text-red-200">{error}</div>
+              <div
+                role="alert"
+                className="mb-4 flex items-start gap-2.5 rounded-xl border border-red-400/30 bg-red-950/40 p-3 text-sm text-red-200 lg:border-danger-500/25 lg:bg-danger-50/95 lg:text-danger-700 dark:lg:bg-danger-950/35 dark:lg:text-danger-400"
+              >
+                <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+                <span>{error}</span>
+              </div>
             )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -257,24 +332,33 @@ export function AdminLoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full rounded-xl bg-gradient-to-r from-accent-600 to-accent-500 py-3 text-sm font-semibold text-white shadow-lg shadow-accent-900/40 transition hover:from-accent-500 hover:to-accent-400 disabled:opacity-50"
+                className="btn-glow w-full rounded-xl bg-gradient-to-r from-primary-600 via-primary-600 to-primary-500 px-4 py-3.5 text-sm font-semibold text-white shadow-lg shadow-primary-600/25 transition hover:from-primary-700 hover:via-primary-600 hover:to-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500/35 disabled:opacity-50 dark:shadow-primary-900/30"
               >
                 {loading ? "Signing in…" : "Sign in as administrator"}
               </button>
             </form>
 
             {demoAuthAvailable && (
-              <div className="mt-6 rounded-xl border border-white/10 bg-black/20 p-4 text-xs text-primary-200 lg:border-border lg:bg-muted/30 lg:text-muted-foreground dark:lg:border-white/10 dark:lg:bg-black/20 dark:lg:text-primary-200">
-                <p className="font-semibold text-white lg:text-surface-foreground">Development demo administrator</p>
-                <p className="mt-1 break-all font-mono text-primary-300 lg:text-muted-foreground dark:lg:text-primary-300">
-                  {adminDemo.email} / {adminDemo.password}
+              <div className="mt-6 rounded-xl border border-white/10 bg-black/20 p-4 text-left text-xs text-primary-200 lg:border-border/80 lg:bg-gradient-to-b lg:from-muted/60 lg:to-muted/30 lg:text-muted-foreground dark:lg:border-white/10 dark:lg:from-muted/25 dark:lg:to-transparent">
+                <p className="font-semibold text-white lg:text-surface-foreground">Local demo accounts</p>
+                <ul className="mt-2 space-y-2 font-mono text-[11px] leading-relaxed">
+                  {DEMO_ACCOUNTS.map((acc) => (
+                    <li key={acc.profile.id}>
+                      <span className="text-white lg:text-surface-foreground">{acc.profile.role}:</span> {acc.email}{" "}
+                      <span className="text-primary-300 lg:text-muted-foreground">/ {acc.password}</span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-2 text-[11px] text-primary-400 lg:text-muted-foreground">
+                  This page accepts <span className="font-semibold text-accent-300 lg:text-primary-600">administrator</span>{" "}
+                  sign-in only; use the standard portal for broker or client roles.
                 </p>
                 <button
                   type="button"
                   onClick={fillAdminDemo}
-                  className="mt-3 text-sm font-medium text-accent-400 underline-offset-2 hover:underline"
+                  className="mt-3 text-sm font-medium text-accent-400 underline-offset-2 hover:underline lg:text-primary-600 dark:lg:text-primary-400"
                 >
-                  Fill demo credentials
+                  Fill administrator demo
                 </button>
               </div>
             )}
@@ -286,7 +370,10 @@ export function AdminLoginPage() {
             </p>
           </div>
 
-          <p className="mt-6 text-center text-xs text-primary-400 lg:text-muted-foreground">Unauthorized access is prohibited and may be prosecuted.</p>
+          <p className="mt-5 flex items-center justify-center gap-1.5 text-center text-xs text-primary-400 lg:text-muted-foreground">
+            <Lock className="h-3.5 w-3.5 shrink-0 text-accent-500 lg:text-accent-600" aria-hidden />
+            <span>Protected by 256-bit SSL · FSC Mauritius licensed · operations staff only</span>
+          </p>
         </div>
       </div>
     </div>

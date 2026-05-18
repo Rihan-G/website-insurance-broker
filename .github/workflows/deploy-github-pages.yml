@@ -4,7 +4,7 @@
 #   Settings → Pages → Build and deployment → Source: "GitHub Actions"
 #
 # Live URL (after first successful run):
-#   https://<your-username>.github.io/website-insurance-broker/
+#   https://<your-username>.github.io/<repository-name>/
 #
 # VITE_ALLOW_DEMO_LOGIN enables the same in-browser demo accounts as local dev
 # (no real Supabase required to try the portal on Pages).
@@ -44,7 +44,8 @@ jobs:
 
       - name: Build for GitHub Pages
         env:
-          VITE_GH_PAGES_BASE: /website-insurance-broker
+          # Project Pages URL: https://<user>.github.io/<repo>/ — must match repository name (fork-friendly).
+          VITE_GH_PAGES_BASE: /${{ github.event.repository.name }}
           VITE_ALLOW_DEMO_LOGIN: "true"
         run: pnpm build
 

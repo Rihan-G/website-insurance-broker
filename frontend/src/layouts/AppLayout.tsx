@@ -116,7 +116,7 @@ const navLabels: Record<string, string> = {
   capacity: "Capacity Mgmt.",
   audit: "Audit Log",
   expiry: "Expiry Monitor",
-  calendar: "Holiday Calendar",
+  calendar: "Calendar & holidays",
   voice: "Voice Upload",
   compliance: "Compliance",
   "2fa": "Two-Factor Auth",

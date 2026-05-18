@@ -39,11 +39,11 @@ This repo deploys the **static frontend** to **GitHub Pages** on every push to `
 5. The first deploy may pause for **environment approval**: open the workflow run, click **Review deployments**, approve **github-pages** if GitHub asks.
 6. When the job is green, **Pages** will show your URL (refresh the Pages settings page if needed).
 
-**Site URL** (replace `<user>` with your GitHub username, lowercase in the host):
+**Site URL** (replace `<user>` with your GitHub username, lowercase in the host, and `<repo>` with this repository name):
 
-`https://<user>.github.io/website-insurance-broker/`
+`https://<user>.github.io/<repo>/`
 
-Example: `https://rihan-g.github.io/website-insurance-broker/`
+The **Deploy GitHub Pages** workflow sets `VITE_GH_PAGES_BASE` to `/<repository name>` automatically so forks build with the correct asset path.
 
 ### Demo login on Pages (no Supabase required)
 
@@ -58,7 +58,7 @@ Many screens use **mock data** when demo mode is active; any feature that still 
 ### If something fails
 
 - **404 on refresh:** the workflow copies `index.html` → `404.html`; redeploy from `main`.
-- **Blank page or wrong assets:** confirm `VITE_GH_PAGES_BASE` matches the repo name (`/website-insurance-broker` for this repository).
+- **Blank page or wrong assets:** confirm the workflow’s `VITE_GH_PAGES_BASE` matches your GitHub repository name (leading slash, e.g. `/my-fork-name`).
 - **Workflow not listed:** ensure `.github/workflows/deploy-github-pages.yml` exists on the default branch you push.
 
 ## Tech Stack

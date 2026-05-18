@@ -37,7 +37,7 @@ export const QUICK_NAV_ITEMS: QuickNavItem[] = [
   { id: "capacity", label: "Capacity Management", to: "/dashboard/capacity", keywords: "brokers workload", roles: ["admin"] },
   { id: "audit", label: "Audit Log", to: "/dashboard/audit", keywords: "security history", roles: ["admin"] },
   { id: "expiry", label: "Expiry Monitor", to: "/dashboard/expiry", keywords: "renewal alerts" },
-  { id: "calendar", label: "Holiday Calendar", to: "/dashboard/calendar", keywords: "mauritius holidays" },
+  { id: "calendar", label: "Calendar & holidays", to: "/dashboard/calendar", keywords: "mauritius holidays timetree renewals office schedule" },
   { id: "voice", label: "Voice Upload", to: "/dashboard/voice", keywords: "transcription audio" },
   { id: "compliance", label: "Compliance & KYC", to: "/dashboard/compliance", keywords: "aml kyc", roles: ["admin", "broker"] },
   { id: "2fa", label: "Two-Factor Auth", to: "/dashboard/2fa", keywords: "totp security" },

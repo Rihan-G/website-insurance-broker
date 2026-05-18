@@ -60,13 +60,13 @@ describe("App", () => {
 
   it("renders admin login at /admin", () => {
     renderApp("/admin");
-    expect(screen.getByText(/Administrator access/)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /Administrator access/ })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Sign in as administrator/ })).toBeInTheDocument();
   });
 
   it("redirects legacy /admin/login to /admin", () => {
     renderApp("/admin/login");
-    expect(screen.getByText(/Administrator access/)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /Administrator access/ })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Sign in as administrator/ })).toBeInTheDocument();
   });
 
