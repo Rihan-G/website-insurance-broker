@@ -47,6 +47,21 @@ const demoPipeline: PipelineItem[] = [
   { id: "5", clientName: "Sophie Chen", documentType: "Travel Insurance", status: "rejected", uploadedAt: "2025-01-14T11:00:00Z", confidence: 42 },
 ];
 
+/** Demo metrics when signed in as a client (distinct from brokerage-wide staff demo stats). */
+const demoClientStats: DashboardStats = {
+  totalClients: 1,
+  activePolices: 2,
+  pendingDocuments: 1,
+  monthlyRevenue: 12400,
+  revenueChange: 0,
+  documentsProcessed: 14,
+};
+
+const demoClientPipeline: PipelineItem[] = [
+  { id: "c1", clientName: "You", documentType: "Motor Insurance", status: "processing", uploadedAt: "2025-01-15T09:15:00Z", confidence: 87 },
+  { id: "c2", clientName: "You", documentType: "Home Insurance", status: "uploaded", uploadedAt: "2025-01-14T16:45:00Z", confidence: undefined },
+];
+
 const emptyStats: DashboardStats = {
   totalClients: 0,
   activePolices: 0,
@@ -153,15 +168,21 @@ function StatGridSkeleton() {
 export function DashboardPage() {
   const { format } = useCurrency();
   const { user, profile, session, demoAuthActive } = useAuth();
-  const [stats, setStats] = useState<DashboardStats | null>(demoAuthActive ? demoStats : null);
-  const [pipeline, setPipeline] = useState<PipelineItem[]>(demoAuthActive ? demoPipeline : []);
+  const staffDashboard = profile?.role === "admin" || profile?.role === "broker";
+  const [stats, setStats] = useState<DashboardStats | null>(() =>
+    demoAuthActive ? (staffDashboard ? demoStats : demoClientStats) : null,
+  );
+  const [pipeline, setPipeline] = useState<PipelineItem[]>(() =>
+    demoAuthActive ? (staffDashboard ? demoPipeline : demoClientPipeline) : [],
+  );
   const [loading, setLoading] = useState(!demoAuthActive && Boolean(session && user));
   const [careSnapshot, setCareSnapshot] = useState<CareSnapshot | null>(demoAuthActive ? demoCareSnapshot : null);
 
   useEffect(() => {
     if (demoAuthActive) {
-      setStats(demoStats);
-      setPipeline(demoPipeline);
+      const staff = profile?.role === "admin" || profile?.role === "broker";
+      setStats(staff ? demoStats : demoClientStats);
+      setPipeline(staff ? demoPipeline : demoClientPipeline);
       setLoading(false);
       return;
     }
@@ -379,14 +400,15 @@ export function DashboardPage() {
     );
   }
 
-  const viewStats = stats ?? (demoAuthActive ? demoStats : emptyStats);
-  const viewPipeline = demoAuthActive ? demoPipeline : pipeline;
+  const viewStats =
+    stats ?? (demoAuthActive ? (staffDashboard ? demoStats : demoClientStats) : emptyStats);
+  const viewPipeline = demoAuthActive ? (staffDashboard ? demoPipeline : demoClientPipeline) : pipeline;
   const showStatSkeleton = loading && !demoAuthActive && Boolean(session && user && profile);
   const careLoading = careSnapshot === null && !demoAuthActive && Boolean(session && user && profile);
-  const isClientLive = profile?.role === "client" && !demoAuthActive;
+  const isClientCare = profile?.role === "client";
 
   return (
-    <div className="space-y-8">
+    <div className="min-w-0 space-y-8">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="space-y-1">
           <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary-600/80 dark:text-primary-400/90">Overview</p>
@@ -472,7 +494,7 @@ export function DashboardPage() {
               </div>
             ))}
           </div>
-        ) : isClientLive ? (
+        ) : isClientCare ? (
           <div className="mt-4 max-w-md">
             <Link
               to="/dashboard/notifications"
@@ -532,7 +554,7 @@ export function DashboardPage() {
       <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
         {showStatSkeleton ? (
           <StatGridSkeleton />
-        ) : profile?.role === "client" && !demoAuthActive ? (
+        ) : profile?.role === "client" ? (
           <>
             <StatCard
               title="Active Policies"
@@ -594,8 +616,8 @@ export function DashboardPage() {
         )}
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-3">
-        <div className="dashboard-panel xl:col-span-2 overflow-hidden rounded-2xl">
+      <div className="grid min-w-0 gap-6 xl:grid-cols-3">
+        <div className="dashboard-panel min-w-0 overflow-hidden rounded-2xl xl:col-span-2">
           <div className="flex items-center justify-between border-b border-border/80 bg-gradient-to-r from-primary-50/50 via-transparent to-accent-50/25 px-6 py-4 dark:from-primary-950/35 dark:via-transparent dark:to-accent-950/20">
             <div>
               <h3 className="font-semibold text-surface-foreground">Document Pipeline</h3>
@@ -625,14 +647,14 @@ export function DashboardPage() {
             {viewPipeline.map((item) => (
               <div
                 key={item.id}
-                className="flex cursor-default items-center gap-4 px-6 py-4 transition-colors duration-150 hover:bg-primary-50/60 dark:hover:bg-muted/40"
+                className="flex cursor-default items-center gap-4 px-6 py-4 transition-colors duration-150 hover:bg-primary-50/60 dark:hover:bg-muted/40 min-w-0"
               >
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-surface-foreground truncate">{item.clientName}</p>
                   <p className="text-sm text-muted-foreground">{item.documentType}</p>
                   <p className="mt-0.5 text-xs text-muted-foreground/90">{formatRelativeTime(item.uploadedAt)}</p>
                 </div>
-                <span className={`rounded-full px-2.5 py-1 text-xs font-medium capitalize ${DOCUMENT_STATUS_BADGE_CLASS[item.status]}`}>
+                <span className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-medium capitalize ${DOCUMENT_STATUS_BADGE_CLASS[item.status]}`}>
                   {item.status}
                 </span>
                 {item.confidence !== undefined && (
@@ -653,7 +675,7 @@ export function DashboardPage() {
           </div>
         </div>
 
-        <div className="dashboard-panel overflow-hidden rounded-2xl">
+        <div className="dashboard-panel min-w-0 overflow-hidden rounded-2xl">
           <div className="border-b border-border/80 bg-gradient-to-r from-primary-50/40 via-transparent to-primary-50/30 px-6 py-4 dark:from-primary-950/30 dark:to-primary-950/15">
             <h3 className="font-semibold text-surface-foreground">Revenue Trend</h3>
           </div>

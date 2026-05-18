@@ -104,7 +104,7 @@ export default function App() {
         <Route
           path="audit"
           element={
-            <RoleGuard allowedRoles={["admin"]}>
+            <RoleGuard allowedRoles={["admin", "broker"]}>
               <AuditLogPage />
             </RoleGuard>
           }
@@ -164,7 +164,7 @@ export default function App() {
         <Route
           path="capacity"
           element={
-            <RoleGuard allowedRoles={["admin"]}>
+            <RoleGuard allowedRoles={["admin", "broker"]}>
               <CapacityPage />
             </RoleGuard>
           }

@@ -3,11 +3,29 @@ import { MemoryRouter } from "react-router-dom";
 import { describe, it, expect, vi } from "vitest";
 import { CurrencyProvider } from "../context/CurrencyContext";
 import { DashboardPage } from "../pages/DashboardPage";
+import type { Profile } from "../types";
+
+/** Demo session with staff-shaped metrics (pipeline names, stat labels). */
+const demoBrokerProfile: Profile = {
+  id: "demo-user-id",
+  email: "broker@demo.local",
+  full_name: "Demo Broker",
+  role: "broker",
+  phone: null,
+  totp_secret: null,
+  totp_enabled: false,
+  last_login_at: null,
+  avatar_url: null,
+  bio: null,
+  commission_rate: null,
+  created_at: "2025-01-01T00:00:00.000Z",
+  updated_at: "2025-01-01T00:00:00.000Z",
+};
 
 vi.mock("../context/AuthContext", () => ({
   useAuth: () => ({
     user: { id: "demo-user-id" },
-    profile: null,
+    profile: demoBrokerProfile,
     session: null,
     loading: false,
     demoAuthActive: true,
