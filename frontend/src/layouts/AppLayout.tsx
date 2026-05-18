@@ -127,18 +127,42 @@ const navLabels: Record<string, string> = {
 
 type VisibleNavGroup = { label: string; items: NavItem[] };
 
-function subscribeLgBreakpoint(cb: () => void) {
-  const mq = window.matchMedia("(min-width: 1024px)");
-  mq.addEventListener("change", cb);
-  return () => mq.removeEventListener("change", cb);
+const DESKTOP_SHELL_MIN_PX = 1024;
+
+/**
+ * Prefer min(document client width, visualViewport width) so iOS/Android Chrome in
+ * “Desktop site” / zoomed layouts still treat the shell as compact: matchMedia alone
+ * can report a wide layout viewport while only a narrow band is visible, which
+ * used to keep a desktop rail and squeeze dashboard content to the right.
+ */
+function shellLayoutWidthPx(): number {
+  if (typeof document === "undefined") return 0;
+  const client = document.documentElement.clientWidth;
+  if (typeof window === "undefined") return client;
+  const vvW = window.visualViewport?.width;
+  if (vvW != null && vvW > 0 && client > 0) return Math.min(client, vvW);
+  return client > 0 ? client : window.innerWidth;
 }
 
-function lgBreakpointMatches(): boolean {
-  return window.matchMedia("(min-width: 1024px)").matches;
+function shellLayoutIsWide(): boolean {
+  return shellLayoutWidthPx() >= DESKTOP_SHELL_MIN_PX;
 }
 
-function lgBreakpointServerSnapshot(): boolean {
+function shellLayoutIsWideServer(): boolean {
   return false;
+}
+
+function subscribeShellLayout(cb: () => void) {
+  if (typeof window === "undefined") return () => {};
+  const vv = window.visualViewport;
+  vv?.addEventListener("resize", cb);
+  vv?.addEventListener("scroll", cb);
+  window.addEventListener("resize", cb);
+  return () => {
+    vv?.removeEventListener("resize", cb);
+    vv?.removeEventListener("scroll", cb);
+    window.removeEventListener("resize", cb);
+  };
 }
 
 function DashboardSidebarPanel({
@@ -290,7 +314,7 @@ export function AppLayout() {
   const location = useLocation();
   const mainRef = useRef<HTMLElement>(null);
   const [notifBadge, setNotifBadge] = useState<number | null>(null);
-  const isLg = useSyncExternalStore(subscribeLgBreakpoint, lgBreakpointMatches, lgBreakpointServerSnapshot);
+  const isLg = useSyncExternalStore(subscribeShellLayout, shellLayoutIsWide, shellLayoutIsWideServer);
   useAutoLogout();
 
   useEffect(() => {
@@ -410,8 +434,10 @@ export function AppLayout() {
 
   return (
     <>
-    <div className="relative flex w-full flex-1 flex-col overflow-hidden bg-background min-h-0 min-h-screen-dynamic lg:flex-row">
-      {/* Desktop only: never mount the w-64 rail in the DOM below lg (avoids flex/overflow quirks on mobile Chrome). */}
+    <div
+      className={`relative flex w-full flex-1 overflow-hidden bg-background min-h-0 min-h-screen-dynamic ${isLg ? "flex-row" : "flex-col"}`}
+    >
+      {/* Desktop only: mount the w-64 rail only when the shell is truly wide (see shellLayoutWidthPx). */}
       {isLg ? (
         <aside className="relative flex h-full min-h-0 w-64 shrink-0 flex-col overflow-hidden border-r border-white/5">
           <DashboardSidebarPanel
@@ -427,7 +453,9 @@ export function AppLayout() {
       ) : null}
 
       {/* Dashboard canvas: full width on mobile; nav is a fixed portal (Figma-style sheet), not a flex sibling. */}
-      <div className="relative flex min-h-0 min-w-0 w-full max-w-full flex-1 flex-col overflow-hidden max-lg:pt-[env(safe-area-inset-top)]">
+      <div
+        className={`relative flex min-h-0 min-w-0 w-full max-w-full flex-1 basis-full flex-col overflow-x-clip overflow-hidden ${!isLg ? "pt-[env(safe-area-inset-top)]" : ""}`}
+      >
         <a
           href="#main-content"
           className="absolute -top-16 left-4 z-[9999] rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white shadow-lg transition-[top] duration-200 focus:top-4 focus:outline-none focus:ring-2 focus:ring-ring"
@@ -436,13 +464,15 @@ export function AppLayout() {
         </a>
         <CommandPalette open={cmdOpen} onOpenChange={setCmdOpen} />
 
-        <header className="relative z-10 flex h-16 min-w-0 shrink-0 items-center gap-4 border-b border-border/70 bg-white/85 px-6 shadow-[0_1px_0_rgba(255,255,255,0.65)_inset,0_8px_28px_-16px_rgba(3,105,161,0.12)] backdrop-blur-xl lg:px-8 dark:border-border dark:bg-surface/75 dark:shadow-[0_1px_0_rgba(255,255,255,0.05)_inset,0_12px_40px_-12px_rgba(0,0,0,0.5)]">
+        <header
+          className={`relative z-10 flex h-16 min-w-0 shrink-0 items-center gap-4 border-b border-border/70 bg-white/85 shadow-[0_1px_0_rgba(255,255,255,0.65)_inset,0_8px_28px_-16px_rgba(3,105,161,0.12)] backdrop-blur-xl dark:border-border dark:bg-surface/75 dark:shadow-[0_1px_0_rgba(255,255,255,0.05)_inset,0_12px_40px_-12px_rgba(0,0,0,0.5)] ${isLg ? "px-8" : "px-6"}`}
+        >
           <button
             type="button"
             aria-expanded={sidebarOpen}
             aria-controls={!isLg && sidebarOpen ? "app-sidebar" : undefined}
             onClick={() => setSidebarOpen((open) => !open)}
-            className="shrink-0 rounded-xl p-1.5 text-muted-foreground hover:bg-primary-50 dark:hover:bg-muted cursor-pointer lg:hidden transition-colors duration-200"
+            className={`shrink-0 rounded-xl p-1.5 text-muted-foreground hover:bg-primary-50 dark:hover:bg-muted cursor-pointer transition-colors duration-200 ${isLg ? "hidden" : ""}`}
           >
             {sidebarOpen ? <X className="h-5 w-5" aria-hidden /> : <Menu className="h-5 w-5" aria-hidden />}
             <span className="sr-only">{sidebarOpen ? "Close navigation" : "Open navigation"}</span>
@@ -478,7 +508,11 @@ export function AppLayout() {
           ref={mainRef}
           id="main-content"
           tabIndex={-1}
-          className="dashboard-bg relative z-0 min-h-0 min-w-0 w-full max-w-full flex-1 touch-pan-y overflow-x-hidden overflow-y-auto overscroll-y-contain p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] lg:p-8 lg:pb-[max(2rem,env(safe-area-inset-bottom))] outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+          className={`dashboard-bg relative z-0 min-h-0 min-w-0 w-full max-w-full flex-1 touch-pan-y overflow-x-hidden overflow-y-auto overscroll-y-contain outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset ${
+            isLg
+              ? "p-8 pb-[max(2rem,env(safe-area-inset-bottom))]"
+              : "p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))]"
+          }`}
         >
           <DashboardAccessSentinel>
             <Outlet />
