@@ -38,7 +38,7 @@ export function LoginPage() {
     else navigate("/dashboard");
   };
 
-  const signInDemoRole = async (role: "client" | "broker" | "admin") => {
+  const signInDemoRole = async (role: "client" | "broker") => {
     const acc = getDemoCredentialsByRole(role);
     if (!acc) return;
     setError("");
@@ -160,9 +160,9 @@ export function LoginPage() {
                 Try the portal (demo)
               </p>
               <p className="mt-1 text-center text-[11px] leading-snug text-muted-foreground">
-                One tap — no Supabase account required in this mode.
+                One tap for client or broker — no Supabase account required in this mode. Administrator demo uses the separate staff sign-in below.
               </p>
-              <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
+              <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
                 <button
                   type="button"
                   disabled={loading}
@@ -179,14 +179,6 @@ export function LoginPage() {
                 >
                   Broker demo
                 </button>
-                <button
-                  type="button"
-                  disabled={loading}
-                  onClick={() => void signInDemoRole("admin")}
-                  className="rounded-xl border border-violet-300/90 bg-violet-100/90 px-3 py-3 text-center text-sm font-bold text-violet-950 shadow-sm transition hover:bg-violet-200/90 disabled:opacity-50 dark:border-violet-600/50 dark:bg-violet-950/50 dark:text-violet-50 dark:hover:bg-violet-900/60"
-                >
-                  Admin demo
-                </button>
               </div>
             </div>
           )}
@@ -194,7 +186,7 @@ export function LoginPage() {
           {!isSignUp && !demoAuthAvailable && import.meta.env.PROD && (
             <p className="mb-4 rounded-xl border border-amber-300/80 bg-amber-50/95 px-4 py-3 text-center text-xs leading-snug text-amber-950 shadow-sm dark:border-amber-700/50 dark:bg-amber-950/40 dark:text-amber-100">
               Demo quick sign-in is off for this build. Set{" "}
-              <span className="font-mono text-[11px]">VITE_ALLOW_DEMO_LOGIN=true</span> when building to enable Client / Broker / Admin demo buttons.
+              <span className="font-mono text-[11px]">VITE_ALLOW_DEMO_LOGIN=true</span> when building to enable Client / Broker demo buttons.
             </p>
           )}
 

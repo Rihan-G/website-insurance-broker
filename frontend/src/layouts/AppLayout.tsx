@@ -203,7 +203,10 @@ export function AppLayout() {
       )}
 
       {/* ── Sidebar — Glassmorphism + Aurora gradient ── */}
-      <aside className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col transition-transform duration-300 lg:static lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} relative overflow-hidden`}>
+      {/* `absolute` below lg so the drawer does not reserve flex width while translated off-screen (`fixed` inside flex can still leave a blank lane on mobile). */}
+      <aside
+        className={`absolute inset-y-0 left-0 z-50 flex w-64 shrink-0 flex-col overflow-hidden transition-transform duration-300 lg:relative lg:inset-auto lg:z-auto lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
+      >
         {/* Sidebar gradient base */}
         <div className="absolute inset-0 bg-gradient-to-b from-primary-950 via-primary-900 to-primary-950" />
         {/* Visible aurora orbs in sidebar */}

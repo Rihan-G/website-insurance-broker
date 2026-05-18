@@ -48,7 +48,7 @@ describe("App", () => {
     expect(screen.getByPlaceholderText("you@company.com")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Client demo/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Broker demo/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Admin demo/i })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Admin demo/i })).not.toBeInTheDocument();
   });
 
   it("shows sign up form when toggled", async () => {
