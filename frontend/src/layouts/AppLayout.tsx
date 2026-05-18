@@ -313,18 +313,18 @@ export function AppLayout() {
 
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
         {/* Top header — glass effect */}
-        <header className="flex h-16 items-center gap-4 border-b border-border/70 bg-white/85 px-6 shadow-[0_1px_0_rgba(255,255,255,0.65)_inset,0_8px_28px_-16px_rgba(3,105,161,0.12)] backdrop-blur-xl lg:px-8 dark:border-border dark:bg-surface/75 dark:shadow-[0_1px_0_rgba(255,255,255,0.05)_inset,0_12px_40px_-12px_rgba(0,0,0,0.5)]">
+        <header className="flex h-16 min-w-0 items-center gap-4 border-b border-border/70 bg-white/85 px-6 shadow-[0_1px_0_rgba(255,255,255,0.65)_inset,0_8px_28px_-16px_rgba(3,105,161,0.12)] backdrop-blur-xl lg:px-8 dark:border-border dark:bg-surface/75 dark:shadow-[0_1px_0_rgba(255,255,255,0.05)_inset,0_12px_40px_-12px_rgba(0,0,0,0.5)]">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="rounded-xl p-1.5 text-muted-foreground hover:bg-primary-50 dark:hover:bg-muted cursor-pointer lg:hidden transition-colors duration-200"
+            className="shrink-0 rounded-xl p-1.5 text-muted-foreground hover:bg-primary-50 dark:hover:bg-muted cursor-pointer lg:hidden transition-colors duration-200"
           >
             {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
-          <div className="flex items-center gap-2">
-            <ShieldCheck className="h-5 w-5 text-primary-500 hidden sm:block" />
-            <h1 className="text-base font-bold text-surface-foreground">{PORTAL_HEADING}</h1>
+          <div className="flex min-w-0 flex-1 items-center gap-2">
+            <ShieldCheck className="h-5 w-5 shrink-0 text-primary-500 hidden sm:block" />
+            <h1 className="truncate text-base font-bold text-surface-foreground">{PORTAL_HEADING}</h1>
           </div>
-          <div className="ml-auto flex items-center gap-2 sm:gap-3">
+          <div className="ml-auto flex shrink-0 items-center gap-2 sm:gap-3">
             <button
               type="button"
               onClick={() => setCmdOpen(true)}

@@ -15,7 +15,7 @@ vi.mock("../context/AuthContext", () => ({
     signUp: vi.fn(),
     signOut: vi.fn(),
     isAdmin: false,
-    demoAuthAvailable: false,
+    demoAuthAvailable: true,
   }),
   AuthProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
@@ -46,6 +46,9 @@ describe("App", () => {
     renderApp("/login");
     expect(screen.getByText("Secure Sign In")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("you@company.com")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Client demo/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Broker demo/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Admin demo/i })).toBeInTheDocument();
   });
 
   it("shows sign up form when toggled", async () => {

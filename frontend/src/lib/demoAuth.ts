@@ -146,7 +146,14 @@ function supabaseLooksUnconfigured(): boolean {
 export function isDemoAuthEnabled(): boolean {
   if (import.meta.env.VITE_ALLOW_DEMO_LOGIN === "false") return false;
   if (import.meta.env.VITE_ALLOW_DEMO_LOGIN === "true") return true;
-  return import.meta.env.DEV && supabaseLooksUnconfigured();
+  // Local `pnpm dev`: always offer demo sign-in unless explicitly disabled above.
+  if (import.meta.env.DEV) return true;
+  return supabaseLooksUnconfigured();
+}
+
+/** Resolve built-in demo credentials for a role (first account when multiple share the role). */
+export function getDemoCredentialsByRole(role: "client" | "broker" | "admin"): (typeof DEMO_ACCOUNTS)[number] | undefined {
+  return DEMO_ACCOUNTS.find((a) => a.profile.role === role);
 }
 
 export function matchDemoLogin(email: string, password: string): DemoBundle | null {
