@@ -1,0 +1,90 @@
+SecureBroker — remaining work and improvement ideas
+====================================================
+Last updated for the current codebase (renewals, tasks, uploads, Edge functions, demo paths).
+
+PART A — STILL TO DO (concrete)
+-------------------------------
+
+Operations / Supabase
+- Run `supabase db push` (or apply SQL migrations in order) on every environment: through at least 00008
+  (renewals + tasks), plus earlier upload/RLS migrations if not already applied.
+- Deploy Edge Functions: `ai-config`, `document-ingest` (and set Dashboard secrets: AI keys, optional
+  VIRUS_SCAN_WEBHOOK_URL, OPENAI_BASE_URL as needed).
+- Point `frontend/.env` at a real project URL and keys (not localhost placeholder) for live Auth, Storage,
+  and functions.
+- Confirm Storage bucket `documents` exists, stays private, and size limits match your largest files.
+
+Uploads & documents
+- Replace `document-ingest` OCR placeholder with a real provider (Textract, Document AI, Vision) and a
+  durable queue for large PDFs; add retries and dead-letter handling.
+- Add true malware scanning beyond the optional webhook stub.
+- Optional: staff “upload for client” UX polish (search clients, bulk upload).
+
+Security & compliance
+- Verify TOTP on the server (Edge Function) before enabling 2FA; avoid trusting only client-side checks.
+- Periodic RLS review as new tables ship (renewals, tasks, payments, inbox).
+- Data retention policy and export/delete for GDPR-style requests.
+
+Payments & messaging
+- Wire a real PSP (e.g. Stripe) and webhooks; reconcile `payments` rows with gateway state.
+- WhatsApp / SMS / email: production templates, provider accounts, delivery webhooks, bounce handling.
+
+Renewals & tasks (new)
+- Renewals: email/WhatsApp reminders before `renewal_date`; link to policy renewal workflow; optional
+  PDF pack from templates (`template_key` is stored but generation is not built).
+- Tasks: optional recurrence (weekly stand-up), attachments, comments, @mentions; calendar month view
+  combining tasks + renewals; push notifications for assignees.
+- Holiday calendar vs work calendar: decide whether to merge “Planning” into one calendar UI or keep
+  separate routes with a shared month component.
+
+Product / README phases (still not “production complete” end-to-end)
+- Phase 1: production OCR pipeline (see uploads above).
+- Phase 2: hardened 2FA; broader admin reporting.
+- Phase 3: real notifications pipeline; client-only views audited against RLS.
+- Phase 4: generated PDFs (certificates, receipts) from `generated_documents` or equivalent jobs.
+- Phase 5–7: full i18n coverage, e-ID vendor, operational monitoring and alerting.
+
+Testing & quality
+- Expand Vitest/RTL coverage for critical paths (auth, upload, renewals, tasks, payments).
+- E2E (Playwright) against a disposable Supabase branch or seeded project.
+- Accessibility audit (keyboard, contrast, focus traps in modals/sidebar).
+
+Observability
+- Centralised logging/metrics (OpenTelemetry or host dashboards) for Edge functions and frontend errors
+  (e.g. Sentry), without logging PII or file contents.
+
+
+PART B — IMPROVEMENT IDEAS (suggestions)
+--------------------------------------
+
+User experience
+- Unified “Today” dashboard card: tasks due today + renewals due this week + pending documents.
+- Global command palette (search clients, policies, tasks, renewals).
+- Empty states with one-click actions (e.g. “Add task for today”, “Book renewal call”).
+- Progressive disclosure on dense admin pages (filters collapsed by default on mobile).
+
+Performance
+- Route-based code splitting for heavy pages (charts, calendar).
+- Virtualised long tables (documents, audit log).
+- Image and PDF preview via signed URLs with caching headers where safe.
+
+Design system
+- Extract repeated card/table/chip patterns into a small set of documented components.
+- Dark mode QA on every new feature (sidebar + main content contrast).
+
+Business features
+- Brokerage hierarchy (teams, regions) if you scale beyond a single office.
+- Commission rules engine (tiered rates, clawbacks) with audit trail.
+- Client self-service: limited task completion, renewal confirmation, payment status.
+
+Risk & insurance-specific
+- FNOL (first notice of loss) guided flow with mandatory fields per product line.
+- Tolerance registers and sanctions re-screening on renewal.
+
+Marketing & trust
+- Public status page; security page describing encryption and RLS at a high level.
+- SEO for landing pages; structured data for local business if relevant.
+
+Developer experience
+- Supabase-generated TypeScript types in CI (`supabase gen types`) to reduce manual `database.ts` drift.
+- Staging environment that mirrors production migrations and seed data.
