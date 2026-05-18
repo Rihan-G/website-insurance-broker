@@ -156,6 +156,11 @@ export function getDemoCredentialsByRole(role: "client" | "broker" | "admin"): (
   return DEMO_ACCOUNTS.find((a) => a.profile.role === role);
 }
 
+/** Primary demo admin — same identity as "Admin demo" on `/login` and `/admin` demo helpers. */
+export function getPrimaryDemoAdminAccount(): (typeof DEMO_ACCOUNTS)[number] | undefined {
+  return getDemoCredentialsByRole("admin");
+}
+
 export function matchDemoLogin(email: string, password: string): DemoBundle | null {
   if (!isDemoAuthEnabled()) return null;
   const hit = DEMO_ACCOUNTS.find(
@@ -167,7 +172,9 @@ export function matchDemoLogin(email: string, password: string): DemoBundle | nu
 }
 
 export function bundleFromPayload(p: DemoAuthPayload): DemoBundle {
+  const byId = DEMO_ACCOUNTS.find((a) => a.profile.id === p.userId);
   const tmpl =
+    byId?.profile ??
     DEMO_ACCOUNTS.find((a) => a.profile.role === p.role)?.profile ??
     DEMO_ACCOUNTS[2].profile;
   const profile: Profile = {

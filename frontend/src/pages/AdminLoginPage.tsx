@@ -6,11 +6,12 @@ import { useTheme } from "../context/ThemeContext";
 import { ThemeToggle } from "../components/ThemeToggle";
 import { CurrencySwitcher } from "../components/CurrencySwitcher";
 import { ParticleField } from "../components/ParticleField";
-import { DEMO_ACCOUNTS } from "../lib/demoAuth";
+import { DEMO_ACCOUNTS, getPrimaryDemoAdminAccount } from "../lib/demoAuth";
 import { COMPANY_NAME_SHORT } from "../lib/branding";
 import { formatHolidayDate, upcomingMauritiusHolidays, type MauritiusHoliday } from "../lib/mauritiusHolidays";
 
-const adminDemo = DEMO_ACCOUNTS[0];
+/** Same account as "Admin demo" on the standard `/login` page. */
+const adminDemo = getPrimaryDemoAdminAccount() ?? DEMO_ACCOUNTS[0];
 
 const trustSignals = [
   "Role-based access for administrators",
@@ -74,6 +75,24 @@ export function AdminLoginPage() {
   const fillAdminDemo = () => {
     setEmail(adminDemo.email);
     setPassword(adminDemo.password);
+  };
+
+  const signInAsDemoAdmin = async () => {
+    setError("");
+    setLoading(true);
+    const result = await signIn(adminDemo.email, adminDemo.password);
+    if (result.error) {
+      setError(result.error.message);
+      setLoading(false);
+      return;
+    }
+    if (!result.profile || result.profile.role !== "admin") {
+      await signOut();
+      setError("This portal is for administrator accounts only. Use the standard sign-in for broker or client access.");
+      setLoading(false);
+      return;
+    }
+    navigate("/dashboard");
   };
 
   return (
@@ -266,16 +285,30 @@ export function AdminLoginPage() {
             {demoAuthAvailable && (
               <div className="mt-6 rounded-xl border border-white/10 bg-black/20 p-4 text-xs text-primary-200 lg:border-border lg:bg-muted/30 lg:text-muted-foreground dark:lg:border-white/10 dark:lg:bg-black/20 dark:lg:text-primary-200">
                 <p className="font-semibold text-white lg:text-surface-foreground">Development demo administrator</p>
-                <p className="mt-1 break-all font-mono text-primary-300 lg:text-muted-foreground dark:lg:text-primary-300">
+                <p className="mt-1 text-[11px] leading-snug text-primary-400 lg:text-muted-foreground">
+                  Same account as the <span className="font-semibold text-primary-200 lg:text-surface-foreground">Admin demo</span> button on the standard sign-in page — one dashboard after sign-in.
+                </p>
+                <p className="mt-2 break-all font-mono text-primary-300 lg:text-muted-foreground dark:lg:text-primary-300">
                   {adminDemo.email} / {adminDemo.password}
                 </p>
-                <button
-                  type="button"
-                  onClick={fillAdminDemo}
-                  className="mt-3 text-sm font-medium text-accent-400 underline-offset-2 hover:underline"
-                >
-                  Fill demo credentials
-                </button>
+                <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+                  <button
+                    type="button"
+                    disabled={loading}
+                    onClick={() => void signInAsDemoAdmin()}
+                    className="rounded-xl bg-gradient-to-r from-accent-600 to-accent-500 px-4 py-2.5 text-center text-sm font-semibold text-white shadow-md shadow-accent-900/30 transition hover:from-accent-500 hover:to-accent-400 disabled:opacity-50"
+                  >
+                    Sign in with demo admin
+                  </button>
+                  <button
+                    type="button"
+                    disabled={loading}
+                    onClick={fillAdminDemo}
+                    className="rounded-xl border border-white/20 bg-white/5 px-4 py-2.5 text-center text-sm font-medium text-white transition hover:bg-white/10 disabled:opacity-50 lg:border-border lg:bg-muted/50 lg:text-surface-foreground lg:hover:bg-muted dark:lg:border-white/15 dark:lg:bg-black/25 dark:lg:text-white dark:lg:hover:bg-black/40"
+                  >
+                    Fill demo credentials
+                  </button>
+                </div>
               </div>
             )}
 

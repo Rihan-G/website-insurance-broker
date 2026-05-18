@@ -203,7 +203,9 @@ export function AppLayout() {
       )}
 
       {/* ── Sidebar — Glassmorphism + Aurora gradient ── */}
-      <aside className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col transition-transform duration-300 lg:static lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} relative overflow-hidden`}>
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 flex w-64 shrink-0 flex-col overflow-hidden transition-transform duration-300 lg:relative ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}
+      >
         {/* Sidebar gradient base */}
         <div className="absolute inset-0 bg-gradient-to-b from-primary-950 via-primary-900 to-primary-950" />
         {/* Visible aurora orbs in sidebar */}
@@ -315,7 +317,8 @@ export function AppLayout() {
         {/* Top header — glass effect */}
         <header className="flex h-16 min-w-0 items-center gap-4 border-b border-border/70 bg-white/85 px-6 shadow-[0_1px_0_rgba(255,255,255,0.65)_inset,0_8px_28px_-16px_rgba(3,105,161,0.12)] backdrop-blur-xl lg:px-8 dark:border-border dark:bg-surface/75 dark:shadow-[0_1px_0_rgba(255,255,255,0.05)_inset,0_12px_40px_-12px_rgba(0,0,0,0.5)]">
           <button
-            onClick={() => setSidebarOpen(true)}
+            type="button"
+            onClick={() => setSidebarOpen((open) => !open)}
             className="shrink-0 rounded-xl p-1.5 text-muted-foreground hover:bg-primary-50 dark:hover:bg-muted cursor-pointer lg:hidden transition-colors duration-200"
           >
             {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
