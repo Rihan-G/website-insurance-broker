@@ -190,7 +190,7 @@ export function AppLayout() {
   })).filter((group) => group.items.length > 0);
 
   return (
-    <div className="relative flex h-screen dashboard-bg">
+    <div className="relative flex h-screen min-h-0 w-full max-w-[100vw] overflow-x-hidden dashboard-bg">
       <a
         href="#main-content"
         className="absolute -top-16 left-4 z-[9999] rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white shadow-lg transition-[top] duration-200 focus:top-4 focus:outline-none focus:ring-2 focus:ring-ring"
