@@ -19,10 +19,10 @@ export const QUICK_NAV_ITEMS: QuickNavItem[] = [
   { id: "clients", label: "Clients", to: "/dashboard/clients", keywords: "crm people", roles: ["admin", "broker"] },
   {
     id: "broker-client-site",
-    label: "Client site (broker)",
+    label: "Client site",
     to: "/dashboard/broker-client-site",
-    keywords: "client portal files upload external",
-    roles: ["broker"],
+    keywords: "client portal files upload external staff broker admin",
+    roles: ["admin", "broker"],
   },
   { id: "services", label: "Services", to: "/dashboard/services", keywords: "products motor home" },
   { id: "quotes", label: "Quote Calculator", to: "/dashboard/quotes", keywords: "premium estimate motor" },

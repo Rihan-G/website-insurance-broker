@@ -35,7 +35,7 @@ const navGroups: Array<{ label: string; items: NavItem[] }> = [
       { name: "documents", to: "/dashboard/documents", icon: FileText },
       { name: "upload", to: "/dashboard/upload", icon: Upload },
       { name: "clients", to: "/dashboard/clients", icon: Users, roles: ["admin", "broker"] },
-      { name: "broker-client-site", to: "/dashboard/broker-client-site", icon: ExternalLink, roles: ["broker"] },
+      { name: "broker-client-site", to: "/dashboard/broker-client-site", icon: ExternalLink, roles: ["admin", "broker"] },
     ],
   },
   {
@@ -99,7 +99,7 @@ const navLabels: Record<string, string> = {
   documents: "Documents",
   upload: "Upload",
   clients: "Clients",
-  "broker-client-site": "Client site (broker)",
+  "broker-client-site": "Client site",
   services: "Services",
   quotes: "Quote Calculator",
   "mid-term": "Mid-Term Adjust.",

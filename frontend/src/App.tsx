@@ -164,7 +164,7 @@ export default function App() {
         <Route
           path="broker-client-site"
           element={
-            <RoleGuard allowedRoles={["broker"]}>
+            <RoleGuard allowedRoles={["admin", "broker"]}>
               <BrokerClientSiteHubPage />
             </RoleGuard>
           }

@@ -13,10 +13,10 @@ const CLIENT_LINKS: { id: string; label: string; description: string; path: stri
 
 const INTERNAL_LINKS: { id: string; label: string; description: string; to: string; icon: typeof Users }[] = [
   { id: "clients", label: "Clients (CRM)", description: "Pick a client profile before opening the portal links.", to: "/dashboard/clients", icon: Users },
-  { id: "review", label: "Document review", description: "Broker queue for OCR and approvals.", to: "/dashboard/review", icon: FolderOpen },
+  { id: "review", label: "Document review", description: "Staff queue for OCR and approvals.", to: "/dashboard/review", icon: FolderOpen },
 ];
 
-/** Broker-only hub: opens the client-facing site in a new tab for assisted sessions. */
+/** Admin & broker hub: opens the client-facing site in a new tab for assisted sessions. */
 export function BrokerClientSiteHubPage() {
   const base = getClientPortalBaseUrl();
   const sameOrigin = typeof window !== "undefined" && base === window.location.origin;
@@ -24,10 +24,10 @@ export function BrokerClientSiteHubPage() {
   return (
     <div className="space-y-8">
       <div>
-        <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary-600/90 dark:text-primary-400/90">Broker</p>
+        <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary-600/90 dark:text-primary-400/90">Staff</p>
         <h2 className="mt-1 text-2xl font-bold tracking-tight text-surface-foreground sm:text-3xl">Client website shortcuts</h2>
         <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-          Use these links when you are with a client or remoting in: they open the same pages a client uses for files, uploads, and service tasks. Each link opens in a new tab so you keep this broker workspace open.
+          For admins and brokers working with a client: these open the same client-facing pages for files, uploads, and service tasks. Each link opens in a new tab so you keep this workspace open.
         </p>
       </div>
 
