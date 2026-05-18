@@ -31,6 +31,8 @@ import { ClientPortalPage } from "./pages/ClientPortalPage";
 import { MidTermPage } from "./pages/MidTermPage";
 import { CapacityPage } from "./pages/CapacityPage";
 import { HolidayCalendarPage } from "./pages/HolidayCalendarPage";
+import { OperationsTimeTreePage } from "./pages/OperationsTimeTreePage";
+import { BrokerClientSiteHubPage } from "./pages/BrokerClientSiteHubPage";
 import { CommissionPage } from "./pages/CommissionPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import { RenewalsPage } from "./pages/RenewalsPage";
@@ -151,6 +153,22 @@ export default function App() {
           }
         />
         <Route path="calendar" element={<HolidayCalendarPage />} />
+        <Route
+          path="operations-calendar"
+          element={
+            <RoleGuard allowedRoles={["admin", "broker"]}>
+              <OperationsTimeTreePage />
+            </RoleGuard>
+          }
+        />
+        <Route
+          path="broker-client-site"
+          element={
+            <RoleGuard allowedRoles={["broker"]}>
+              <BrokerClientSiteHubPage />
+            </RoleGuard>
+          }
+        />
         <Route
           path="commissions"
           element={

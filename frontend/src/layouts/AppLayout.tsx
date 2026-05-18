@@ -5,7 +5,7 @@ import {
   ShieldCheck, KeyRound, ClipboardList, MessageSquare, CreditCard,
   Calculator, BarChart3, Bell, MessageCircle, Mic, Shield, ChevronDown,
   Globe, Home, RefreshCw, Award, Calendar, Search, CalendarClock, FileWarning,
-  MessagesSquare, BellRing, ListTodo,
+  MessagesSquare, BellRing, ListTodo, GitBranch, ExternalLink,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useAutoLogout } from "../hooks/useAutoLogout";
@@ -35,6 +35,7 @@ const navGroups: Array<{ label: string; items: NavItem[] }> = [
       { name: "documents", to: "/dashboard/documents", icon: FileText },
       { name: "upload", to: "/dashboard/upload", icon: Upload },
       { name: "clients", to: "/dashboard/clients", icon: Users, roles: ["admin", "broker"] },
+      { name: "broker-client-site", to: "/dashboard/broker-client-site", icon: ExternalLink, roles: ["broker"] },
     ],
   },
   {
@@ -78,6 +79,7 @@ const navGroups: Array<{ label: string; items: NavItem[] }> = [
     items: [
       { name: "expiry", to: "/dashboard/expiry", icon: Bell },
       { name: "calendar", to: "/dashboard/calendar", icon: Calendar },
+      { name: "operations-calendar", to: "/dashboard/operations-calendar", icon: GitBranch, roles: ["admin", "broker"] },
       { name: "voice", to: "/dashboard/voice", icon: Mic },
       { name: "compliance", to: "/dashboard/compliance", icon: ShieldCheck, roles: ["admin", "broker"] },
     ],
@@ -97,6 +99,7 @@ const navLabels: Record<string, string> = {
   documents: "Documents",
   upload: "Upload",
   clients: "Clients",
+  "broker-client-site": "Client site (broker)",
   services: "Services",
   quotes: "Quote Calculator",
   "mid-term": "Mid-Term Adjust.",
@@ -115,6 +118,7 @@ const navLabels: Record<string, string> = {
   audit: "Audit Log",
   expiry: "Expiry Monitor",
   calendar: "Holiday Calendar",
+  "operations-calendar": "Operations calendar",
   voice: "Voice Upload",
   compliance: "Compliance",
   "2fa": "Two-Factor Auth",
