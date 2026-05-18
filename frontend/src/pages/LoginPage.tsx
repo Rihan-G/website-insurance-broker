@@ -238,7 +238,7 @@ export function LoginPage() {
             {!isSignUp && import.meta.env.VITE_SHOW_STAFF_LOGIN_LINK !== "false" && (
               <p className="mt-5 text-center text-sm text-muted-foreground">
                 <Link
-                  to="/admin/login"
+                  to="/admin"
                   className="font-medium text-primary-600 dark:text-primary-400 hover:underline underline-offset-2"
                 >
                   Administrator sign-in
