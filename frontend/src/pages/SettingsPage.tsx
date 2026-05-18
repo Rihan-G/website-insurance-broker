@@ -1,12 +1,22 @@
-import { useState } from "react";
-import { Save, Bell, Lock, Globe, Palette } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Save, Bell, Lock, Globe, Palette, ExternalLink } from "lucide-react";
 import { useTheme, type ThemePreference } from "../context/ThemeContext";
 import { COMPANY_NAME } from "../lib/branding";
 import { useCurrency, type CurrencyCode } from "../context/CurrencyContext";
 
+function portalRootUrl(): string {
+  const base = import.meta.env.BASE_URL ?? "/";
+  try {
+    return new URL(base, window.location.origin).href;
+  } catch {
+    return window.location.origin;
+  }
+}
+
 export function SettingsPage() {
   const { preference, setPreference } = useTheme();
   const { currency, setCurrency, allCurrencies } = useCurrency();
+  const rootHref = useMemo(() => portalRootUrl(), []);
   const [notifications, setNotifications] = useState({
     email: true,
     sms: false,
@@ -33,6 +43,25 @@ export function SettingsPage() {
               General
             </h3>
             <div className="mt-5 space-y-4">
+              <div className="rounded-lg border border-border bg-muted/25 px-4 py-3">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Portal web address</p>
+                <a
+                  href={rootHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-1.5 inline-flex max-w-full items-start gap-2 break-all text-sm font-semibold text-primary-600 underline-offset-2 hover:underline dark:text-primary-400"
+                >
+                  <span className="min-w-0">{rootHref.replace(/\/$/, "") || rootHref}</span>
+                  <ExternalLink className="mt-0.5 h-4 w-4 shrink-0 opacity-80" aria-hidden />
+                </a>
+                <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                  Opens this app at its root (respects GitHub Pages and other sub-path hosting). If GitHub’s{" "}
+                  <span className="font-medium text-surface-foreground">Settings → Pages</span> page has not shown a “Visit site”
+                  link yet, run a successful <span className="font-medium text-surface-foreground">Deploy GitHub Pages</span>{" "}
+                  workflow on <span className="font-medium text-surface-foreground">main</span>, then refresh Pages — or use
+                  this address directly.
+                </p>
+              </div>
               <div>
                 <label className="block text-sm font-medium text-surface-foreground">Company Name</label>
                 <input

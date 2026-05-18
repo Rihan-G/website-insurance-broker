@@ -65,6 +65,7 @@ Many screens use **mock data** when demo mode is active; any feature that still 
 - **404 on refresh:** the workflow copies `index.html` → `404.html`; redeploy from `main`.
 - **Blank page or wrong assets:** confirm the workflow log line `VITE_GH_PAGES_BASE=...` matches your GitHub Pages URL path (repository slug; the workflow lowercases it automatically).
 - **No “Pages” in Settings:** use the left sidebar **Code and automation** → **Pages**, or open `https://github.com/OWNER/REPO/settings/pages`. Confirm you are in **repo** Settings (not your user profile) and that you have **Admin** on the repo.
+- **Pages opens but no “Visit site” link:** GitHub often shows the public URL only after the **first successful** **Deploy GitHub Pages** run on **`main`**. Wait for the workflow to finish, then refresh **Pages**. The URL is always `https://<owner>.github.io/<repository>/`. In the app, open **Dashboard → Settings** — **Portal web address** shows the same root URL from your browser (works without that GitHub UI).
 
 ## Tech Stack
 
