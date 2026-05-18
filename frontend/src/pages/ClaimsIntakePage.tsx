@@ -1,8 +1,22 @@
-import { useEffect, useState } from "react";
-import { ChevronRight, FileWarning, ShieldCheck, Upload, Database } from "lucide-react";
+import { lazy, Suspense, useEffect, useState } from "react";
+import { ChevronRight, Crosshair, FileWarning, MapPin, ShieldCheck, Upload, Database } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
 import { db } from "../lib/db";
+import type { IncidentPin } from "../types/incidentMap";
+
+const IncidentLocationMap = lazy(async () => {
+  const m = await import("../components/IncidentLocationMap");
+  return { default: m.IncidentLocationMap };
+});
+
+function buildStoredLocation(address: string, pin: IncidentPin | null): string | null {
+  const a = address.trim();
+  if (!a && !pin) return null;
+  if (pin && a) return `${a} — Pin: ${pin.lat.toFixed(5)}, ${pin.lng.toFixed(5)}`;
+  if (pin) return `Pin: ${pin.lat.toFixed(5)}, ${pin.lng.toFixed(5)}`;
+  return a;
+}
 
 const STEPS = ["Incident", "Parties", "Details", "Review"] as const;
 
@@ -19,23 +33,29 @@ export function ClaimsIntakePage() {
     contactPhone: "",
     thirdParties: "",
   });
+  const [incidentPin, setIncidentPin] = useState<IncidentPin | null>(null);
 
   useEffect(() => {
     if (!user || demoAuthActive || !session || profile?.role === "client") {
       if (profile?.role === "client") setTargetClientId(user?.id ?? "");
       return;
     }
-    void db
-      .profiles()
-      .select("id, full_name")
-      .eq("role", "client")
-      .order("full_name")
-      .then(({ data, error }) => {
-        if (!error && data) {
-          setClients(data as Array<{ id: string; full_name: string }>);
-          if (data[0]) setTargetClientId((data[0] as { id: string }).id);
-        }
-      });
+    let cancelled = false;
+    void (async () => {
+      const { data, error } = await db
+        .profiles()
+        .select("id, full_name")
+        .eq("role", "client")
+        .order("full_name");
+      if (cancelled) return;
+      if (!error && data) {
+        setClients(data as Array<{ id: string; full_name: string }>);
+        if (data[0]) setTargetClientId((data[0] as { id: string }).id);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [user, profile?.role, session, demoAuthActive]);
 
   const next = () => setStep((s) => Math.min(s + 1, STEPS.length - 1));
@@ -51,6 +71,7 @@ export function ClaimsIntakePage() {
       toast.success("Claim intake saved — your broker will follow up (demo).");
       setStep(0);
       setForm({ policyNumber: "", when: "", where: "", description: "", contactPhone: "", thirdParties: "" });
+      setIncidentPin(null);
       return;
     }
     const { error } = await db.claimIntakes().insert({
@@ -58,7 +79,7 @@ export function ClaimsIntakePage() {
       created_by: user.id,
       policy_number: form.policyNumber || null,
       incident_at: form.when ? new Date(form.when).toISOString() : null,
-      location: form.where || null,
+      location: buildStoredLocation(form.where, incidentPin),
       description: form.description || null,
       third_parties: form.thirdParties || null,
       status: "submitted",
@@ -70,6 +91,7 @@ export function ClaimsIntakePage() {
     toast.success("Claim intake submitted.");
     setStep(0);
     setForm({ policyNumber: "", when: "", where: "", description: "", contactPhone: "", thirdParties: "" });
+    setIncidentPin(null);
     await db.portalNotifications().insert({
       user_id: cid,
       kind: "system",
@@ -151,6 +173,64 @@ export function ClaimsIntakePage() {
               <span className="mb-1.5 block text-sm font-semibold text-surface-foreground">Where?</span>
               <input className={field} value={form.where} onChange={(e) => setForm({ ...form, where: e.target.value })} placeholder="City, street, landmark" />
             </label>
+
+            <div className="space-y-3">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="flex items-center gap-2 text-sm font-semibold text-surface-foreground">
+                  <MapPin className="h-4 w-4 text-primary-600 dark:text-primary-400" aria-hidden />
+                  Pin on map
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-surface-foreground hover:bg-muted/80 dark:border-border"
+                    onClick={() => {
+                      if (!navigator.geolocation) {
+                        toast.error("Location is not available in this browser.");
+                        return;
+                      }
+                      navigator.geolocation.getCurrentPosition(
+                        (pos) => {
+                          setIncidentPin({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+                          toast.success("Pin placed from your location.");
+                        },
+                        () => toast.error("Could not read your location — try clicking the map instead."),
+                        { enableHighAccuracy: true, timeout: 12_000 },
+                      );
+                    }}
+                  >
+                    <Crosshair className="h-3.5 w-3.5" aria-hidden />
+                    Use my location
+                  </button>
+                  {incidentPin && (
+                    <button
+                      type="button"
+                      className="rounded-lg border border-border px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:bg-muted/80 dark:border-border"
+                      onClick={() => setIncidentPin(null)}
+                    >
+                      Clear pin
+                    </button>
+                  )}
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Click the map to drop a pin, drag it to adjust, or use your device location. OpenStreetMap tiles — no API key required.
+              </p>
+              <Suspense
+                fallback={
+                  <div className="flex h-[260px] items-center justify-center rounded-xl border border-dashed border-border bg-muted/30 text-sm text-muted-foreground">
+                    Loading map…
+                  </div>
+                }
+              >
+                <IncidentLocationMap value={incidentPin} onChange={setIncidentPin} />
+              </Suspense>
+              {incidentPin && (
+                <p className="text-xs font-mono text-muted-foreground">
+                  Coordinates: {incidentPin.lat.toFixed(5)}, {incidentPin.lng.toFixed(5)}
+                </p>
+              )}
+            </div>
           </div>
         )}
 
@@ -191,7 +271,8 @@ export function ClaimsIntakePage() {
                 <span className="font-medium text-surface-foreground">Policy:</span> {form.policyNumber || "—"}
               </li>
               <li>
-                <span className="font-medium text-surface-foreground">When / where:</span> {form.when || "—"} · {form.where || "—"}
+                <span className="font-medium text-surface-foreground">When / where:</span> {form.when || "—"} ·{" "}
+                {buildStoredLocation(form.where, incidentPin) || "—"}
               </li>
               <li>
                 <span className="font-medium text-surface-foreground">Contact:</span> {form.contactPhone || "—"}

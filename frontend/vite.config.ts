@@ -27,6 +27,7 @@ export default defineConfig({
           "vendor-charts": ["recharts"],
           "vendor-pdf": ["jspdf", "jspdf-autotable"],
           "vendor-supabase": ["@supabase/supabase-js"],
+          "vendor-leaflet": ["leaflet", "react-leaflet"],
         },
       },
     },

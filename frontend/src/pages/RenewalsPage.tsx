@@ -78,7 +78,10 @@ export function RenewalsPage() {
 
     const ids = (policies as Policy[]).map((p) => p.id);
     const { data: prefs } = await db.renewalPreferences().select("*").in("policy_id", ids);
-    const prefByPolicy = new Map((prefs ?? []).map((r: { policy_id: string; remind_email: boolean; remind_sms: boolean; remind_whatsapp: boolean }) => [r.policy_id, r]));
+    type PrefRow = { policy_id: string; remind_email: boolean; remind_sms: boolean; remind_whatsapp: boolean };
+    const prefByPolicy = new Map<string, PrefRow>(
+      ((prefs ?? []) as PrefRow[]).map((r) => [r.policy_id, r]),
+    );
 
     const next: Row[] = (policies as Policy[]).map((p) => {
       const pr = prefByPolicy.get(p.id);

@@ -394,6 +394,27 @@ export function HomePage() {
                   <MapPin className="h-4 w-4 shrink-0 mt-0.5" />
                   <span>Port Louis, Mauritius</span>
                 </div>
+                <div className="mt-5 overflow-hidden rounded-xl border border-primary-800/80 shadow-lg shadow-black/20">
+                  <iframe
+                    title="Office location — Port Louis on OpenStreetMap"
+                    className="h-44 w-full border-0"
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    src="https://www.openstreetmap.org/export/embed.html?bbox=57.482,-20.175,57.521,-20.142&layer=mapnik&marker=-20.1619,57.5014"
+                  />
+                  <div className="border-t border-primary-800/80 bg-primary-900/50 px-3 py-2 text-center text-[11px] text-primary-300/95">
+                    <a
+                      href="https://www.openstreetmap.org/?mlat=-20.1619&mlon=57.5014#map=16/-20.1619/57.5014"
+                      className="font-medium text-accent-400 hover:text-accent-300"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Open full map
+                    </a>
+                    <span className="text-primary-500"> · </span>
+                    <span className="text-primary-400">© OpenStreetMap contributors</span>
+                  </div>
+                </div>
                 <div className="flex items-center gap-2">
                   <Globe className="h-4 w-4 shrink-0" />
                   <span>{WEBSITE_DOMAIN}</span>
