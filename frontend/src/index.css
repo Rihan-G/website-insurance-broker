@@ -72,24 +72,30 @@ body {
 
 /* Dark theme tokens — complements @theme defaults */
 .dark {
-  --color-background: #0a0f18;
-  --color-surface: #121a28;
-  --color-surface-foreground: #e8f0f7;
-  --color-muted: #1e293b;
-  /* Brighter body copy on navy surfaces (readability vs muted slate) */
-  --color-muted-foreground: #b8c7d9;
-  --color-border: #3d4f66;
+  --color-background: #0a1018;
+  --color-surface: #131c29;
+  /* Brighter default copy on navy (WCAG-friendly on typical surfaces) */
+  --color-surface-foreground: #f1f6fc;
+  --color-muted: #232f42;
+  /* Secondary / helper text — was #b8c7d9; lift for legibility */
+  --color-muted-foreground: #c9d9eb;
+  --color-border: #455878;
   --color-ring: #38bdf8;
 
+  /*
+   * Primary scale in dark: low steps must stay dark for fills that use
+   * primary-50/950, but primary-100–400 are also used as *text* via
+   * dark:text-primary-100|200|300 — those need to read as light ink.
+   */
   --color-primary-50: #0f1729;
-  --color-primary-100: #152238;
-  --color-primary-200: #1e3a5f;
-  --color-primary-300: #5ab0e6;
-  --color-primary-400: #7cc4f0;
+  --color-primary-100: #d6ebf8;
+  --color-primary-200: #b4daf5;
+  --color-primary-300: #8cc8f0;
+  --color-primary-400: #a3daf9;
   --color-primary-500: #38bdf8;
   --color-primary-600: #0ea5e9;
   --color-primary-700: #7dd3fc;
-  --color-primary-900: #e0f2fe;
+  --color-primary-900: #eaf6ff;
 
   --color-accent-50: #052e16;
   --color-accent-600: #4ade80;
@@ -107,7 +113,7 @@ body {
 .dark input::placeholder,
 .dark textarea::placeholder {
   color: var(--color-muted-foreground);
-  opacity: 0.72;
+  opacity: 0.82;
 }
 
 /* Transitions: avoid `all` — specify properties (faster, clearer paint boundaries) */

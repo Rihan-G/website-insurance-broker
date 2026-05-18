@@ -4,7 +4,8 @@ import {
   LayoutDashboard, FileText, Upload, Users, Settings, LogOut, Menu, X,
   ShieldCheck, KeyRound, ClipboardList, MessageSquare, CreditCard,
   Calculator, BarChart3, Bell, MessageCircle, Mic, Shield, ChevronDown,
-  Globe, Home, RefreshCw, Award, Calendar, Search,
+  Globe, Home, RefreshCw, Award, Calendar, Search, CalendarClock, FileWarning,
+  MessagesSquare, BellRing, ListTodo,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useAutoLogout } from "../hooks/useAutoLogout";
@@ -52,6 +53,16 @@ const navGroups: Array<{ label: string; items: NavItem[] }> = [
     ],
   },
   {
+    label: "Care",
+    items: [
+      { name: "renewals", to: "/dashboard/renewals", icon: CalendarClock },
+      { name: "claims", to: "/dashboard/claims", icon: FileWarning },
+      { name: "secure-messages", to: "/dashboard/secure-messages", icon: MessagesSquare },
+      { name: "notifications", to: "/dashboard/notifications", icon: BellRing },
+      { name: "tasks", to: "/dashboard/tasks", icon: ListTodo },
+    ],
+  },
+  {
     label: "Admin",
     items: [
       { name: "review", to: "/dashboard/review", icon: ClipboardList, roles: ["admin", "broker"] },
@@ -90,6 +101,11 @@ const navLabels: Record<string, string> = {
   "mid-term": "Mid-Term Adjust.",
   inbox: "Inbox",
   payments: "Payments",
+  renewals: "Renewals",
+  claims: "Claims intake",
+  "secure-messages": "Secure messages",
+  notifications: "Notifications",
+  tasks: "Tasks",
   whatsapp: "WhatsApp",
   review: "Doc Review",
   analytics: "Analytics",

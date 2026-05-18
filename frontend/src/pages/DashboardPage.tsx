@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import type { ComponentType } from "react";
 import {
   Users,
@@ -10,6 +11,11 @@ import {
   ArrowDownRight,
   ShieldCheck,
   ClipboardCheck,
+  CalendarClock,
+  FileWarning,
+  MessagesSquare,
+  BellRing,
+  ListTodo,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { DOCUMENT_STATUS_BADGE_CLASS, labelFromMime } from "../lib/documentsDisplay";
@@ -314,6 +320,35 @@ export function DashboardPage() {
           <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-accent-600 dark:text-accent-400" aria-hidden />
           {demoAuthActive ? "Demo session" : "Live data"}
         </span>
+      </div>
+
+      <div className="dashboard-panel rounded-2xl p-5">
+        <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Workflow shortcuts</p>
+        <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+          {(
+            [
+              { to: "/dashboard/renewals", label: "Renewals", hint: "Runway & reminders", Icon: CalendarClock },
+              { to: "/dashboard/claims", label: "Claims", hint: "FNOL wizard", Icon: FileWarning },
+              { to: "/dashboard/secure-messages", label: "Secure chat", hint: "Policy threads", Icon: MessagesSquare },
+              { to: "/dashboard/notifications", label: "Alerts", hint: "Activity feed", Icon: BellRing },
+              { to: "/dashboard/tasks", label: "Tasks", hint: "SLAs & follow-ups", Icon: ListTodo },
+            ] as const
+          ).map(({ to, label, hint, Icon }) => (
+            <Link
+              key={to}
+              to={to}
+              className="card-hover group flex gap-3 rounded-xl border border-border/90 bg-surface p-4 shadow-sm dark:border-border"
+            >
+              <div className="rounded-lg bg-primary-50 p-2 text-primary-700 dark:bg-primary-950/50 dark:text-primary-300">
+                <Icon className="h-5 w-5" aria-hidden />
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm font-bold text-surface-foreground group-hover:text-primary-700 dark:group-hover:text-primary-300">{label}</p>
+                <p className="text-xs text-muted-foreground">{hint}</p>
+              </div>
+            </Link>
+          ))}
+        </div>
       </div>
 
       <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">

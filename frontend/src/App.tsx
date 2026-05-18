@@ -33,6 +33,11 @@ import { CapacityPage } from "./pages/CapacityPage";
 import { HolidayCalendarPage } from "./pages/HolidayCalendarPage";
 import { CommissionPage } from "./pages/CommissionPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
+import { RenewalsPage } from "./pages/RenewalsPage";
+import { ClaimsIntakePage } from "./pages/ClaimsIntakePage";
+import { SecureMessagesPage } from "./pages/SecureMessagesPage";
+import { NotificationsPage } from "./pages/NotificationsPage";
+import { TasksPage } from "./pages/TasksPage";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -96,6 +101,11 @@ export default function App() {
         {/* Phase 3 – Client & Payments */}
         <Route path="inbox" element={<InboxPage />} />
         <Route path="payments" element={<PaymentsPage />} />
+        <Route path="renewals" element={<RenewalsPage />} />
+        <Route path="claims" element={<ClaimsIntakePage />} />
+        <Route path="secure-messages" element={<SecureMessagesPage />} />
+        <Route path="notifications" element={<NotificationsPage />} />
+        <Route path="tasks" element={<TasksPage />} />
 
         {/* Phase 4 – Advanced */}
         <Route path="quotes" element={<QuoteCalculatorPage />} />

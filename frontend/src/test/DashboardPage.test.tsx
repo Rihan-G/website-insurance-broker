@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import { describe, it, expect, vi } from "vitest";
 import { CurrencyProvider } from "../context/CurrencyContext";
 import { DashboardPage } from "../pages/DashboardPage";
@@ -20,9 +21,11 @@ vi.mock("../context/AuthContext", () => ({
 
 function renderDashboard() {
   return render(
-    <CurrencyProvider>
-      <DashboardPage />
-    </CurrencyProvider>,
+    <MemoryRouter>
+      <CurrencyProvider>
+        <DashboardPage />
+      </CurrencyProvider>
+    </MemoryRouter>,
   );
 }
 
