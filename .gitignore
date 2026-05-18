@@ -2,6 +2,8 @@ node_modules
 dist
 .env
 .env.local
+.env.portal-client
+.env.portal-staff
 *.log
 .DS_Store
 coverage

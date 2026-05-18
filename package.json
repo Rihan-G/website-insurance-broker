@@ -7,6 +7,8 @@
   "scripts": {
     "dev": "pnpm --filter frontend dev",
     "build": "pnpm --filter frontend build",
+    "build:portal-client": "pnpm --filter frontend build:portal-client",
+    "build:portal-staff": "pnpm --filter frontend build:portal-staff",
     "lint": "pnpm --filter frontend lint",
     "test": "pnpm --filter frontend test",
     "preview": "pnpm --filter frontend preview"

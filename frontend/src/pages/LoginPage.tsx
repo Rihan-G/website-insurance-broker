@@ -4,6 +4,7 @@ import { ShieldCheck, Eye, EyeOff, Lock, CheckCircle, Sparkles, AlertTriangle } 
 import { useAuth } from "../context/AuthContext";
 import { DEMO_ACCOUNTS } from "../lib/demoAuth";
 import { COMPANY_NAME_SHORT } from "../lib/branding";
+import { getPortalFlavor, staffPortalBaseUrl } from "../lib/portalFlavor";
 import { ParticleField } from "../components/ParticleField";
 import { ThemeToggle } from "../components/ThemeToggle";
 
@@ -25,6 +26,8 @@ export function LoginPage() {
   const [loading, setLoading] = useState(false);
   const { signIn, signUp, demoAuthAvailable } = useAuth();
   const navigate = useNavigate();
+  const staffBase = staffPortalBaseUrl();
+  const adminHref = getPortalFlavor() === "client" && staffBase ? `${staffBase}/admin` : "/admin";
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -237,12 +240,22 @@ export function LoginPage() {
 
             {!isSignUp && import.meta.env.VITE_SHOW_STAFF_LOGIN_LINK !== "false" && (
               <p className="mt-5 text-center text-sm text-muted-foreground">
-                <Link
-                  to="/admin"
-                  className="font-medium text-primary-600 dark:text-primary-400 hover:underline underline-offset-2"
-                >
-                  Administrator sign-in
-                </Link>
+                {adminHref.startsWith("http") ? (
+                  <a
+                    href={adminHref}
+                    className="font-medium text-primary-600 dark:text-primary-400 hover:underline underline-offset-2"
+                    rel="noopener noreferrer"
+                  >
+                    Administrator sign-in
+                  </a>
+                ) : (
+                  <Link
+                    to={adminHref}
+                    className="font-medium text-primary-600 dark:text-primary-400 hover:underline underline-offset-2"
+                  >
+                    Administrator sign-in
+                  </Link>
+                )}
               </p>
             )}
 

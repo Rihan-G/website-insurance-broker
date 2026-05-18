@@ -18,9 +18,19 @@ export const STAFF_DASHBOARD_SEGMENTS = new Set([
   "broker-client-site",
 ]);
 
+/** Segments that belong on the client portal host when using a split deploy. */
+export const CLIENT_ONLY_DASHBOARD_SEGMENTS = new Set(["my-policies"]);
+
 /** True when `pathname` is under `/dashboard/…` and the segment is staff-only. */
 export function isStaffDashboardPath(pathname: string): boolean {
   const m = pathname.match(/^\/dashboard\/([^/?]+)/);
   const seg = m?.[1];
   return Boolean(seg && STAFF_DASHBOARD_SEGMENTS.has(seg));
+}
+
+/** True for routes like `/dashboard/my-policies` that should open on the client portal host. */
+export function isClientOnlyDashboardPath(pathname: string): boolean {
+  const m = pathname.match(/^\/dashboard\/([^/?]+)/);
+  const seg = m?.[1];
+  return Boolean(seg && CLIENT_ONLY_DASHBOARD_SEGMENTS.has(seg));
 }

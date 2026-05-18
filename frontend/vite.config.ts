@@ -11,12 +11,16 @@ const base =
       : `${ghPagesBase}/`
     : "/";
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   base,
   plugins: [react(), tailwindcss()],
   server: {
     port: 5173,
     host: true,
+  },
+  define: {
+    ...(mode === "portal-client" ? { "import.meta.env.VITE_PORTAL_FLAVOR": JSON.stringify("client") } : {}),
+    ...(mode === "portal-staff" ? { "import.meta.env.VITE_PORTAL_FLAVOR": JSON.stringify("staff") } : {}),
   },
   build: {
     chunkSizeWarningLimit: 800,
@@ -32,4 +36,4 @@ export default defineConfig({
       },
     },
   },
-});
+}));

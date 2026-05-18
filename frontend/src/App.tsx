@@ -38,6 +38,17 @@ import { ClaimsIntakePage } from "./pages/ClaimsIntakePage";
 import { SecureMessagesPage } from "./pages/SecureMessagesPage";
 import { NotificationsPage } from "./pages/NotificationsPage";
 import { TasksPage } from "./pages/TasksPage";
+import { CrossPortalNavigate } from "./components/CrossPortalNavigate";
+import { getPortalFlavor, staffPortalBaseUrl } from "./lib/portalFlavor";
+
+function AdminPortalEntry() {
+  if (getPortalFlavor() === "client") {
+    const staff = staffPortalBaseUrl();
+    if (staff) return <CrossPortalNavigate href={`${staff}/admin`} />;
+    return <Navigate to="/login" replace />;
+  }
+  return <AdminLoginPage />;
+}
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -56,7 +67,7 @@ export default function App() {
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/admin" element={<AdminLoginPage />} />
+      <Route path="/admin" element={<AdminPortalEntry />} />
       <Route path="/admin/login" element={<Navigate to="/admin" replace />} />
       <Route
         path="/dashboard"

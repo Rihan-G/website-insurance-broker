@@ -13,9 +13,10 @@ import { useTranslation } from "react-i18next";
 import { ParticleField } from "../components/ParticleField";
 import { ThemeToggle } from "../components/ThemeToggle";
 import { CommandPalette } from "../components/CommandPalette";
-import { ClientStaffRouteSentinel } from "../components/ClientStaffRouteSentinel";
+import { DashboardAccessSentinel } from "../components/DashboardAccessSentinel";
 import { CurrencySwitcher } from "../components/CurrencySwitcher";
 import { COMPANY_NAME_SHORT, PORTAL_HEADING } from "../lib/branding";
+import { getPortalFlavor } from "../lib/portalFlavor";
 import { supabase } from "../lib/supabase";
 import "../lib/i18n";
 
@@ -61,7 +62,7 @@ const navGroups: Array<{ label: string; items: NavItem[] }> = [
       { name: "claims", to: "/dashboard/claims", icon: FileWarning },
       { name: "secure-messages", to: "/dashboard/secure-messages", icon: MessagesSquare },
       { name: "notifications", to: "/dashboard/notifications", icon: BellRing },
-      { name: "tasks", to: "/dashboard/tasks", icon: ListTodo },
+      { name: "tasks", to: "/dashboard/tasks", icon: ListTodo, roles: ["admin", "broker"] },
     ],
   },
   {
@@ -177,8 +178,14 @@ export function AppLayout() {
   const visibleGroups = navGroups.map((group) => ({
     ...group,
     items: group.items.filter((item) => {
+      const shell = getPortalFlavor();
+      if (shell === "client") {
+        if (item.roles?.length && !item.roles.includes("client")) return false;
+      } else if (shell === "staff") {
+        if (item.roles?.length === 1 && item.roles[0] === "client") return false;
+      }
       if (!item.roles) return true;
-      return profile?.role && item.roles.includes(profile.role);
+      return profile?.role ? item.roles.includes(profile.role) : false;
     }),
   })).filter((group) => group.items.length > 0);
 
@@ -346,9 +353,9 @@ export function AppLayout() {
           tabIndex={-1}
           className="flex-1 overflow-y-auto p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] lg:p-8 lg:pb-[max(2rem,env(safe-area-inset-bottom))] outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
         >
-          <ClientStaffRouteSentinel>
+          <DashboardAccessSentinel>
             <Outlet />
-          </ClientStaffRouteSentinel>
+          </DashboardAccessSentinel>
         </main>
       </div>
     </div>

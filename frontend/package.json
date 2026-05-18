@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:portal-client": "tsc -b && vite build --mode portal-client",
+    "build:portal-staff": "tsc -b && vite build --mode portal-staff",
     "type-check": "tsc -b",
     "preview": "vite preview",
     "lint": "eslint . && tsc --noEmit",

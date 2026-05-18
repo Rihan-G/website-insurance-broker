@@ -1,4 +1,7 @@
 /** Flat navigation for command palette — keep in sync with `App.tsx` routes and `RoleGuard` rules. */
+import type { PortalFlavor } from "./portalFlavor";
+import { getPortalFlavor } from "./portalFlavor";
+
 export type AppRole = "admin" | "broker" | "client";
 
 export interface QuickNavItem {
@@ -26,7 +29,7 @@ export const QUICK_NAV_ITEMS: QuickNavItem[] = [
   { id: "claims", label: "Claims intake", to: "/dashboard/claims", keywords: "fnol loss incident first notice" },
   { id: "secure-messages", label: "Secure messages", to: "/dashboard/secure-messages", keywords: "encrypted threads chat" },
   { id: "notifications", label: "Notifications", to: "/dashboard/notifications", keywords: "alerts activity feed" },
-  { id: "tasks", label: "Tasks", to: "/dashboard/tasks", keywords: "sla follow up todo broker" },
+  { id: "tasks", label: "Tasks", to: "/dashboard/tasks", keywords: "sla follow up todo broker", roles: ["admin", "broker"] },
   { id: "whatsapp", label: "WhatsApp", to: "/dashboard/whatsapp", keywords: "templates meta", roles: ["admin", "broker"] },
   { id: "review", label: "Document Review", to: "/dashboard/review", keywords: "ocr approve", roles: ["admin", "broker"] },
   { id: "analytics", label: "Analytics", to: "/dashboard/analytics", keywords: "charts reports", roles: ["admin", "broker"] },
@@ -41,9 +44,23 @@ export const QUICK_NAV_ITEMS: QuickNavItem[] = [
   { id: "settings", label: "Settings", to: "/dashboard/settings", keywords: "profile account" },
 ];
 
+function quickNavItemAllowedForShell(item: QuickNavItem, role: AppRole, shell: PortalFlavor): boolean {
+  if (shell === "client") {
+    if (!item.roles) return true;
+    return item.roles.includes("client");
+  }
+  if (shell === "staff") {
+    if (!item.roles) return true;
+    return item.roles.some((r) => r === "admin" || r === "broker");
+  }
+  if (!item.roles) return true;
+  return item.roles.includes(role);
+}
+
 export function quickNavForRole(role: AppRole | undefined, query: string): QuickNavItem[] {
   const r = role ?? "client";
-  const allowed = QUICK_NAV_ITEMS.filter((item) => !item.roles || item.roles.includes(r));
+  const shell = getPortalFlavor();
+  const allowed = QUICK_NAV_ITEMS.filter((item) => quickNavItemAllowedForShell(item, r, shell));
   const q = query.trim().toLowerCase();
   if (!q) return allowed;
   return allowed.filter((item) => {
