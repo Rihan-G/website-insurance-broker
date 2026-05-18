@@ -44,10 +44,13 @@ jobs:
 
       - name: Build for GitHub Pages
         env:
-          # Project Pages URL: https://<user>.github.io/<repo>/ — must match repository name (fork-friendly).
-          VITE_GH_PAGES_BASE: /${{ github.event.repository.name }}
           VITE_ALLOW_DEMO_LOGIN: "true"
-        run: pnpm build
+        run: |
+          # GitHub Pages project URLs use a lowercase path segment; mixed-case repo names must match.
+          REPO=$(echo "${{ github.event.repository.name }}" | tr '[:upper:]' '[:lower:]')
+          export VITE_GH_PAGES_BASE="/${REPO}"
+          echo "VITE_GH_PAGES_BASE=$VITE_GH_PAGES_BASE"
+          pnpm build
 
       - name: SPA fallback + Jekyll bypass
         run: |

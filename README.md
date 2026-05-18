@@ -43,7 +43,9 @@ This repo deploys the **static frontend** to **GitHub Pages** on every push to `
 
 `https://<user>.github.io/<repo>/`
 
-The **Deploy GitHub Pages** workflow sets `VITE_GH_PAGES_BASE` to `/<repository name>` automatically so forks build with the correct asset path.
+The **Deploy GitHub Pages** workflow runs on **pushes to `main` only**. Merging your feature branch into `main` is what updates the live site; commits that exist only on another branch do not redeploy Pages.
+
+The workflow sets `VITE_GH_PAGES_BASE` to `/<repository name>` (lowercased) so static asset URLs match `https://<user>.github.io/<repo>/`.
 
 ### Demo login on Pages (no Supabase required)
 
@@ -58,8 +60,9 @@ Many screens use **mock data** when demo mode is active; any feature that still 
 
 ### If something fails
 
+- **Site looks old or missing new pages:** the Pages workflow only runs when **`main` is pushed**. Merge your branch into `main` (or push directly to `main`) and wait for the **Deploy GitHub Pages** action to finish green.
 - **404 on refresh:** the workflow copies `index.html` → `404.html`; redeploy from `main`.
-- **Blank page or wrong assets:** confirm the workflow’s `VITE_GH_PAGES_BASE` matches your GitHub repository name (leading slash, e.g. `/my-fork-name`).
+- **Blank page or wrong assets:** confirm the workflow log line `VITE_GH_PAGES_BASE=...` matches your GitHub Pages URL path (repository slug; the workflow lowercases it automatically).
 - **Workflow not listed:** ensure `.github/workflows/deploy-github-pages.yml` exists on the default branch you push.
 
 ## Tech Stack
