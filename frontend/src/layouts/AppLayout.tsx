@@ -71,8 +71,8 @@ const navGroups: Array<{ label: string; items: NavItem[] }> = [
       { name: "review", to: "/dashboard/review", icon: ClipboardList, roles: ["admin", "broker"] },
       { name: "analytics", to: "/dashboard/analytics", icon: BarChart3, roles: ["admin", "broker"] },
       { name: "commissions", to: "/dashboard/commissions", icon: Award, roles: ["admin", "broker"] },
-      { name: "capacity", to: "/dashboard/capacity", icon: Users, roles: ["admin"] },
-      { name: "audit", to: "/dashboard/audit", icon: Shield, roles: ["admin"] },
+      { name: "capacity", to: "/dashboard/capacity", icon: Users, roles: ["admin", "broker"] },
+      { name: "audit", to: "/dashboard/audit", icon: Shield, roles: ["admin", "broker"] },
     ],
   },
   {
@@ -311,7 +311,7 @@ export function AppLayout() {
         </div>
       </aside>
 
-      <div className="flex flex-1 flex-col overflow-hidden">
+      <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
         {/* Top header — glass effect */}
         <header className="flex h-16 items-center gap-4 border-b border-border/70 bg-white/85 px-6 shadow-[0_1px_0_rgba(255,255,255,0.65)_inset,0_8px_28px_-16px_rgba(3,105,161,0.12)] backdrop-blur-xl lg:px-8 dark:border-border dark:bg-surface/75 dark:shadow-[0_1px_0_rgba(255,255,255,0.05)_inset,0_12px_40px_-12px_rgba(0,0,0,0.5)]">
           <button
@@ -351,7 +351,7 @@ export function AppLayout() {
           ref={mainRef}
           id="main-content"
           tabIndex={-1}
-          className="flex-1 overflow-y-auto p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] lg:p-8 lg:pb-[max(2rem,env(safe-area-inset-bottom))] outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+          className="min-w-0 flex-1 overflow-x-hidden overflow-y-auto p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] lg:p-8 lg:pb-[max(2rem,env(safe-area-inset-bottom))] outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
         >
           <DashboardAccessSentinel>
             <Outlet />
