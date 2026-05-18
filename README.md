@@ -48,6 +48,19 @@ The **Deploy GitHub Pages** workflow runs on **pushes to `main` only**. Merging 
 
 The workflow sets `VITE_GH_PAGES_BASE` to `/<repository name>` (lowercased) so static asset URLs match `https://<user>.github.io/<repo>/`.
 
+### Sharing: another computer (no your GitHub login)
+
+GitHub treats two URLs differently:
+
+| What you open | Who can use it |
+|---------------|----------------|
+| **`https://github.com/OWNER/REPO`** (the **repository** on GitHub) | **Private repo:** only people signed into GitHub **and** granted access (collaborator / org member). A random PC with no login (or the wrong account) **cannot** open it. **Public repo:** anyone can browse the code. |
+| **`https://OWNER.github.io/REPO/`** (the **live app** from GitHub Pages) | After a successful deploy, **anyone** can open this in a normal browser — **no GitHub account** — as long as the site is **publicly reachable** (usual case for a **public** repository + Pages). Send this link to open the portal from another PC. |
+
+**If someone must open the repo itself on `github.com` from another PC:** either make the repository **public** (**Settings → General → Danger zone → Change repository visibility**), or keep it private and **invite their GitHub user** under **Settings → Collaborators and teams** (they sign in with **their** account).
+
+**If they only need to try the product:** do **not** send them to `github.com/...` unless they need source code. Send the **`https://<user>.github.io/<repo>/`** address (same pattern as above; owner and repo names are lowercase in the host/path).
+
 ### Demo login on Pages (no Supabase required)
 
 The Pages build sets **`VITE_ALLOW_DEMO_LOGIN=true`**, so you can sign in with the **local demo accounts** shown on the login page (same emails/passwords as in `frontend/src/lib/demoAuth.ts`), for example:
@@ -66,6 +79,7 @@ Many screens use **mock data** when demo mode is active; any feature that still 
 - **Blank page or wrong assets:** confirm the workflow log line `VITE_GH_PAGES_BASE=...` matches your GitHub Pages URL path (repository slug; the workflow lowercases it automatically).
 - **No “Pages” in Settings:** use the left sidebar **Code and automation** → **Pages**, or open `https://github.com/OWNER/REPO/settings/pages`. Confirm you are in **repo** Settings (not your user profile) and that you have **Admin** on the repo.
 - **Pages opens but no “Visit site” link:** GitHub often shows the public URL only after the **first successful** **Deploy GitHub Pages** run on **`main`**. Wait for the workflow to finish, then refresh **Pages**. The URL is always `https://<owner>.github.io/<repository>/`. In the app, open **Dashboard → Settings** — **Portal web address** shows the same root URL from your browser (works without that GitHub UI).
+- **Someone else’s PC can’t open `github.com/.../repo`:** the repository is probably **private**. They need a GitHub login with access, or the repo must be **public**, or add them as a **collaborator**. To share only the running app, send the **`https://<user>.github.io/<repo>/`** link instead (see **Sharing: another computer** above).
 
 ## Tech Stack
 
