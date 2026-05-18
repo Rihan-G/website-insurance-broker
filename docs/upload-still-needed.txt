@@ -1,64 +1,29 @@
-Upload feature — what is already in place vs still needed
+Upload checklist — implemented in repo vs operator steps
 ===========================================================
 
-Already in place (code / migrations)
---------------------------------------
-- Browser upload to Supabase Storage bucket "documents" with path pattern:
-  documents/<client_uuid>/<timestamp_random>.<ext>
-- Row insert into public.documents (client_id, file_path, uploaded_by, etc.)
-- RLS: clients restricted to own rows; staff policies for read/insert (see migrations through 00005)
-- Storage RLS: clients limited to own folder; staff broader access (00004)
-- Basic validation: PDF, JPEG, PNG, TIFF; 25 MB max
-- Signed URL helper for private downloads (documentStorage.ts)
-- Upload page requires sign-in; short copy explaining files stay on the user account
+Implemented (this codebase)
+---------------------------
+- Client vs staff upload paths; staff must pick a client before uploading.
+- document_purpose (claim, renewal, id_proof, policy, other) on documents + Documents list + CSV export.
+- New-version upload: optional row to replace; keeps logical file_name and increments version.
+- Client-side magic-byte validation (uploadMagic.ts) plus safe storage file extensions.
+- Parallel upload cap (4) in the browser.
+- Edge Function document-ingest: JWT auth, ownership checks, per-minute rate limit (25 client / 60 staff),
+  server magic-byte verification, SHA-256 (full file if ≤2MB else first 1MB + scope note), optional
+  VIRUS_SCAN_WEBHOOK_URL stub, structured JSON logs, updates ocr_data / ocr_confidence / status.
+- Storage RLS for voice/<user_id>/ on the documents bucket (00007).
+- supabase/config.toml verify_jwt for document-ingest.
 
+You still must run (operations)
+--------------------------------
+1. supabase db push (or apply migrations 00006, 00007) on each environment.
+2. supabase functions deploy document-ingest
+3. Create private bucket "documents" if missing; confirm file_size_limit suits your needs.
+4. Point frontend .env at the real project (not localhost placeholder) for live uploads + ingest.
 
-Still needed — operations / database
-------------------------------------
-1. Apply all Supabase migrations on the live project (including 00004 storage policies and 00005 documents RLS).
-2. Ensure the "documents" bucket exists in the Supabase project and remains private.
-3. Match Supabase anon URL and keys in frontend .env to that project (not localhost placeholder) for real uploads.
-
-
-Still needed — staff (broker/admin) uploading for a client
-------------------------------------------------------------
-4. Upload page always uses the signed-in user as client_id. Brokers must upload into documents/<CLIENT_ID>/...
-   Add a client selector (search profiles where role = client) when profile.role is admin or broker, and pass
-   that UUID as clientId for both storage path and documents.client_id.
-5. Optionally restrict the Upload route to clients only until (4) is done, or show the picker only for staff.
-
-
-Still needed — product / UX ("what is being uploaded")
--------------------------------------------------------
-6. Optional document_type or purpose enum (claim, renewal, ID, policy, other) saved on documents — shown in UI
-   before upload and in Documents list.
-7. Wire "new version" flow: choose existing document, then saveDocumentRecord(..., existingDocumentId). UI does
-   not expose this yet (isNewVersion is never set on UploadPage).
-
-
-Still needed — OCR and processing
----------------------------------
-8. OCR is simulated in the browser (random confidence); results are not written to documents.ocr_data /
-   ocr_confidence in the database.
-9. Replace with a real pipeline: e.g. upload -> Edge Function or worker -> call Document AI / Textract / etc. ->
-   update row status (processing -> reviewed) and store structured ocr_data.
-10. Queue + retry for large files; handle failures and surface errors to the user.
-
-
-Still needed — quality and security
------------------------------------
-11. Server-side file type check (magic bytes), not only MIME from the browser.
-12. Optional virus/malware scanning before promoting file to "available".
-13. Sanitize or replace original file names for storage keys to avoid odd characters and path issues.
-14. Rate limiting per user for uploads (Edge or Supabase config).
-
-
-Still needed — other upload surfaces
---------------------------------------
-15. VoiceUploadPage uses storage paths under voice/<user_id>/ — verify storage policies allow this or align
-    paths with documents/... policies so voice notes do not fail RLS in production.
-
-
-Still needed — observability
-----------------------------
-16. Structured logging or metrics: upload success/fail, size, duration (no raw file content in logs).
+Production hardening (follow-up, not fully automatable here)
+-------------------------------------------------------------
+- Swap document-ingest OCR placeholder for Document AI / Textract / Vision API + durable job queue.
+- True virus scanning integration (respond to webhook, quarantine objects).
+- Column-level or trigger-based UPDATE policies if clients must PATCH metadata without Edge.
+- WAF / CDN rate limits in front of Supabase for abuse beyond per-user ingest limits.

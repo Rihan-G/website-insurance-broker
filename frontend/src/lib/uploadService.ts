@@ -9,6 +9,13 @@ export interface UploadResult {
   mimeType: string;
 }
 
+export type DocumentPurpose = "claim" | "renewal" | "id_proof" | "policy" | "other";
+
+export interface SaveDocumentOptions {
+  existingDocumentId?: string;
+  documentPurpose?: DocumentPurpose;
+}
+
 const ACCEPTED_TYPES = ["application/pdf", "image/jpeg", "image/png", "image/tiff"];
 const MAX_SIZE_MB = 25;
 
@@ -22,15 +29,32 @@ export function validateFile(file: File): string | null {
   return null;
 }
 
+function sanitizeExtension(fileName: string, mimeType: string): string {
+  const raw = (fileName.split(".").pop() ?? "").toLowerCase().replace(/[^a-z0-9]/g, "");
+  if (["pdf", "jpg", "jpeg", "png", "tif", "tiff"].includes(raw)) {
+    if (raw === "jpg" || raw === "jpeg") return "jpeg";
+    if (raw === "tif" || raw === "tiff") return "tiff";
+    return raw;
+  }
+  if (mimeType.includes("pdf")) return "pdf";
+  if (mimeType.includes("jpeg") || mimeType.includes("jpg")) return "jpeg";
+  if (mimeType.includes("png")) return "png";
+  if (mimeType.includes("tiff") || mimeType.includes("tif")) return "tiff";
+  return "bin";
+}
+
 export async function uploadDocument(
   file: File,
   clientId: string,
   onProgress?: (pct: number) => void
 ): Promise<UploadResult> {
-  const ext = file.name.split(".").pop();
-  const path = `documents/${clientId}/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
+  const ext = sanitizeExtension(file.name, file.type);
+  const safeRandom =
+    typeof crypto !== "undefined" && "randomUUID" in crypto
+      ? crypto.randomUUID()
+      : Math.random().toString(36).slice(2);
+  const path = `documents/${clientId}/${Date.now()}_${safeRandom}.${ext}`;
 
-  // Supabase Storage doesn't expose granular progress, so we fake a pre/post split
   onProgress?.(10);
 
   const { error } = await supabase.storage.from("documents").upload(path, file, {
@@ -42,7 +66,6 @@ export async function uploadDocument(
 
   onProgress?.(100);
 
-  // Bucket is private; use `documentStorage.ts` signed URLs when exposing files to users.
   return { path, url: "", size: file.size, mimeType: file.type };
 }
 
@@ -51,33 +74,38 @@ export async function saveDocumentRecord(
   uploadedBy: string,
   file: File,
   uploadResult: UploadResult,
-  existingDocumentId?: string
-) {
-  if (existingDocumentId) {
-    // New version of an existing document
-    const { data: existing } = await db.documents()
-      .select("version")
-      .eq("id", existingDocumentId)
+  options?: SaveDocumentOptions
+): Promise<{ id: string }> {
+  const purpose = options?.documentPurpose ?? "other";
+
+  if (options?.existingDocumentId) {
+    const { data: existing, error: exErr } = await db.documents()
+      .select("version, file_name")
+      .eq("id", options.existingDocumentId)
       .single();
 
-    const newVersion = ((existing as { version?: number })?.version ?? 1) + 1;
+    if (exErr || !existing) throw new Error("Could not load document to replace.");
+
+    const newVersion = ((existing as { version?: number }).version ?? 1) + 1;
+    const logicalName = (existing as { file_name: string }).file_name;
 
     const { data, error } = await db.documents()
       .insert({
         client_id: clientId,
-        file_name: file.name,
+        file_name: logicalName,
         file_path: uploadResult.path,
         file_size: uploadResult.size,
         mime_type: uploadResult.mimeType,
         status: "uploaded",
         uploaded_by: uploadedBy,
         version: newVersion,
+        document_purpose: purpose,
       })
-      .select()
+      .select("id")
       .single();
 
     if (error) throw new Error((error as { message: string }).message);
-    return data;
+    return { id: (data as { id: string }).id };
   }
 
   const { data, error } = await db.documents()
@@ -89,16 +117,33 @@ export async function saveDocumentRecord(
       mime_type: uploadResult.mimeType,
       status: "uploaded",
       uploaded_by: uploadedBy,
+      document_purpose: purpose,
     })
-    .select()
+    .select("id")
     .single();
 
   if (error) throw new Error((error as { message: string }).message);
-  return data;
+  return { id: (data as { id: string }).id };
+}
+
+export async function listClientDocumentsForReplace(clientId: string): Promise<
+  { id: string; file_name: string; version: number; created_at: string }[]
+> {
+  const { data, error } = await db
+    .documents()
+    .select("id, file_name, version, created_at")
+    .eq("client_id", clientId)
+    .order("file_name", { ascending: true })
+    .order("version", { ascending: false })
+    .limit(100);
+
+  if (error) throw new Error((error as { message: string }).message);
+  return (data ?? []) as { id: string; file_name: string; version: number; created_at: string }[];
 }
 
 export async function getDocumentVersions(originalName: string, clientId: string) {
-  const { data, error } = await db.documents()
+  const { data, error } = await db
+    .documents()
     .select("*")
     .eq("client_id", clientId)
     .eq("file_name", originalName)

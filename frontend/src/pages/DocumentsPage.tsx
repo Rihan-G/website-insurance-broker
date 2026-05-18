@@ -5,6 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import {
   DOCUMENT_STATUS_BADGE_CLASS,
   formatBytes,
+  labelDocumentPurpose,
   labelFromMime,
 } from "../lib/documentsDisplay";
 import { openDocumentInNewTab, triggerDocumentDownload } from "../lib/documentStorage";
@@ -18,6 +19,7 @@ interface DocumentRow {
   fileName: string;
   client: string;
   type: string;
+  purpose: string;
   status: "uploaded" | "processing" | "reviewed" | "approved" | "rejected";
   uploadedAt: string;
   size: string;
@@ -25,12 +27,12 @@ interface DocumentRow {
 }
 
 const mockDocuments: DocumentRow[] = [
-  { id: "1", fileName: "motor_policy_2025.pdf", client: "Marie Dupont", type: "Motor Insurance", status: "approved", uploadedAt: "2025-01-15", size: "2.4 MB", confidence: 98 },
-  { id: "2", fileName: "home_valuation.pdf", client: "Jean-Pierre Ramgoolam", type: "Home Insurance", status: "processing", uploadedAt: "2025-01-15", size: "5.1 MB", confidence: 87 },
-  { id: "3", fileName: "life_application.pdf", client: "Priya Devi", type: "Life Insurance", status: "reviewed", uploadedAt: "2025-01-14", size: "1.8 MB", confidence: 94 },
-  { id: "4", fileName: "health_claim_form.pdf", client: "Ahmed Boolell", type: "Health Insurance", status: "uploaded", uploadedAt: "2025-01-14", size: "3.2 MB", confidence: null },
-  { id: "5", fileName: "travel_docs.pdf", client: "Sophie Chen", type: "Travel Insurance", status: "rejected", uploadedAt: "2025-01-13", size: "892 KB", confidence: 42 },
-  { id: "6", fileName: "renewal_notice.pdf", client: "Ravi Patel", type: "Motor Insurance", status: "approved", uploadedAt: "2025-01-13", size: "1.1 MB", confidence: 96 },
+  { id: "1", fileName: "motor_policy_2025.pdf", client: "Marie Dupont", type: "Motor Insurance", purpose: "Policy", status: "approved", uploadedAt: "2025-01-15", size: "2.4 MB", confidence: 98 },
+  { id: "2", fileName: "home_valuation.pdf", client: "Jean-Pierre Ramgoolam", type: "Home Insurance", purpose: "Other", status: "processing", uploadedAt: "2025-01-15", size: "5.1 MB", confidence: 87 },
+  { id: "3", fileName: "life_application.pdf", client: "Priya Devi", type: "Life Insurance", purpose: "Policy", status: "reviewed", uploadedAt: "2025-01-14", size: "1.8 MB", confidence: 94 },
+  { id: "4", fileName: "health_claim_form.pdf", client: "Ahmed Boolell", type: "Health Insurance", purpose: "Claim", status: "uploaded", uploadedAt: "2025-01-14", size: "3.2 MB", confidence: null },
+  { id: "5", fileName: "travel_docs.pdf", client: "Sophie Chen", type: "Travel Insurance", purpose: "Other", status: "rejected", uploadedAt: "2025-01-13", size: "892 KB", confidence: 42 },
+  { id: "6", fileName: "renewal_notice.pdf", client: "Ravi Patel", type: "Motor Insurance", purpose: "Renewal", status: "approved", uploadedAt: "2025-01-13", size: "1.1 MB", confidence: 96 },
 ];
 
 export function DocumentsPage() {
@@ -61,6 +63,7 @@ export function DocumentsPage() {
           mime_type,
           status,
           ocr_confidence,
+          document_purpose,
           created_at,
           client:profiles!documents_client_id_fkey ( full_name )
         `,
@@ -89,6 +92,7 @@ export function DocumentsPage() {
         mime_type: string;
         status: DocumentRow["status"];
         ocr_confidence: number | null;
+        document_purpose?: string | null;
         created_at: string;
         client: { full_name: string } | null;
       };
@@ -100,6 +104,7 @@ export function DocumentsPage() {
           fileName: r.file_name,
           client: profile?.role === "client" ? "You" : (r.client?.full_name ?? "Client"),
           type: labelFromMime(r.mime_type),
+          purpose: labelDocumentPurpose(r.document_purpose),
           status: r.status,
           uploadedAt: r.created_at.slice(0, 10),
           size: formatBytes(r.file_size),
@@ -121,7 +126,8 @@ export function DocumentsPage() {
       rows.filter((doc) => {
         const matchesSearch =
           doc.fileName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          doc.client.toLowerCase().includes(searchTerm.toLowerCase());
+          doc.client.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          doc.purpose.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesStatus = statusFilter === "all" || doc.status === statusFilter;
         return matchesSearch && matchesStatus;
       }),
@@ -139,6 +145,7 @@ export function DocumentsPage() {
         "Storage Path": d.filePath ?? "",
         Client: d.client,
         Type: d.type,
+        Purpose: d.purpose,
         Status: d.status,
         OCR: d.confidence === null ? "Pending" : String(d.confidence),
         Uploaded: d.uploadedAt,
@@ -245,6 +252,7 @@ export function DocumentsPage() {
                 <th className="px-6 py-3 font-semibold text-surface-foreground">Document</th>
                 <th className="px-6 py-3 font-semibold text-surface-foreground">Client</th>
                 <th className="px-6 py-3 font-semibold text-surface-foreground">Type</th>
+                <th className="px-6 py-3 font-semibold text-surface-foreground">Purpose</th>
                 <th className="px-6 py-3 font-semibold text-surface-foreground">Status</th>
                 <th className="px-6 py-3 font-semibold text-surface-foreground">OCR Score</th>
                 <th className="px-6 py-3 font-semibold text-surface-foreground">Date</th>
@@ -267,6 +275,7 @@ export function DocumentsPage() {
                   </td>
                   <td className="px-6 py-4 text-surface-foreground">{doc.client}</td>
                   <td className="px-6 py-4 text-muted-foreground">{doc.type}</td>
+                  <td className="px-6 py-4 text-muted-foreground">{doc.purpose}</td>
                   <td className="px-6 py-4">
                     <span className={`rounded-full px-2.5 py-1 text-xs font-medium capitalize ${DOCUMENT_STATUS_BADGE_CLASS[doc.status]}`}>
                       {doc.status}

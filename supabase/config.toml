@@ -31,3 +31,6 @@ file_size_limit = "25MB"
 # Edge Function: AI key health (secrets AI_API_KEY_BROKER / AI_API_KEY_CLIENT — never expose via Vite)
 [functions.ai-config]
 verify_jwt = true
+
+[functions.document-ingest]
+verify_jwt = true

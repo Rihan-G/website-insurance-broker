@@ -2,6 +2,8 @@ import { db } from "./db";
 
 export type AuditAction =
   | "document.uploaded"
+  | "document.ingest_completed"
+  | "document.ingest_failed"
   | "document.reviewed"
   | "document.approved"
   | "document.rejected"

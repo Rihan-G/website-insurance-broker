@@ -49,6 +49,7 @@ export interface Database {
           ocr_confidence: number | null;
           version: number;
           uploaded_by: string;
+          document_purpose: "claim" | "renewal" | "id_proof" | "policy" | "other";
           created_at: string;
           updated_at: string;
         };
@@ -61,6 +62,7 @@ export interface Database {
           status?: string;
           uploaded_by: string;
           version?: number;
+          document_purpose?: "claim" | "renewal" | "id_proof" | "policy" | "other";
         };
         Update: Partial<{
           status: string;
@@ -68,6 +70,7 @@ export interface Database {
           ocr_confidence: number | null;
           version: number;
           updated_at: string;
+          document_purpose: "claim" | "renewal" | "id_proof" | "policy" | "other";
         }>;
       };
       policies: {

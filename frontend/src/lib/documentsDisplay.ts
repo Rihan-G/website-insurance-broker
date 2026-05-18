@@ -25,3 +25,14 @@ export function labelFromMime(mime: string | null | undefined): string {
   if (sub === "pdf") return "PDF";
   return sub.replace(/-/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase());
 }
+
+export function labelDocumentPurpose(p: string | null | undefined): string {
+  const map: Record<string, string> = {
+    claim: "Claim",
+    renewal: "Renewal",
+    id_proof: "ID / proof",
+    policy: "Policy",
+    other: "Other",
+  };
+  return map[p ?? "other"] ?? "Other";
+}
