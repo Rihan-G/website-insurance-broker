@@ -1,5 +1,15 @@
-import { Bell, Calendar, FileText, Shield } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import { Bell, FileText, Lock, MessageCircle, Shield, Upload } from "lucide-react";
 import { WEBSITE_DOMAIN } from "../../lib/branding";
+
+const clientFeatures: Array<{ icon: LucideIcon; label: string }> = [
+  { icon: Lock, label: "256-bit encrypted sign-in & uploads" },
+  { icon: Upload, label: "Send proof & paperwork in one place" },
+  { icon: Bell, label: "Renewal & premium reminders (opt-in)" },
+  { icon: FileText, label: "Schedules & certificates to download" },
+  { icon: Shield, label: "Guided first steps if you need to claim" },
+  { icon: MessageCircle, label: "WhatsApp or email to your advisor" },
+];
 
 /** Decorative “your portal” preview for the marketing hero (no live data) — written for clients & prospects, not broker ops. */
 export function HomeHeroDashboardMockup() {
@@ -38,15 +48,18 @@ export function HomeHeroDashboardMockup() {
             </div>
           </div>
           <div className="rounded-xl border border-white/10 bg-gradient-to-br from-primary-900/80 to-slate-900/80 p-3">
-            <div className="mb-2 flex items-center justify-between gap-2">
-              <p className="text-[10px] font-bold uppercase tracking-wide text-primary-200">This year</p>
-              <Calendar className="h-4 w-4 text-accent-400" />
-            </div>
-            <div className="flex h-14 items-end gap-1.5">
-              {[35, 55, 40, 70, 50, 85, 60].map((h, i) => (
-                <div key={i} className="flex-1 rounded-t-sm bg-gradient-to-t from-primary-600/40 to-accent-400/80" style={{ height: `${h}%` }} />
+            <p className="text-[10px] font-bold uppercase tracking-wide text-primary-200">What you get in the client area</p>
+            <ul className="mt-2.5 grid grid-cols-1 gap-1.5 sm:grid-cols-2">
+              {clientFeatures.map(({ icon: Icon, label }) => (
+                <li
+                  key={label}
+                  className="flex items-start gap-2 rounded-lg bg-slate-950/35 px-2 py-1.5 ring-1 ring-white/5"
+                >
+                  <Icon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent-400" aria-hidden />
+                  <span className="text-[10px] font-medium leading-snug text-primary-100/95">{label}</span>
+                </li>
               ))}
-            </div>
+            </ul>
             <p className="mt-2 text-[10px] text-primary-200/80">Illustrative preview — not your real data.</p>
           </div>
           <div className="space-y-2 rounded-xl border border-white/10 bg-white/5 p-3">

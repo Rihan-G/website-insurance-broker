@@ -1,4 +1,4 @@
-import { CreditCard, FileWarning, LayoutDashboard, PieChart, Users } from "lucide-react";
+import { Check, FileWarning, LayoutDashboard, Sparkles, Users } from "lucide-react";
 import { AnimatedSection } from "./HomeAnimatedPrimitives";
 
 /** Enterprise-style “SaaS” preview band — static content written for all visitors (clients & staff share this homepage). */
@@ -24,18 +24,33 @@ export function HomePlatformPreview() {
               title: "Renewals & cover in view",
               desc: "See what is active, what is coming due, and what needs a signature—without digging through email threads.",
               tone: "from-primary-600/90 to-primary-800",
+              features: [
+                "Single timeline for renewals and tasks",
+                "Status on signatures & outstanding items",
+                "Motor, home, travel, and business in one login",
+              ],
             },
             {
               icon: FileWarning,
               title: "Guided claims support",
               desc: "Structured first steps after an incident, with space to add photos or documents so nothing important is missed.",
               tone: "from-amber-600/90 to-orange-800",
+              features: [
+                "Checklist-style first steps after a loss",
+                "Slots for photos, police reports, estimates",
+                "Your broker picks up with clear next actions",
+              ],
             },
             {
               icon: Users,
               title: "Advice when it matters",
               desc: "Licensed brokers explain trade-offs in plain language—online tools speed things up, people close the loop.",
               tone: "from-emerald-600/90 to-teal-900",
+              features: [
+                "Plain-language comparisons before you bind",
+                "Phone, email, or WhatsApp (where you opt in)",
+                "Same team from quote through renewal",
+              ],
             },
           ].map((card, i) => (
             <AnimatedSection key={card.title} className={`stagger-${i + 1}`} animation="animate-scale-in">
@@ -48,11 +63,15 @@ export function HomePlatformPreview() {
                     <card.icon className="h-6 w-6 text-primary-600 dark:text-primary-300" aria-hidden />
                   </div>
                   <h3 className="mt-5 text-lg font-bold text-surface-foreground">{card.title}</h3>
-                  <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">{card.desc}</p>
-                  <div className="mt-6 flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-primary-600 dark:text-primary-400">
-                    <PieChart className="h-4 w-4" aria-hidden />
-                    Preview layout
-                  </div>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{card.desc}</p>
+                  <ul className="mt-5 flex-1 space-y-2 border-t border-border/80 pt-4 dark:border-white/10">
+                    {card.features.map((line) => (
+                      <li key={line} className="flex gap-2 text-sm text-surface-foreground/90">
+                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-accent-600 dark:text-accent-400" aria-hidden />
+                        <span>{line}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               </div>
             </AnimatedSection>
@@ -62,33 +81,42 @@ export function HomePlatformPreview() {
         <AnimatedSection className="mt-12" animation="animate-fade-in">
           <div className="relative overflow-hidden rounded-2xl border border-border bg-slate-900 p-6 text-primary-50 shadow-2xl sm:p-8 dark:border-white/10 dark:bg-slate-950">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(56,189,248,0.12),transparent_45%),radial-gradient(circle_at_80%_60%,rgba(74,222,128,0.1),transparent_40%)]" />
-            <div className="relative grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+            <div className="relative grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
               <div>
-                <p className="text-xs font-bold uppercase tracking-widest text-primary-300/90">Payments & peace of mind</p>
-                <p className="mt-2 text-xl font-bold text-white sm:text-2xl">Know what is due—and what is already sorted</p>
+                <p className="text-xs font-bold uppercase tracking-widest text-primary-300/90">Built around you</p>
+                <p className="mt-2 text-xl font-bold text-white sm:text-2xl">Client features you actually use</p>
                 <p className="mt-3 text-sm leading-relaxed text-primary-200/90">
-                  Illustrative snapshot only. In your real account you would see upcoming premiums, confirmations, and gentle reminders—not broker-only accounting views.
+                  No internal ledgers on this page—just the kinds of tools policyholders get once they are onboarded: clarity, reminders, and
+                  a safe place for paperwork.
                 </p>
+                <ul className="mt-5 space-y-2.5 text-sm text-primary-100/95">
+                  {[
+                    "256-bit TLS in the browser; files sent through your private area, not random email threads.",
+                    "Gentle reminders before renewals or instalments so lapses are less likely.",
+                    "Download schedules and certificates whenever you need a copy for the bank or employer.",
+                  ].map((line) => (
+                    <li key={line} className="flex gap-2">
+                      <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-accent-300" aria-hidden />
+                      <span>{line}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
               <div className="rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
                 <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                  <span className="text-xs font-semibold text-primary-100">This month</span>
-                  <CreditCard className="h-5 w-5 text-accent-300" aria-hidden />
+                  <span className="text-xs font-semibold text-primary-100">At a glance</span>
+                  <Sparkles className="h-5 w-5 text-accent-300" aria-hidden />
                 </div>
                 <div className="mt-4 space-y-3">
                   {[
-                    { l: "Confirmed", v: "Paid", chip: "Done" },
-                    { l: "Scheduled", v: "Due soon", chip: "Reminder" },
-                    { l: "Questions?", v: "Message us", chip: "Help" },
+                    { title: "Secure inbox", body: "Uploads land in your file—only you and your broker see them." },
+                    { title: "Clear statuses", body: "See what is waiting on you, the insurer, or your advisor." },
+                    { title: "Payment clarity", body: "Upcoming due dates and confirmations—without firm-wide totals." },
+                    { title: "Human escalation", body: "One tap to message your advisor when something is unclear." },
                   ].map((r) => (
-                    <div key={r.l} className="flex items-center justify-between gap-3 rounded-lg bg-slate-950/50 px-3 py-2 ring-1 ring-white/5">
-                      <div>
-                        <p className="text-[11px] uppercase tracking-wide text-primary-300/90">{r.l}</p>
-                        <p className="text-sm font-bold text-white">{r.v}</p>
-                      </div>
-                      <span className="shrink-0 rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-bold uppercase text-primary-100">
-                        {r.chip}
-                      </span>
+                    <div key={r.title} className="rounded-lg bg-slate-950/50 px-3 py-2.5 ring-1 ring-white/5">
+                      <p className="text-xs font-bold uppercase tracking-wide text-primary-200">{r.title}</p>
+                      <p className="mt-1 text-sm leading-snug text-primary-50/95">{r.body}</p>
                     </div>
                   ))}
                 </div>
