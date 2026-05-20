@@ -1,7 +1,17 @@
-import { Bell, FileText, Shield, TrendingUp } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import { Bell, FileText, Lock, MessageCircle, Shield, Upload } from "lucide-react";
 import { WEBSITE_DOMAIN } from "../../lib/branding";
 
-/** Decorative “portal” frame for the marketing hero (no live data). */
+const clientFeatures: Array<{ icon: LucideIcon; label: string }> = [
+  { icon: Lock, label: "256-bit encrypted sign-in & uploads" },
+  { icon: Upload, label: "Send proof & paperwork in one place" },
+  { icon: Bell, label: "Renewal & premium reminders (opt-in)" },
+  { icon: FileText, label: "Schedules & certificates to download" },
+  { icon: Shield, label: "Guided first steps if you need to claim" },
+  { icon: MessageCircle, label: "WhatsApp or email to your advisor" },
+];
+
+/** Decorative “your portal” preview for the marketing hero (no live data) — written for clients & prospects, not broker ops. */
 export function HomeHeroDashboardMockup() {
   return (
     <div
@@ -20,40 +30,44 @@ export function HomeHeroDashboardMockup() {
         </div>
         <div className="grid gap-3 p-4 sm:p-5">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <p className="text-xs font-bold uppercase tracking-wide text-primary-200/90">Overview</p>
-            <span className="rounded-full bg-accent-500/20 px-2 py-0.5 text-[10px] font-bold uppercase text-accent-300 ring-1 ring-accent-500/30">
-              Live
+            <p className="text-xs font-bold uppercase tracking-wide text-primary-200/90">Your cover</p>
+            <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold uppercase text-emerald-300 ring-1 ring-emerald-500/30">
+              Active
             </span>
           </div>
           <div className="grid grid-cols-2 gap-2 sm:gap-3">
             <div className="rounded-xl border border-white/10 bg-white/5 p-3">
               <p className="text-[10px] font-semibold uppercase tracking-wide text-primary-300">Policies</p>
-              <p className="mt-1 text-xl font-bold text-white">512</p>
-              <p className="text-[10px] text-emerald-300/90">+12 this month</p>
+              <p className="mt-1 text-xl font-bold text-white">2</p>
+              <p className="text-[10px] text-emerald-300/90">Motor & home</p>
             </div>
             <div className="rounded-xl border border-white/10 bg-white/5 p-3">
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-primary-300">Claims queue</p>
-              <p className="mt-1 text-xl font-bold text-white">8</p>
-              <p className="text-[10px] text-amber-200/90">3 due today</p>
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-primary-300">Next renewal</p>
+              <p className="mt-1 text-xl font-bold text-white">Aug</p>
+              <p className="text-[10px] text-primary-200/90">We will remind you</p>
             </div>
           </div>
           <div className="rounded-xl border border-white/10 bg-gradient-to-br from-primary-900/80 to-slate-900/80 p-3">
-            <div className="mb-2 flex items-center justify-between gap-2">
-              <p className="text-[10px] font-bold uppercase tracking-wide text-primary-200">Pipeline</p>
-              <TrendingUp className="h-4 w-4 text-accent-400" />
-            </div>
-            <div className="flex h-16 items-end gap-1.5">
-              {[40, 65, 45, 80, 55, 90, 70].map((h, i) => (
-                <div key={i} className="flex-1 rounded-t-sm bg-gradient-to-t from-primary-600/40 to-accent-400/80" style={{ height: `${h}%` }} />
+            <p className="text-[10px] font-bold uppercase tracking-wide text-primary-200">What you get in the client area</p>
+            <ul className="mt-2.5 grid grid-cols-1 gap-1.5 sm:grid-cols-2">
+              {clientFeatures.map(({ icon: Icon, label }) => (
+                <li
+                  key={label}
+                  className="flex items-start gap-2 rounded-lg bg-slate-950/35 px-2 py-1.5 ring-1 ring-white/5"
+                >
+                  <Icon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent-400" aria-hidden />
+                  <span className="text-[10px] font-medium leading-snug text-primary-100/95">{label}</span>
+                </li>
               ))}
-            </div>
+            </ul>
+            <p className="mt-2 text-[10px] text-primary-200/80">Illustrative preview — not your real data.</p>
           </div>
           <div className="space-y-2 rounded-xl border border-white/10 bg-white/5 p-3">
-            <p className="text-[10px] font-bold uppercase tracking-wide text-primary-200">Today</p>
+            <p className="text-[10px] font-bold uppercase tracking-wide text-primary-200">Updates</p>
             {[
-              { icon: FileText, t: "Motor policy — docs received", s: "Review" },
-              { icon: Shield, t: "Renewal payment confirmed", s: "Done" },
-              { icon: Bell, t: "Client reminder — motor FNOL", s: "Due" },
+              { icon: FileText, t: "Policy schedule uploaded", s: "New" },
+              { icon: Shield, t: "Renewal quote ready to review", s: "Action" },
+              { icon: Bell, t: "Reminder: motor premium due soon", s: "Soon" },
             ].map((row, i) => (
               <div key={i} className="flex items-center gap-2 rounded-lg bg-slate-950/40 px-2 py-2 ring-1 ring-white/5">
                 <row.icon className="h-4 w-4 shrink-0 text-primary-300" />

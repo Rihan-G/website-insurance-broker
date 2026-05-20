@@ -16,6 +16,10 @@ It complements **[PHASES.md](../PHASES.md)**, which is the authoritative **Supab
 | Deploy | Static **GitHub Pages** build (`pnpm build` + workflow); demo login via `VITE_ALLOW_DEMO_LOGIN` |
 | Tests | Vitest + RTL (`frontend/vitest.config.ts`) |
 
+### Homepage and roles
+
+- **`/`** (`HomePage`) is **centralized marketing**: the same public homepage for **clients, brokers, and admins** (trust, services, quick quote, CTAs to sign in). Do not fork it into parallel “staff home” vs “client home” routes unless there is a strong product reason; keep role splits in **`/dashboard/*`** (and portal flavors if you deploy split origins).
+
 Treat **Next.js + shadcn + Framer Motion** as an **optional migration path**, not a prerequisite for shipping value. The highest-impact product move remains **real quotes/leads + staff workflows** on the stack you already have.
 
 ---
