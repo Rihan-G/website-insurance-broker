@@ -68,6 +68,11 @@ Many screens use **mock data** when demo mode is active; any feature that still 
 - **Testing**: Vitest + React Testing Library
 - **Linting**: ESLint with TypeScript support
 
+## Build planning
+
+- **[docs/BUILD_ROADMAP.md](docs/BUILD_ROADMAP.md)** — execution sequencing for marketing depth, design system, quote persistence, SEO, and state management (complements product phases below).
+- **[docs/next-migration/MIGRATION_STRATEGY.md](docs/next-migration/MIGRATION_STRATEGY.md)** — when and how to adopt Next.js, hosting tradeoffs (GitHub Pages vs Vercel), env vars, and App Router folder mapping.
+
 ## Getting Started
 
 ### Prerequisites
