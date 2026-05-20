@@ -34,6 +34,7 @@ import { AnimatedSection, StatCounter } from "./home/HomeAnimatedPrimitives";
 import { HomeQuoteCalculator } from "./home/HomeQuoteCalculator";
 import { HomeMarketingNav } from "./home/HomeMarketingNav";
 import { HomeStickyCta } from "./home/HomeStickyCta";
+import { HomeAssistantTeaser } from "./home/HomeAssistantTeaser";
 import { homeFaqItems } from "./home/homeFaqData";
 import { HomeHeroDashboardMockup } from "./home/HomeHeroDashboardMockup";
 import { HomePlatformPreview } from "./home/HomePlatformPreview";
@@ -52,10 +53,11 @@ export function HomePage() {
   const waveLightFill = resolved === "dark" ? "#111c2f" : "#ffffff";
 
   return (
-    <div className="min-h-screen bg-primary-50 max-lg:pb-[calc(5.75rem+env(safe-area-inset-bottom))] lg:pb-0 dark:bg-background">
+    <div className="min-h-screen bg-primary-50 max-lg:pb-[calc(9.25rem+env(safe-area-inset-bottom))] lg:pb-0 dark:bg-background">
       <ScrollProgress />
       <BackToTop />
       <HomeMarketingNav />
+      <HomeAssistantTeaser />
       <HomeStickyCta />
 
       {/* ═══════════════════════════════════════════════════════════════
