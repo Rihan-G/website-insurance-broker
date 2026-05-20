@@ -1,8 +1,9 @@
 import { lazy, Suspense, useEffect, useState } from "react";
-import { ChevronRight, Crosshair, FileWarning, MapPin, ShieldCheck, Upload, Database } from "lucide-react";
+import { ChevronRight, Crosshair, FileWarning, MapPin, ShieldCheck, Upload, Database, Paperclip, X } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
 import { db } from "../lib/db";
+import { uploadDocument, validateFile } from "../lib/uploadService";
 import type { IncidentPin } from "../types/incidentMap";
 
 const IncidentLocationMap = lazy(async () => {
@@ -34,6 +35,7 @@ export function ClaimsIntakePage() {
     thirdParties: "",
   });
   const [incidentPin, setIncidentPin] = useState<IncidentPin | null>(null);
+  const [evidenceFiles, setEvidenceFiles] = useState<File[]>([]);
 
   useEffect(() => {
     if (!user || demoAuthActive || !session || profile?.role === "client") {
@@ -68,36 +70,88 @@ export function ClaimsIntakePage() {
       return;
     }
     if (demoAuthActive || !session) {
-      toast.success("Claim intake saved — your broker will follow up (demo).");
+      toast.success(
+        evidenceFiles.length
+          ? `Claim intake recorded locally (demo). ${evidenceFiles.length} attachment(s) not uploaded until you use Supabase.`
+          : "Claim intake saved — your broker will follow up (demo).",
+      );
       setStep(0);
       setForm({ policyNumber: "", when: "", where: "", description: "", contactPhone: "", thirdParties: "" });
       setIncidentPin(null);
+      setEvidenceFiles([]);
       return;
     }
-    const { error } = await db.claimIntakes().insert({
-      client_id: cid,
-      created_by: user.id,
-      policy_number: form.policyNumber || null,
-      incident_at: form.when ? new Date(form.when).toISOString() : null,
-      location: buildStoredLocation(form.where, incidentPin),
-      description: form.description || null,
-      third_parties: form.thirdParties || null,
-      status: "submitted",
-    });
-    if (error) {
-      toast.error(error.message);
+
+    for (const file of evidenceFiles) {
+      const bad = validateFile(file);
+      if (bad) {
+        toast.error(bad);
+        return;
+      }
+    }
+
+    const { data: row, error } = await db
+      .claimIntakes()
+      .insert({
+        client_id: cid,
+        created_by: user.id,
+        policy_number: form.policyNumber || null,
+        incident_at: form.when ? new Date(form.when).toISOString() : null,
+        location: buildStoredLocation(form.where, incidentPin),
+        description: form.description || null,
+        third_parties: form.thirdParties || null,
+        status: "submitted",
+      })
+      .select("id")
+      .single();
+
+    if (error || !row) {
+      toast.error((error as { message?: string } | null)?.message ?? "Could not create claim intake.");
       return;
     }
-    toast.success("Claim intake submitted.");
-    setStep(0);
-    setForm({ policyNumber: "", when: "", where: "", description: "", contactPhone: "", thirdParties: "" });
-    setIncidentPin(null);
+
+    const claimId = (row as { id: string }).id;
+
+    try {
+      for (const file of evidenceFiles) {
+        const uploadResult = await uploadDocument(file, cid);
+        const { error: attErr } = await db.claimIntakeAttachments().insert({
+          claim_intake_id: claimId,
+          storage_object_path: uploadResult.path,
+          file_name: file.name,
+          file_size: uploadResult.size,
+          mime_type: uploadResult.mimeType,
+          uploaded_by: user.id,
+        });
+        if (attErr) {
+          toast.error((attErr as { message?: string }).message ?? "Uploaded intake but failed to register an attachment.");
+          return;
+        }
+      }
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to upload evidence files.");
+      return;
+    }
+
+    const policyRef = form.policyNumber;
+
+    toast.success(
+      evidenceFiles.length
+        ? `Claim intake submitted with ${evidenceFiles.length} file(s).`
+        : "Claim intake submitted.",
+    );
+
     await db.portalNotifications().insert({
       user_id: cid,
       kind: "system",
       title: "Claim intake received",
-      body: `A claim intake was submitted for policy ref ${form.policyNumber || "(none)"}.`,
+      body: `A claim intake was submitted for policy ref ${policyRef || "(none)"}.`,
     });
+
+    setStep(0);
+    setForm({ policyNumber: "", when: "", where: "", description: "", contactPhone: "", thirdParties: "" });
+    setIncidentPin(null);
+    setEvidenceFiles([]);
   };
 
   const field =
@@ -110,7 +164,8 @@ export function ClaimsIntakePage() {
           <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary-600/90 dark:text-primary-400/90">First notice of loss</p>
           <h2 className="mt-1 text-2xl font-bold tracking-tight text-surface-foreground sm:text-3xl">Claims intake</h2>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-            Submits to <code className="text-xs">claim_intakes</code> when signed in with Supabase. Demo mode keeps everything local.
+            Submits to <code className="text-xs">claim_intakes</code> with optional files in Storage, registered in{" "}
+            <code className="text-xs">claim_intake_attachments</code>, when signed in with Supabase. Demo mode keeps everything local.
           </p>
         </div>
         <span
@@ -253,9 +308,47 @@ export function ClaimsIntakePage() {
               <span className="mb-1.5 block text-sm font-semibold text-surface-foreground">What happened?</span>
               <textarea className={`${field} min-h-[140px]`} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Describe the sequence of events clearly." />
             </label>
-            <div className="rounded-xl border border-dashed border-border bg-muted/30 px-4 py-8 text-center text-sm text-muted-foreground">
-              <Upload className="mx-auto mb-2 h-8 w-8 opacity-60" aria-hidden />
-              Photo / PDF upload would plug into storage here.
+            <div className="rounded-xl border border-border bg-muted/20 p-4">
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                <span className="flex items-center gap-2 text-sm font-semibold text-surface-foreground">
+                  <Paperclip className="h-4 w-4 text-primary-600 dark:text-primary-400" aria-hidden />
+                  Supporting photos / PDF
+                </span>
+                <span className="text-xs text-muted-foreground">Optional · PDF, JPG, PNG, TIFF · max 25MB each</span>
+              </div>
+              <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-dashed border-border bg-surface px-4 py-3 text-sm font-medium text-surface-foreground hover:bg-muted/50">
+                <Upload className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
+                <span>Add files</span>
+                <input
+                  type="file"
+                  className="sr-only"
+                  accept=".pdf,.png,.jpg,.jpeg,.tiff,.tif,application/pdf,image/png,image/jpeg,image/tiff"
+                  multiple
+                  onChange={(e) => {
+                    const list = e.target.files ? Array.from(e.target.files) : [];
+                    e.target.value = "";
+                    if (list.length === 0) return;
+                    setEvidenceFiles((prev) => [...prev, ...list]);
+                  }}
+                />
+              </label>
+              {evidenceFiles.length > 0 && (
+                <ul className="mt-3 space-y-2">
+                  {evidenceFiles.map((f, idx) => (
+                    <li key={`${f.name}-${idx}`} className="flex items-center justify-between gap-2 rounded-lg border border-border/80 bg-surface px-3 py-2 text-sm">
+                      <span className="truncate text-surface-foreground">{f.name}</span>
+                      <button
+                        type="button"
+                        className="shrink-0 rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-surface-foreground"
+                        aria-label={`Remove ${f.name}`}
+                        onClick={() => setEvidenceFiles((prev) => prev.filter((_, i) => i !== idx))}
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           </div>
         )}
@@ -279,6 +372,10 @@ export function ClaimsIntakePage() {
               </li>
               <li>
                 <span className="font-medium text-surface-foreground">Narrative:</span> {form.description ? `${form.description.slice(0, 160)}…` : "—"}
+              </li>
+              <li>
+                <span className="font-medium text-surface-foreground">Attachments:</span>{" "}
+                {evidenceFiles.length === 0 ? "None" : `${evidenceFiles.length} file(s) — ${evidenceFiles.map((f) => f.name).join(", ")}`}
               </li>
             </ul>
           </div>

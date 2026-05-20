@@ -414,6 +414,32 @@ export interface Database {
         };
         Update: Partial<{ status: string }>;
       };
+      claim_intake_attachments: {
+        Row: {
+          id: string;
+          claim_intake_id: string;
+          storage_object_path: string;
+          file_name: string;
+          file_size: number | null;
+          mime_type: string;
+          uploaded_by: string;
+          created_at: string;
+        };
+        Insert: {
+          claim_intake_id: string;
+          storage_object_path: string;
+          file_name: string;
+          file_size?: number | null;
+          mime_type: string;
+          uploaded_by: string;
+        };
+        Update: Partial<{
+          storage_object_path: string;
+          file_name: string;
+          file_size: number | null;
+          mime_type: string;
+        }>;
+      };
       secure_threads: {
         Row: {
           id: string;

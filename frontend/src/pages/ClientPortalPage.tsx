@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { FileText, CreditCard, MessageSquare, RefreshCw, Calendar, CheckCircle, Clock, AlertTriangle, ChevronRight, Download } from "lucide-react";
+import { FileText, CreditCard, MessageSquare, RefreshCw, Calendar, CheckCircle, Clock, AlertTriangle, ChevronRight, Download, FileWarning, FolderOpen } from "lucide-react";
 import { supabase } from "../lib/supabase";
+import { db } from "../lib/db";
 import { db } from "../lib/db";
 import { useAuth } from "../context/AuthContext";
 import { generatePolicyCertificate } from "../lib/pdfService";
@@ -19,14 +20,26 @@ interface Policy {
   status: string;
 }
 
-interface Payment {
+interface ClaimIntakeRow {
   id: string;
-  amount: number;
-  currency: string;
   status: string;
-  description: string | null;
+  policy_number: string | null;
   created_at: string;
-  paid_at: string | null;
+}
+
+interface DocumentRow {
+  id: string;
+  file_name: string;
+  status: string;
+  created_at: string;
+}
+
+interface QuoteRow {
+  id: string;
+  product_type: string;
+  estimated_premium: number | null;
+  status: string;
+  created_at: string;
 }
 
 const statusStyles: Record<string, string> = {
@@ -40,6 +53,9 @@ export function ClientPortalPage() {
   const { user, profile, demoAuthActive } = useAuth();
   const [policies, setPolicies] = useState<Policy[]>([]);
   const [payments, setPayments] = useState<Payment[]>([]);
+  const [claimIntakes, setClaimIntakes] = useState<ClaimIntakeRow[]>([]);
+  const [recentDocs, setRecentDocs] = useState<DocumentRow[]>([]);
+  const [savedQuotes, setSavedQuotes] = useState<QuoteRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [unreadMessages, setUnreadMessages] = useState(0);
 
@@ -47,13 +63,34 @@ export function ClientPortalPage() {
     if (!user) return;
     const fetchAll = async () => {
       setLoading(true);
-      const [{ data: pols }, { data: pays }, { count }] = await Promise.all([
+      const [{ data: pols }, { data: pays }, { count }, { data: claims }, { data: docs }, { data: quotes }] = await Promise.all([
         supabase.from("policies").select("*").eq("client_id", user.id).order("end_date", { ascending: true }),
         db.payments().select("*").eq("client_id", user.id).order("created_at", { ascending: false }).limit(50),
         db.inboxMessages().select("id", { count: "exact", head: true }).eq("recipient_id", user.id).eq("is_read", false),
+        db
+          .claimIntakes()
+          .select("id, status, policy_number, created_at")
+          .eq("client_id", user.id)
+          .order("created_at", { ascending: false })
+          .limit(8),
+        db
+          .documents()
+          .select("id, file_name, status, created_at")
+          .eq("client_id", user.id)
+          .order("created_at", { ascending: false })
+          .limit(8),
+        db
+          .quotes()
+          .select("id, product_type, estimated_premium, status, created_at")
+          .eq("client_id", user.id)
+          .order("created_at", { ascending: false })
+          .limit(8),
       ]);
       setPolicies((pols as Policy[]) ?? []);
       setPayments((pays as Payment[]) ?? []);
+      setClaimIntakes((claims as ClaimIntakeRow[]) ?? []);
+      setRecentDocs((docs as DocumentRow[]) ?? []);
+      setSavedQuotes((quotes as QuoteRow[]) ?? []);
       setUnreadMessages(count ?? 0);
       setLoading(false);
     };
@@ -141,6 +178,101 @@ export function ClientPortalPage() {
         )}
       </div>
 
+      {/* Claims, documents & saved quotes */}
+      <div className="grid gap-4 lg:grid-cols-3">
+        <div className="rounded-xl border border-border bg-surface">
+          <div className="flex items-center justify-between border-b border-border px-4 py-3">
+            <h3 className="font-semibold text-surface-foreground flex items-center gap-2">
+              <FileWarning className="h-4 w-4 text-orange-600 dark:text-orange-400 shrink-0" aria-hidden />
+              Claims
+            </h3>
+            <Link to="/dashboard/claims" className="text-xs text-primary-600 hover:underline dark:text-primary-400">
+              FNOL
+            </Link>
+          </div>
+          {claimIntakes.length === 0 ? (
+            <div className="px-4 py-8 text-center text-sm text-muted-foreground">
+              No claim intakes yet.{" "}
+              <Link to="/dashboard/claims" className="text-primary-600 hover:underline dark:text-primary-400">
+                Submit a claim
+              </Link>
+            </div>
+          ) : (
+            <ul className="divide-y divide-border">
+              {claimIntakes.map((c) => (
+                <li key={c.id} className="px-4 py-3">
+                  <p className="text-sm font-medium text-surface-foreground capitalize">{c.status.replace(/_/g, " ")}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {c.policy_number || "No policy #"} · {format(new Date(c.created_at), "dd MMM yyyy")}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        <div className="rounded-xl border border-border bg-surface">
+          <div className="flex items-center justify-between border-b border-border px-4 py-3">
+            <h3 className="font-semibold text-surface-foreground flex items-center gap-2">
+              <FolderOpen className="h-4 w-4 text-primary-600 dark:text-primary-400 shrink-0" aria-hidden />
+              Documents
+            </h3>
+            <Link to="/dashboard/documents" className="text-xs text-primary-600 hover:underline dark:text-primary-400">
+              View all
+            </Link>
+          </div>
+          {recentDocs.length === 0 ? (
+            <div className="px-4 py-8 text-center text-sm text-muted-foreground">
+              No uploads yet.{" "}
+              <Link to="/dashboard/upload" className="text-primary-600 hover:underline dark:text-primary-400">
+                Upload
+              </Link>
+            </div>
+          ) : (
+            <ul className="divide-y divide-border">
+              {recentDocs.map((d) => (
+                <li key={d.id} className="px-4 py-3 flex items-center justify-between gap-2">
+                  <p className="text-sm font-medium text-surface-foreground truncate">{d.file_name}</p>
+                  <span className="text-xs capitalize text-muted-foreground shrink-0">{d.status}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        <div className="rounded-xl border border-border bg-surface">
+          <div className="flex items-center justify-between border-b border-border px-4 py-3">
+            <h3 className="font-semibold text-surface-foreground flex items-center gap-2">
+              <RefreshCw className="h-4 w-4 text-accent-600 dark:text-accent-400 shrink-0" aria-hidden />
+              Saved quotes
+            </h3>
+            <Link to="/dashboard/quotes" className="text-xs text-primary-600 hover:underline dark:text-primary-400">
+              Calculator
+            </Link>
+          </div>
+          {savedQuotes.length === 0 ? (
+            <div className="px-4 py-8 text-center text-sm text-muted-foreground">
+              No saved quotes.{" "}
+              <Link to="/dashboard/quotes" className="text-primary-600 hover:underline dark:text-primary-400">
+                Run the calculator
+              </Link>
+            </div>
+          ) : (
+            <ul className="divide-y divide-border">
+              {savedQuotes.map((q) => (
+                <li key={q.id} className="px-4 py-3">
+                  <p className="text-sm font-medium text-surface-foreground capitalize">{q.product_type}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {q.estimated_premium != null ? `MUR ${Number(q.estimated_premium).toLocaleString()} est.` : "Estimate —"}{" "}
+                    · {format(new Date(q.created_at), "dd MMM yyyy")}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+
       {/* Expiry alerts */}
       {expiringSoon.length > 0 && (
         <div className="rounded-xl border-2 border-warning-200 bg-warning-50 p-5 dark:border-warning-700/45 dark:bg-warning-950/30">
@@ -169,9 +301,10 @@ export function ClientPortalPage() {
       )}
 
       {/* Quick actions */}
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
         {[
           { label: "Get a Quote", desc: "Motor, Home, Life & more", to: "/dashboard/quotes", icon: RefreshCw, color: "bg-primary-600 hover:bg-primary-700" },
+          { label: "Claims", desc: "Intake & status", to: "/dashboard/claims", icon: FileWarning, color: "bg-orange-600 hover:bg-orange-700" },
           { label: "Inbox", desc: `${unreadMessages} unread`, to: "/dashboard/inbox", icon: MessageSquare, color: "bg-accent-600 hover:bg-accent-700" },
           { label: "Payments", desc: "View & pay invoices", to: "/dashboard/payments", icon: CreditCard, color: "bg-purple-600 hover:bg-purple-700" },
           { label: "Upload Document", desc: "Claims, renewals, ID", to: "/dashboard/upload", icon: FileText, color: "bg-warning-600 hover:bg-warning-700" },

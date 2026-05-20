@@ -89,6 +89,6 @@ Work in **order**: each phase builds on the last. Tick items off in your tracker
 
 - **Live data (non-demo):** Dashboard (staff/client), Clients, Documents (list + CSV), Inbox, Client portal, many phase pages using `db` / `supabase`.
 - **Demo mode:** `demoAuthActive` when session is absent (see `AuthContext` + `demoAuth.ts`).
-- **Upload & files:** `uploadService` uploads to private bucket `documents`; `documentStorage.ts` issues signed URLs for preview/download; run migration **`00004`** on Supabase so bucket + `storage.objects` policies exist.
+- **Upload & files:** `uploadService` uploads to private bucket `documents`; `documentStorage.ts` issues signed URLs for preview/download; run migration **`00004`** on Supabase so bucket + `storage.objects` policies exist. Claim FNOL attachments use the same bucket paths under the client folder; apply **`00010_claim_intake_attachments.sql`** so `claim_intake_attachments` + RLS exist.
 
 When in doubt, complete **Phase 1** before changing UI in later phases so you are not debugging schema and UX at once.

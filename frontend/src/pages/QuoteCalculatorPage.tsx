@@ -234,16 +234,20 @@ export function QuoteCalculatorPage() {
     if (!result || !selectedProduct) return;
     setSaving(true);
     try {
-      await db.quotes().insert({
+      const { error } = await db.quotes().insert({
         client_id: user?.id ?? null,
         product_type: selectedProduct,
         input_data: { ...values, _displayCurrency: currency },
         estimated_premium: result.total,
         status: "draft",
       });
+      if (error) {
+        toast.error((error as { message?: string }).message ?? "Failed to save quote.");
+        return;
+      }
       toast.success("Quote saved successfully.");
-    } catch {
-      toast.error("Failed to save quote.");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to save quote.");
     } finally {
       setSaving(false);
     }
