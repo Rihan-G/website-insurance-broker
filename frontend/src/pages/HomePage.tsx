@@ -11,18 +11,28 @@ import {
   Calculator,
   Building2,
   Award,
+  MessageCircle,
 } from "lucide-react";
 import { useInView } from "../hooks/useInView";
 import { ParticleField } from "../components/ParticleField";
 import { WaveDivider } from "../components/WaveDivider";
-import { KineticHeading, Typewriter } from "../components/KineticHeading";
 import { useTheme } from "../context/ThemeContext";
 import { ScrollProgress } from "../components/ScrollProgress";
 import { BackToTop } from "../components/BackToTop";
-import { COMPANY_NAME, CONTACT_EMAIL, WEBSITE_DOMAIN, COMPANY_NAME_SHORT } from "../lib/branding";
+import {
+  COMPANY_NAME,
+  CONTACT_EMAIL,
+  CONTACT_PHONE_DISPLAY,
+  CONTACT_PHONE_TEL,
+  CONTACT_PHONE_WHATSAPP,
+  WEBSITE_DOMAIN,
+  COMPANY_NAME_SHORT,
+} from "../lib/branding";
 import { AnimatedSection, StatCounter } from "./home/HomeAnimatedPrimitives";
 import { HomeQuoteCalculator } from "./home/HomeQuoteCalculator";
 import { HomeMarketingNav } from "./home/HomeMarketingNav";
+import { HomeStickyCta } from "./home/HomeStickyCta";
+import { homeFaqItems } from "./home/homeFaqData";
 import {
   insurers,
   services,
@@ -38,15 +48,16 @@ export function HomePage() {
   const waveLightFill = resolved === "dark" ? "#111c2f" : "#ffffff";
 
   return (
-    <div className="min-h-screen bg-primary-50 dark:bg-background">
+    <div className="min-h-screen bg-primary-50 max-lg:pb-[calc(5.75rem+env(safe-area-inset-bottom))] lg:pb-0 dark:bg-background">
       <ScrollProgress />
       <BackToTop />
       <HomeMarketingNav />
+      <HomeStickyCta />
 
       {/* ═══════════════════════════════════════════════════════════════
            Hero — Aurora UI + Motion-Driven + Kinetic Typography
           ═══════════════════════════════════════════════════════════════ */}
-      <section className="relative overflow-hidden pt-16">
+      <section className="relative overflow-hidden pt-20 sm:pt-24 md:pt-28">
         <div className="absolute inset-0 animated-mesh" />
 
         <div className="aurora-bg">
@@ -63,45 +74,83 @@ export function HomePage() {
 
         <div className="absolute inset-0 dot-grid opacity-20" />
 
-        <div className="relative mx-auto max-w-7xl px-6 py-24 md:py-32 lg:py-40">
+        <div className="relative mx-auto max-w-7xl px-5 py-28 sm:px-6 sm:py-32 md:py-36 lg:py-40">
           <div ref={heroRef.ref} className={`max-w-3xl animate-on-scroll ${heroRef.isInView ? "in-view" : ""}`}>
-            <div className="mb-6 badge-float inline-flex items-center gap-2 rounded-full glass px-4 py-1.5 text-sm font-semibold text-accent-300 ring-1 ring-accent-500/30">
-              <ShieldCheck className="h-4 w-4 text-accent-400" />
-              Licensed Insurance Broker — Mauritius
-              <span className="h-2 w-2 rounded-full bg-accent-400 animate-pulse ring-2 ring-accent-400/40" />
+            <div className="mb-6 badge-float inline-flex items-center gap-2 rounded-full glass px-4 py-2 text-sm font-semibold text-accent-200 ring-1 ring-accent-500/35">
+              <ShieldCheck className="h-4 w-4 text-accent-400" aria-hidden />
+              <span className="text-primary-50/95">FSC-licensed broker · Mauritius</span>
+              <span className="h-2 w-2 rounded-full bg-accent-400 animate-pulse ring-2 ring-accent-400/40" aria-hidden />
             </div>
-            <h1 className="text-4xl font-extrabold leading-tight text-white sm:text-5xl lg:text-6xl">
-              <KineticHeading text="Your Trusted Insurance" highlightWords={[]} delay={300} />
-              <br />
-              <Typewriter words={["Partner", "Protector", "Advisor", "Platform"]} className="text-gradient-warm" speed={80} />
-            </h1>
 
-            <p className="mt-6 max-w-2xl text-lg text-primary-200 leading-relaxed">
-              Comprehensive insurance solutions for individuals and businesses across Mauritius. Upload documents, get instant quotes,
-              manage policies — all in one secure portal.
+            <h1 className="text-balance text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl lg:leading-[1.06]">
+              Protect What Matters Most
+            </h1>
+            <p className="mt-5 max-w-2xl text-xl font-semibold leading-snug text-primary-50 sm:text-2xl">
+              Fast, affordable insurance coverage for individuals and businesses.
+            </p>
+            <p className="mt-5 max-w-2xl text-base leading-relaxed text-primary-200/95 sm:text-lg">
+              Get an indicative quote in seconds, upload policies securely, and work with advisors who place cover with leading
+              insurers—without leaving this portal.
             </p>
 
-            <div className="mt-10 flex flex-wrap items-center gap-4">
+            <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
               <a
                 href="#quote"
-                className="btn-glow ring-pulse inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-accent-500 to-accent-600 px-7 py-3.5 text-sm font-bold text-white hover:from-accent-600 hover:to-accent-700 cursor-pointer shadow-lg shadow-accent-500/40 transition-all duration-200"
+                className="btn-glow ring-pulse inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-accent-500 to-accent-600 px-8 py-3.5 text-sm font-bold text-white shadow-lg shadow-accent-500/40 transition-all duration-200 hover:from-accent-600 hover:to-accent-700 cursor-pointer sm:inline-flex"
               >
-                <Calculator className="h-4 w-4" />
+                <Calculator className="h-4 w-4 shrink-0" aria-hidden />
                 Get a Free Quote
+              </a>
+              <a
+                href={`tel:${CONTACT_PHONE_TEL}`}
+                className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl glass border border-white/30 px-8 py-3.5 text-sm font-bold text-white transition-all duration-200 hover:bg-white/15 cursor-pointer sm:inline-flex"
+              >
+                <Phone className="h-4 w-4 shrink-0" aria-hidden />
+                Talk to an Advisor
               </a>
               <Link
                 to="/login"
-                className="inline-flex items-center gap-2 rounded-xl glass border border-white/25 px-7 py-3.5 text-sm font-semibold text-white hover:bg-white/15 cursor-pointer transition-all duration-200"
+                className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/5 px-8 py-3.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-white/10 cursor-pointer sm:inline-flex"
               >
                 Client Portal
-                <ArrowRight className="h-4 w-4" />
+                <ArrowRight className="h-4 w-4 shrink-0" aria-hidden />
               </Link>
             </div>
 
-            <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-primary-200">
-              {["No obligation quote", "256-bit SSL encryption", "FSC Mauritius Licensed"].map((t) => (
+            <div className="mt-10 grid max-w-2xl grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
+              {[
+                { stat: "700+", label: "Households & businesses advised" },
+                { stat: "98%", label: "Client satisfaction (annual survey)" },
+                { stat: "12+", label: "Insurer partnerships" },
+              ].map((row) => (
+                <div
+                  key={row.label}
+                  className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-center backdrop-blur-sm sm:text-left"
+                >
+                  <p className="text-2xl font-extrabold text-white sm:text-3xl">{row.stat}</p>
+                  <p className="mt-1 text-xs font-medium leading-snug text-primary-200/90">{row.label}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-6 flex flex-wrap items-center gap-x-2 gap-y-2 text-sm text-primary-100/95">
+              <a
+                href={`https://wa.me/${CONTACT_PHONE_WHATSAPP}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-4 py-2 font-semibold text-white transition-colors hover:bg-white/10"
+              >
+                <MessageCircle className="h-4 w-4 shrink-0 text-accent-300" aria-hidden />
+                WhatsApp us
+              </a>
+              <span className="hidden text-primary-300/80 sm:inline">·</span>
+              <span className="text-sm text-primary-200/90">Typical response under 1 business day</span>
+            </div>
+
+            <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-primary-200">
+              {["No-obligation quotes", "256-bit TLS encryption", "Dedicated claims guidance"].map((t) => (
                 <span key={t} className="flex items-center gap-1.5">
-                  <CheckCircle className="h-4 w-4 text-accent-400 shrink-0" />
+                  <CheckCircle className="h-4 w-4 shrink-0 text-accent-400" aria-hidden />
                   {t}
                 </span>
               ))}
@@ -164,11 +213,13 @@ export function HomePage() {
         </div>
       </section>
 
-      <section id="products" className="py-20 lg:py-28">
-        <div className="mx-auto max-w-7xl px-6">
+      <section id="products" className="py-24 lg:py-32">
+        <div className="mx-auto max-w-7xl px-5 sm:px-6">
           <AnimatedSection className="text-center">
             <span className="text-sm font-semibold text-primary-600 uppercase tracking-wider">Insurance Products</span>
-            <h2 className="mt-3 text-3xl font-bold text-primary-900 dark:text-primary-50 sm:text-4xl">Comprehensive Coverage for Every Need</h2>
+            <h2 className="mt-4 text-balance text-3xl font-extrabold tracking-tight text-primary-950 dark:text-primary-50 sm:text-4xl lg:text-5xl">
+              Comprehensive Coverage for Every Need
+            </h2>
             <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
               We partner with Mauritius&apos;s leading insurers to bring you the best rates and coverage options.
             </p>
@@ -195,8 +246,8 @@ export function HomePage() {
         </div>
       </section>
 
-      <section id="quote" className="bg-surface py-20 lg:py-28 border-y border-border">
-        <div className="mx-auto max-w-7xl px-6">
+      <section id="quote" className="bg-surface py-24 lg:py-32 border-y border-border">
+        <div className="mx-auto max-w-7xl px-5 sm:px-6">
           <div className="grid gap-12 lg:grid-cols-2 lg:items-start">
             <div>
               <AnimatedSection animation="animate-slide-left">
@@ -232,11 +283,13 @@ export function HomePage() {
         </div>
       </section>
 
-      <section id="services" className="py-20 lg:py-28">
-        <div className="mx-auto max-w-7xl px-6">
+      <section id="services" className="py-24 lg:py-32">
+        <div className="mx-auto max-w-7xl px-5 sm:px-6">
           <AnimatedSection className="text-center">
             <span className="text-sm font-semibold text-primary-600 uppercase tracking-wider">Our Platform</span>
-            <h2 className="mt-3 text-3xl font-bold text-primary-900 dark:text-primary-50 sm:text-4xl">Built for Insurance Professionals</h2>
+            <h2 className="mt-4 text-balance text-3xl font-extrabold tracking-tight text-primary-950 dark:text-primary-50 sm:text-4xl lg:text-5xl">
+              Built for Insurance Professionals
+            </h2>
             <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
               From document intake to policy management, our platform covers every step of the broker workflow.
             </p>
@@ -261,11 +314,13 @@ export function HomePage() {
         </div>
       </section>
 
-      <section id="testimonials" className="bg-surface py-20 lg:py-28 border-y border-border">
-        <div className="mx-auto max-w-7xl px-6">
+      <section id="testimonials" className="bg-surface py-24 lg:py-32 border-y border-border">
+        <div className="mx-auto max-w-7xl px-5 sm:px-6">
           <AnimatedSection className="text-center">
             <span className="text-sm font-semibold text-primary-600 uppercase tracking-wider">Client Stories</span>
-            <h2 className="mt-3 text-3xl font-bold text-primary-900 dark:text-primary-50 sm:text-4xl">Trusted by Clients Across Mauritius</h2>
+            <h2 className="mt-4 text-balance text-3xl font-extrabold tracking-tight text-primary-950 dark:text-primary-50 sm:text-4xl lg:text-5xl">
+              Trusted by Clients Across Mauritius
+            </h2>
           </AnimatedSection>
 
           <div className="mt-16 grid gap-6 md:grid-cols-3">
@@ -298,6 +353,36 @@ export function HomePage() {
         </div>
       </section>
 
+      <section id="faq" className="border-y border-border bg-white py-24 lg:py-32 dark:bg-slate-950">
+        <div className="mx-auto max-w-3xl px-5 sm:px-6">
+          <div className="text-center">
+            <span className="text-sm font-semibold uppercase tracking-wider text-primary-600">FAQ</span>
+            <h2 className="mt-3 text-balance text-3xl font-extrabold tracking-tight text-primary-950 dark:text-primary-50 sm:text-4xl">
+              Common questions
+            </h2>
+            <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
+              Straight answers about quotes, security, and how we work with insurers.
+            </p>
+          </div>
+          <div className="mt-10 space-y-3">
+            {homeFaqItems.map((item) => (
+              <details
+                key={item.q}
+                className="group rounded-2xl border border-border bg-surface p-1 shadow-sm transition-shadow hover:shadow-md open:shadow-md dark:bg-surface"
+              >
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-xl px-4 py-4 text-left text-base font-semibold text-surface-foreground outline-none ring-primary-500/30 focus-visible:ring-2 [&::-webkit-details-marker]:hidden">
+                  {item.q}
+                  <span className="shrink-0 rounded-full border border-border bg-muted/40 px-2 py-0.5 text-xs font-bold text-muted-foreground transition-transform group-open:rotate-45">
+                    +
+                  </span>
+                </summary>
+                <div className="border-t border-border/80 px-4 pb-4 pt-3 text-sm leading-relaxed text-muted-foreground">{item.a}</div>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 animated-mesh" />
         <div className="aurora-bg">
@@ -318,17 +403,24 @@ export function HomePage() {
             <div className="mt-10 flex flex-wrap justify-center gap-4">
               <a
                 href="#quote"
-                className="btn-glow inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-accent-500 to-accent-600 px-8 py-3.5 text-sm font-bold text-white hover:from-accent-600 hover:to-accent-700 cursor-pointer shadow-lg shadow-accent-500/30 transition-all duration-200"
+                className="btn-glow inline-flex min-h-[48px] items-center gap-2 rounded-xl bg-gradient-to-r from-accent-500 to-accent-600 px-8 py-3.5 text-sm font-bold text-white hover:from-accent-600 hover:to-accent-700 cursor-pointer shadow-lg shadow-accent-500/30 transition-all duration-200"
               >
-                <Calculator className="h-4 w-4" />
+                <Calculator className="h-4 w-4" aria-hidden />
                 Get Your Quote
+              </a>
+              <a
+                href={`tel:${CONTACT_PHONE_TEL}`}
+                className="inline-flex min-h-[48px] items-center gap-2 rounded-xl glass border border-white/20 px-8 py-3.5 text-sm font-bold text-white hover:bg-white/15 cursor-pointer transition-all duration-200"
+              >
+                <Phone className="h-4 w-4 shrink-0" aria-hidden />
+                Call an advisor
               </a>
               <Link
                 to="/login"
-                className="inline-flex items-center gap-2 rounded-xl glass border border-white/20 px-8 py-3.5 text-sm font-semibold text-white hover:bg-white/15 cursor-pointer transition-all duration-200"
+                className="inline-flex min-h-[48px] items-center gap-2 rounded-xl glass border border-white/20 px-8 py-3.5 text-sm font-semibold text-white hover:bg-white/15 cursor-pointer transition-all duration-200"
               >
                 Access Client Portal
-                <ArrowRight className="h-4 w-4" />
+                <ArrowRight className="h-4 w-4" aria-hidden />
               </Link>
             </div>
           </AnimatedSection>
@@ -373,6 +465,9 @@ export function HomePage() {
                 <a href="#testimonials" className="block hover:text-white cursor-pointer transition-colors duration-200">
                   Testimonials
                 </a>
+                <a href="#faq" className="block hover:text-white cursor-pointer transition-colors duration-200">
+                  FAQ
+                </a>
                 <Link to="/login" className="block hover:text-white cursor-pointer transition-colors duration-200">
                   Client Portal
                 </Link>
@@ -383,8 +478,10 @@ export function HomePage() {
               <h4 className="text-sm font-semibold text-white uppercase tracking-wider">Contact</h4>
               <div className="mt-4 space-y-3 text-sm">
                 <div className="flex items-center gap-2">
-                  <Phone className="h-4 w-4 shrink-0" />
-                  <span>+230 123 4567</span>
+                  <Phone className="h-4 w-4 shrink-0" aria-hidden />
+                  <a href={`tel:${CONTACT_PHONE_TEL}`} className="hover:text-white">
+                    {CONTACT_PHONE_DISPLAY}
+                  </a>
                 </div>
                 <div className="flex items-center gap-2">
                   <Mail className="h-4 w-4 shrink-0" />

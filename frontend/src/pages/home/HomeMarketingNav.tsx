@@ -10,6 +10,7 @@ const navLinks = [
   { href: "#products", label: "Products" },
   { href: "#quote", label: "Get Quote" },
   { href: "#testimonials", label: "Testimonials" },
+  { href: "#faq", label: "FAQ" },
   { href: "#contact", label: "Contact" },
 ] as const;
 
@@ -75,7 +76,7 @@ export function HomeMarketingNav() {
           </Link>
           <button
             type="button"
-            className="inline-flex rounded-lg p-2 text-primary-800 dark:text-primary-200 hover:bg-primary-100/80 dark:hover:bg-muted md:hidden"
+            className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg p-2 text-primary-800 dark:text-primary-200 hover:bg-primary-100/80 dark:hover:bg-muted md:hidden"
             aria-expanded={mobileOpen}
             aria-controls={panelId}
             onClick={() => setMobileOpen((o) => !o)}
@@ -97,7 +98,7 @@ export function HomeMarketingNav() {
                 key={href}
                 href={href}
                 onClick={closeMobile}
-                className="block rounded-lg px-3 py-3 text-base font-medium text-primary-800 hover:bg-primary-50 dark:text-primary-100 dark:hover:bg-muted"
+                className="flex min-h-[48px] items-center rounded-lg px-3 py-3 text-base font-medium text-primary-800 hover:bg-primary-50 dark:text-primary-100 dark:hover:bg-muted"
               >
                 {label}
               </a>
@@ -106,14 +107,14 @@ export function HomeMarketingNav() {
               <Link
                 to="/login"
                 onClick={closeMobile}
-                className="block rounded-lg border border-border px-3 py-3 text-center text-sm font-semibold text-primary-800 dark:text-primary-100"
+                className="flex min-h-[48px] items-center justify-center rounded-lg border border-border px-3 text-center text-sm font-semibold text-primary-800 dark:text-primary-100"
               >
                 Sign In
               </Link>
               <Link
                 to="/login"
                 onClick={closeMobile}
-                className="block rounded-lg bg-primary-600 px-3 py-3 text-center text-sm font-semibold text-white hover:bg-primary-700"
+                className="flex min-h-[48px] items-center justify-center rounded-lg bg-primary-600 px-3 text-center text-sm font-semibold text-white hover:bg-primary-700"
               >
                 Client Portal
               </Link>
