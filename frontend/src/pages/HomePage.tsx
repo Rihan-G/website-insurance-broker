@@ -12,6 +12,8 @@ import {
   Building2,
   Award,
   MessageCircle,
+  Linkedin,
+  Facebook,
 } from "lucide-react";
 import { useInView } from "../hooks/useInView";
 import { ParticleField } from "../components/ParticleField";
@@ -33,6 +35,8 @@ import { HomeQuoteCalculator } from "./home/HomeQuoteCalculator";
 import { HomeMarketingNav } from "./home/HomeMarketingNav";
 import { HomeStickyCta } from "./home/HomeStickyCta";
 import { homeFaqItems } from "./home/homeFaqData";
+import { HomeHeroDashboardMockup } from "./home/HomeHeroDashboardMockup";
+import { HomePlatformPreview } from "./home/HomePlatformPreview";
 import {
   insurers,
   services,
@@ -75,7 +79,8 @@ export function HomePage() {
         <div className="absolute inset-0 dot-grid opacity-20" />
 
         <div className="relative mx-auto max-w-7xl px-5 py-28 sm:px-6 sm:py-32 md:py-36 lg:py-40">
-          <div ref={heroRef.ref} className={`max-w-3xl animate-on-scroll ${heroRef.isInView ? "in-view" : ""}`}>
+          <div ref={heroRef.ref} className={`grid items-center gap-12 lg:grid-cols-2 lg:gap-14 xl:gap-16 animate-on-scroll ${heroRef.isInView ? "in-view" : ""}`}>
+            <div className="min-w-0 max-w-3xl">
             <div className="mb-6 badge-float inline-flex items-center gap-2 rounded-full glass px-4 py-2 text-sm font-semibold text-accent-200 ring-1 ring-accent-500/35">
               <ShieldCheck className="h-4 w-4 text-accent-400" aria-hidden />
               <span className="text-primary-50/95">FSC-licensed broker · Mauritius</span>
@@ -155,6 +160,10 @@ export function HomePage() {
                 </span>
               ))}
             </div>
+            </div>
+            <div className="min-w-0 w-full lg:max-w-none lg:justify-self-end">
+              <HomeHeroDashboardMockup />
+            </div>
           </div>
         </div>
 
@@ -176,6 +185,8 @@ export function HomePage() {
           </div>
         </div>
       </section>
+
+      <HomePlatformPreview />
 
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 animated-mesh" />
@@ -448,11 +459,70 @@ export function HomePage() {
                   FSC Licensed
                 </span>
               </div>
+              <div className="mt-8 max-w-md">
+                <h4 className="text-sm font-semibold text-white uppercase tracking-wider">Newsletter</h4>
+                <p className="mt-2 text-xs text-primary-300/90">Regulatory updates and product tips — opt out anytime.</p>
+                <form
+                  className="mt-3 flex flex-col gap-2 sm:flex-row"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    const fd = new FormData(e.currentTarget);
+                    const email = String(fd.get("email") ?? "").trim();
+                    if (!email) return;
+                    window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent("Newsletter signup")}&body=${encodeURIComponent(`Please add me to your newsletter.\n\nEmail: ${email}`)}`;
+                  }}
+                >
+                  <label htmlFor="footer-newsletter-email" className="sr-only">
+                    Email for newsletter
+                  </label>
+                  <input
+                    id="footer-newsletter-email"
+                    name="email"
+                    type="email"
+                    required
+                    autoComplete="email"
+                    placeholder="you@company.com"
+                    className="min-h-[44px] w-full flex-1 rounded-lg border border-primary-700/80 bg-primary-900/40 px-3 py-2 text-sm text-white placeholder:text-primary-400/80 focus:border-accent-400 focus:outline-none focus:ring-2 focus:ring-accent-500/40"
+                  />
+                  <button
+                    type="submit"
+                    className="min-h-[44px] shrink-0 rounded-lg bg-accent-600 px-4 text-sm font-bold text-white hover:bg-accent-500 cursor-pointer"
+                  >
+                    Subscribe
+                  </button>
+                </form>
+                <div className="mt-6 flex flex-wrap items-center gap-4">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-primary-400">Follow</span>
+                  <div className="flex gap-2">
+                    <a
+                      href="https://www.linkedin.com"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-primary-700/80 bg-primary-900/30 text-primary-100 hover:border-accent-500/60 hover:text-white"
+                      aria-label="LinkedIn (placeholder link)"
+                    >
+                      <Linkedin className="h-5 w-5" aria-hidden />
+                    </a>
+                    <a
+                      href="https://www.facebook.com"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-primary-700/80 bg-primary-900/30 text-primary-100 hover:border-accent-500/60 hover:text-white"
+                      aria-label="Facebook (placeholder link)"
+                    >
+                      <Facebook className="h-5 w-5" aria-hidden />
+                    </a>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div>
               <h4 className="text-sm font-semibold text-white uppercase tracking-wider">Quick Links</h4>
               <div className="mt-4 space-y-3 text-sm">
+                <a href="#platform" className="block hover:text-white cursor-pointer transition-colors duration-200">
+                  Platform
+                </a>
                 <a href="#products" className="block hover:text-white cursor-pointer transition-colors duration-200">
                   Insurance Products
                 </a>
@@ -484,8 +554,10 @@ export function HomePage() {
                   </a>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Mail className="h-4 w-4 shrink-0" />
-                  <span>{CONTACT_EMAIL}</span>
+                  <Mail className="h-4 w-4 shrink-0" aria-hidden />
+                  <a href={`mailto:${CONTACT_EMAIL}`} className="hover:text-white">
+                    {CONTACT_EMAIL}
+                  </a>
                 </div>
                 <div className="flex items-start gap-2">
                   <MapPin className="h-4 w-4 shrink-0 mt-0.5" />

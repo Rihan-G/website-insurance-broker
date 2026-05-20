@@ -65,6 +65,10 @@ export function HomeQuoteCalculator() {
   const coverageInMur = Number.isFinite(coverageNum) ? convertToMur(coverageNum, currency) : 0;
   const monthlyMur = interpolateMonthlyMur(policyType, coverageInMur);
   const monthlyDisplay = formatInCurrency(convertFromMur(monthlyMur, currency), currency);
+  const sliderMur =
+    Number.isFinite(coverageInMur) && coverageInMur > 0
+      ? Math.min(2_000_000, Math.max(50_000, coverageInMur))
+      : 500_000;
 
   return (
     <div className="neon-border rounded-2xl bg-surface p-8 shadow-xl dark:shadow-none">
@@ -116,6 +120,24 @@ export function HomeQuoteCalculator() {
           <label htmlFor="home-coverage-custom" className="block text-sm font-medium text-surface-foreground mb-1.5">
             Coverage sum ({currency})
           </label>
+          <input
+            id="home-coverage-range"
+            type="range"
+            min={50_000}
+            max={2_000_000}
+            step={25_000}
+            value={sliderMur}
+            onChange={(e) => {
+              const mur = Number(e.target.value);
+              const displayVal = convertFromMur(mur, currency);
+              setCoverageInput(String(Math.round(displayVal)));
+            }}
+            className="mb-3 h-2 w-full cursor-pointer appearance-none rounded-full bg-muted accent-primary-600 dark:accent-primary-400"
+            aria-valuemin={50_000}
+            aria-valuemax={2_000_000}
+            aria-valuenow={sliderMur}
+            aria-label="Adjust coverage amount"
+          />
           <input
             id="home-coverage-custom"
             type="text"
