@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Calculator, ChevronDown, ArrowRight } from "lucide-react";
+import { Calculator, ChevronDown, ArrowRight, Send } from "lucide-react";
+import toast from "react-hot-toast";
 import {
   type QuoteCurrency,
   QUOTE_CURRENCIES,
@@ -9,8 +10,12 @@ import {
   formatInCurrency,
   currencyHint,
 } from "../../lib/currency";
+import { useAuth } from "../../context/AuthContext";
+import { db } from "../../lib/db";
 
 type HomePolicy = "motor" | "home" | "life" | "health";
+
+const DEMO_HOME_QUOTES_KEY = "demo_home_quote_estimates_v1";
 
 const coverageAnchors: Record<HomePolicy, Array<{ covMur: number; monthlyMur: number }>> = {
   motor: [
@@ -56,10 +61,29 @@ function interpolateMonthlyMur(policy: HomePolicy, coverageMur: number): number 
   return last.monthlyMur + (coverageMur - last.covMur) * slope;
 }
 
+function looksLikeEmail(s: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s.trim());
+}
+
+function pushDemoHomeQuote(payload: Record<string, unknown>) {
+  try {
+    const raw = sessionStorage.getItem(DEMO_HOME_QUOTES_KEY);
+    const prev = raw ? (JSON.parse(raw) as unknown[]) : [];
+    prev.unshift({ savedAt: new Date().toISOString(), ...payload });
+    sessionStorage.setItem(DEMO_HOME_QUOTES_KEY, JSON.stringify(prev.slice(0, 40)));
+  } catch {
+    /* ignore */
+  }
+}
+
 export function HomeQuoteCalculator() {
+  const { user, demoAuthActive } = useAuth();
   const [policyType, setPolicyType] = useState<HomePolicy>("motor");
   const [currency, setCurrency] = useState<QuoteCurrency>("MUR");
   const [coverageInput, setCoverageInput] = useState("500000");
+  const [leadEmail, setLeadEmail] = useState("");
+  const [leadPhone, setLeadPhone] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const coverageNum = parseFloat(coverageInput.replace(/,/g, "") || "0");
   const coverageInMur = Number.isFinite(coverageNum) ? convertToMur(coverageNum, currency) : 0;
@@ -69,6 +93,67 @@ export function HomeQuoteCalculator() {
     Number.isFinite(coverageInMur) && coverageInMur > 0
       ? Math.min(2_000_000, Math.max(50_000, coverageInMur))
       : 500_000;
+
+  const annualMurEst = monthlyMur * 12;
+  /** Demo auth bypasses remote writes; otherwise we use the anon client (guests can insert per quotes RLS). */
+  const persistToDatabase = !demoAuthActive;
+
+  const submitEstimate = async () => {
+    if (!Number.isFinite(coverageInMur) || coverageInMur <= 0) {
+      toast.error("Enter a coverage amount first.");
+      return;
+    }
+    if (!user?.id && !leadEmail.trim()) {
+      toast.error("Add your email so we can follow up, or sign in.");
+      return;
+    }
+    if (leadEmail.trim() && !looksLikeEmail(leadEmail)) {
+      toast.error("Please enter a valid email address.");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const inputData = {
+        source: "home_quick_quote",
+        policy_type: policyType,
+        coverage_input: coverageInput,
+        display_currency: currency,
+        coverage_mur: coverageInMur,
+        monthly_mur_estimate: monthlyMur,
+        lead_email: leadEmail.trim() || null,
+        lead_phone: leadPhone.trim() || null,
+      };
+
+      if (!persistToDatabase) {
+        pushDemoHomeQuote({
+          ...inputData,
+          client_id: user?.id ?? null,
+          annual_mur_estimate: annualMurEst,
+        });
+        toast.success("Estimate saved locally (demo). Connect Supabase to store leads in the database.");
+        return;
+      }
+
+      const { error } = await db.quotes().insert({
+        client_id: user?.id ?? null,
+        product_type: policyType,
+        input_data: inputData,
+        estimated_premium: annualMurEst,
+        status: "draft",
+        notes: leadEmail.trim() ? `Lead: ${leadEmail.trim()}${leadPhone.trim() ? ` · ${leadPhone.trim()}` : ""}` : null,
+      });
+      if (error) {
+        toast.error((error as { message?: string }).message ?? "Could not save estimate.");
+        return;
+      }
+      toast.success("Thanks — your estimate is saved. A broker will follow up.");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Could not save estimate.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <div className="neon-border rounded-2xl bg-surface p-8 shadow-xl dark:shadow-none">
@@ -155,6 +240,50 @@ export function HomeQuoteCalculator() {
             {monthlyDisplay}
           </p>
           <p className="mt-1 text-xs text-muted-foreground">per month *</p>
+        </div>
+
+        <div className="rounded-xl border border-border bg-muted/20 p-4 space-y-3">
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Save this estimate</p>
+          {!user?.id && (
+            <>
+              <label className="block text-sm font-medium text-surface-foreground">
+                Email <span className="text-danger-600">*</span>
+              </label>
+              <input
+                type="email"
+                autoComplete="email"
+                placeholder="you@example.com"
+                value={leadEmail}
+                onChange={(e) => setLeadEmail(e.target.value)}
+                className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm focus:border-primary-500 focus:ring-2 focus:ring-ring/20 focus:outline-none"
+              />
+            </>
+          )}
+          <label className="block text-sm font-medium text-surface-foreground">Phone (optional)</label>
+          <input
+            type="tel"
+            autoComplete="tel"
+            placeholder="+230 …"
+            value={leadPhone}
+            onChange={(e) => setLeadPhone(e.target.value)}
+            className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm focus:border-primary-500 focus:ring-2 focus:ring-ring/20 focus:outline-none"
+          />
+          <button
+            type="button"
+            onClick={() => void submitEstimate()}
+            disabled={submitting}
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary-600 px-4 py-3 text-sm font-semibold text-white hover:bg-primary-700 disabled:opacity-60 cursor-pointer transition-colors duration-200 active:scale-[0.99]"
+          >
+            <Send className="h-4 w-4" aria-hidden />
+            {submitting ? "Saving…" : persistToDatabase ? "Submit estimate to our team" : "Save estimate (demo)"}
+          </button>
+          <p className="text-[11px] text-muted-foreground leading-snug">
+            {persistToDatabase
+              ? user?.id
+                ? "Stored in your broker workspace (quotes table) under your account."
+                : "Stored as a lead in the quotes table (anonymous). Add your email so a broker can reply."
+              : "Demo mode stores submissions in this browser only."}
+          </p>
         </div>
 
         <Link

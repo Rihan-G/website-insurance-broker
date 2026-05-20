@@ -26,6 +26,7 @@ export const db = {
   auditLogs: () => sb.from("audit_logs"),
   renewalPreferences: () => sb.from("renewal_preferences"),
   claimIntakes: () => sb.from("claim_intakes"),
+  claimIntakeAttachments: () => sb.from("claim_intake_attachments"),
   secureThreads: () => sb.from("secure_threads"),
   secureMessages: () => sb.from("secure_messages"),
   portalNotifications: () => sb.from("portal_notifications"),
