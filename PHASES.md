@@ -2,6 +2,9 @@
 
 Work in **order**: each phase builds on the last. Tick items off in your tracker or checklist when done.
 
+**Feature ↔ phase mapping (routes, tables, what is mock vs live):** see **[docs/FEATURES_BY_PHASE.md](docs/FEATURES_BY_PHASE.md)**.  
+**GitHub Pages errors (blank site, chunks, 404 on refresh):** see **[docs/GITHUB_PAGES.md](docs/GITHUB_PAGES.md)**.
+
 ---
 
 ## Phase 1 — Database & authentication
@@ -10,7 +13,7 @@ Work in **order**: each phase builds on the last. Tick items off in your tracker
 
 | Task | Notes |
 |------|--------|
-| Apply migrations on the hosted project | Run `supabase db push` (CLI linked to project) or paste SQL from `supabase/migrations/` in order through **`00004_documents_storage_bucket`** (see Phase 2 for Storage). |
+| Apply migrations on the hosted project | Run `supabase db push` (CLI linked to project) or paste SQL from `supabase/migrations/` in order through **`00010_claim_intake_attachments`** (after `00005` care workspace). |
 | Smoke-test RLS | Log in as **client** vs **broker** vs **admin** and confirm dashboards/clients/documents behave (empty data is OK; errors mean RLS or missing policies). |
 | Create real Auth users | At least **one admin**, **one broker**, **one client** (Sign up / Dashboard or Auth UI). |
 | Confirm profiles | `handle_new_user` trigger should create `profiles` rows; if not, insert/fix manually so roles match menus (`AppLayout`). |

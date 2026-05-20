@@ -66,8 +66,9 @@ jobs:
             echo "VITE_GH_PAGES_BASE=/" >> "$GITHUB_ENV"
             echo "Using root base (user/org GitHub Pages repository)."
           else
-            echo "VITE_GH_PAGES_BASE=/$REPO/" >> "$GITHUB_ENV"
-            echo "Using project base /$REPO/ for GitHub Pages."
+            # GitHub Pages project URLs use a lowercase path segment; mixed-case repo names break chunk loading if base mismatches.
+            echo "VITE_GH_PAGES_BASE=/${repo_lc}/" >> "$GITHUB_ENV"
+            echo "Using project base /${repo_lc}/ for GitHub Pages."
           fi
 
       - name: Build for GitHub Pages
@@ -76,7 +77,12 @@ jobs:
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
           VITE_ALLOW_DEMO_LOGIN: ${{ secrets.VITE_ALLOW_DEMO_LOGIN }}
-        run: pnpm build
+        run: |
+          # Default demo login on Pages unless the secret is explicitly set (e.g. to "false").
+          if [ -z "${VITE_ALLOW_DEMO_LOGIN:-}" ]; then
+            export VITE_ALLOW_DEMO_LOGIN=true
+          fi
+          pnpm build
 
       - name: SPA fallback + Jekyll bypass
         run: |
