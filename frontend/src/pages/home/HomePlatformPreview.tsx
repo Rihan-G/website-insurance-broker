@@ -1,7 +1,7 @@
 import { CreditCard, FileWarning, LayoutDashboard, PieChart, Users } from "lucide-react";
 import { AnimatedSection } from "./HomeAnimatedPrimitives";
 
-/** Enterprise-style “SaaS” preview band — static content for marketing trust. */
+/** Enterprise-style “SaaS” preview band — static content written for all visitors (clients & staff share this homepage). */
 export function HomePlatformPreview() {
   return (
     <section id="platform" className="border-y border-border bg-gradient-to-b from-slate-50 to-white py-24 lg:py-32 dark:from-slate-950 dark:to-slate-900">
@@ -9,11 +9,11 @@ export function HomePlatformPreview() {
         <AnimatedSection className="mx-auto max-w-3xl text-center">
           <span className="text-sm font-semibold uppercase tracking-wider text-primary-600 dark:text-primary-400">Platform</span>
           <h2 className="mt-4 text-balance text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-4xl lg:text-5xl">
-            A broker workspace your clients can feel
+            One calm place for policies, renewals, and claims
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            Claims tracking, policy documents, and renewals in one place — the same portal experience your team uses behind the scenes,
-            presented here as a polished product surface.
+            Whether you are insuring your family or your business, you get the same secure portal experience—clear updates, fewer surprises,
+            and advisors when you need a human.
           </p>
         </AnimatedSection>
 
@@ -21,20 +21,20 @@ export function HomePlatformPreview() {
           {[
             {
               icon: LayoutDashboard,
-              title: "Operations overview",
-              desc: "Pipeline status, renewals, and staff workload at a glance.",
+              title: "Renewals & cover in view",
+              desc: "See what is active, what is coming due, and what needs a signature—without digging through email threads.",
               tone: "from-primary-600/90 to-primary-800",
             },
             {
               icon: FileWarning,
-              title: "Claims & FNOL",
-              desc: "Structured intakes, attachments, and SLA-friendly follow-ups.",
+              title: "Guided claims support",
+              desc: "Structured first steps after an incident, with space to add photos or documents so nothing important is missed.",
               tone: "from-amber-600/90 to-orange-800",
             },
             {
               icon: Users,
-              title: "Client & policy records",
-              desc: "Households, vehicles, and endorsements with a clean audit trail.",
+              title: "Advice when it matters",
+              desc: "Licensed brokers explain trade-offs in plain language—online tools speed things up, people close the loop.",
               tone: "from-emerald-600/90 to-teal-900",
             },
           ].map((card, i) => (
@@ -64,11 +64,10 @@ export function HomePlatformPreview() {
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(56,189,248,0.12),transparent_45%),radial-gradient(circle_at_80%_60%,rgba(74,222,128,0.1),transparent_40%)]" />
             <div className="relative grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
               <div>
-                <p className="text-xs font-bold uppercase tracking-widest text-primary-300/90">Payments & compliance</p>
-                <p className="mt-2 text-xl font-bold text-white sm:text-2xl">Reconcile premiums without spreadsheet chaos</p>
+                <p className="text-xs font-bold uppercase tracking-widest text-primary-300/90">Payments & peace of mind</p>
+                <p className="mt-2 text-xl font-bold text-white sm:text-2xl">Know what is due—and what is already sorted</p>
                 <p className="mt-3 text-sm leading-relaxed text-primary-200/90">
-                  Status chips, reminders, and export-friendly views help brokers stay audit-ready while clients see only what matters to
-                  them.
+                  Illustrative snapshot only. In your real account you would see upcoming premiums, confirmations, and gentle reminders—not broker-only accounting views.
                 </p>
               </div>
               <div className="rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
@@ -78,9 +77,9 @@ export function HomePlatformPreview() {
                 </div>
                 <div className="mt-4 space-y-3">
                   {[
-                    { l: "Collected", v: "₨ 1.24M", chip: "On track" },
-                    { l: "Outstanding", v: "₨ 186k", chip: "Follow up" },
-                    { l: "Failed attempts", v: "3", chip: "Retry" },
+                    { l: "Confirmed", v: "Paid", chip: "Done" },
+                    { l: "Scheduled", v: "Due soon", chip: "Reminder" },
+                    { l: "Questions?", v: "Message us", chip: "Help" },
                   ].map((r) => (
                     <div key={r.l} className="flex items-center justify-between gap-3 rounded-lg bg-slate-950/50 px-3 py-2 ring-1 ring-white/5">
                       <div>

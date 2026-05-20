@@ -2,6 +2,8 @@
 
 This document maps **product features and routes** to the rollout phases in **[PHASES.md](../PHASES.md)**. Those phases are the **authoritative implementation order** for Supabase, RLS, and storage. The older seven-bullet list in the root README is **historical / marketing themes** only — use **PHASES.md** plus this file for engineering.
 
+**Homepage model:** **`/`** is a **single shared marketing homepage** for all roles (clients, brokers, admins). Authenticated, role-aware UX belongs under **`/dashboard/*`** (and optional **portal flavor** builds for split staff/client deployments).
+
 ---
 
 ## Phase 1 — Database and authentication

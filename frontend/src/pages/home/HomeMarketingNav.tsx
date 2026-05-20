@@ -95,23 +95,13 @@ export function HomeMarketingNav() {
           <ThemeToggle />
           <Link
             to="/login"
-            className={`hidden rounded-lg px-4 py-2 text-sm font-semibold transition-colors duration-200 sm:block ${
-              scrolled
-                ? "text-primary-800 hover:bg-primary-50 dark:text-primary-200 dark:hover:bg-muted"
-                : "text-white hover:bg-white/10"
-            }`}
-          >
-            Sign In
-          </Link>
-          <Link
-            to="/login"
             className={`rounded-lg px-3 py-2.5 text-sm font-semibold transition-colors duration-200 sm:px-4 ${
               scrolled
                 ? "bg-primary-600 text-white hover:bg-primary-700"
                 : "bg-white text-primary-900 hover:bg-primary-50"
             }`}
           >
-            Client Portal
+            Sign in
           </Link>
           <button
             type="button"
@@ -153,20 +143,13 @@ export function HomeMarketingNav() {
             >
               Get Quote
             </a>
-            <div className="flex flex-col gap-2 border-t border-primary-100 pt-4 dark:border-border">
-              <Link
-                to="/login"
-                onClick={closeMobile}
-                className="flex min-h-[48px] items-center justify-center rounded-lg border border-border px-3 text-center text-sm font-semibold text-primary-800 dark:text-primary-100"
-              >
-                Sign In
-              </Link>
+            <div className="border-t border-primary-100 pt-4 dark:border-border">
               <Link
                 to="/login"
                 onClick={closeMobile}
                 className="flex min-h-[48px] items-center justify-center rounded-lg bg-primary-600 px-3 text-center text-sm font-semibold text-white hover:bg-primary-700"
               >
-                Client Portal
+                Sign in
               </Link>
             </div>
           </div>

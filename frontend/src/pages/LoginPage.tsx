@@ -98,8 +98,7 @@ export function LoginPage() {
             <span className="text-gradient-warm">Insurance Portal</span>
           </h1>
           <p className="text-base text-primary-200 max-w-sm leading-relaxed">
-            Manage policies, upload documents with OCR intelligence, and serve your
-            clients — all in one compliance-ready platform.
+            Sign in to your secure area for renewals, messages, and uploads—backed by licensed advisors when you need a person on the line.
           </p>
 
           <div className="mt-8 space-y-3">
@@ -115,9 +114,9 @@ export function LoginPage() {
 
           <div className="mt-10 grid grid-cols-3 gap-6">
             {[
-              { value: "700+", label: "Active Clients" },
-              { value: "99.9%", label: "Uptime SLA" },
-              { value: "24/7", label: "Support" },
+              { value: "15+", label: "Years of local advisory experience" },
+              { value: "12+", label: "Insurer partnerships" },
+              { value: "1:1", label: "Human support when you need it" },
             ].map((s) => (
               <div key={s.label} className="rounded-xl glass p-4 text-center">
                 <p className="text-2xl font-bold text-white">{s.value}</p>

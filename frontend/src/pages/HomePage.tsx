@@ -94,8 +94,8 @@ export function HomePage() {
               Fast, affordable insurance coverage for individuals and businesses.
             </p>
             <p className="mt-5 max-w-2xl text-base leading-relaxed text-primary-200/95 sm:text-lg">
-              Get an indicative quote in seconds, upload policies securely, and work with advisors who place cover with leading
-              insurers—without leaving this portal.
+              Get an indicative quote in minutes, share documents through a secure channel, and work with licensed advisors who place cover
+              with leading insurers—all in one place.
             </p>
 
             <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
@@ -117,16 +117,16 @@ export function HomePage() {
                 to="/login"
                 className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/5 px-8 py-3.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-white/10 cursor-pointer sm:inline-flex"
               >
-                Client Portal
+                Sign in
                 <ArrowRight className="h-4 w-4 shrink-0" aria-hidden />
               </Link>
             </div>
 
             <div className="mt-10 grid max-w-2xl grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
               {[
-                { stat: "700+", label: "Households & businesses advised" },
-                { stat: "98%", label: "Client satisfaction (annual survey)" },
+                { stat: "15+", label: "Years of local advisory experience" },
                 { stat: "12+", label: "Insurer partnerships" },
+                { stat: "1:1", label: "Human support when you need it" },
               ].map((row) => (
                 <div
                   key={row.label}
@@ -198,10 +198,10 @@ export function HomePage() {
         <div className="absolute inset-0 dot-grid opacity-10" />
         <div className="relative mx-auto grid max-w-7xl grid-cols-2 gap-5 px-6 py-14 md:grid-cols-4">
           {[
-            { value: 700, suffix: "+", label: "Active Clients" },
-            { value: 2500, suffix: "+", label: "Policies Managed" },
-            { value: 99, suffix: ".9%", label: "Uptime SLA" },
-            { value: 15000, suffix: "+", label: "Documents Processed" },
+            { value: 15, suffix: "+", label: "Years serving Mauritius" },
+            { value: 12, suffix: "+", label: "Insurer partners" },
+            { value: 98, suffix: "%", label: "Clients who would recommend us*" },
+            { value: 1, suffix: "", label: "Licensed team on your side" },
           ].map((s) => (
             <div key={s.label} className="glass glow-card-anim rounded-2xl p-5 text-center ring-1 ring-white/10">
               <StatCounter value={s.value} suffix={s.suffix} label={s.label} />
@@ -299,10 +299,10 @@ export function HomePage() {
           <AnimatedSection className="text-center">
             <span className="text-sm font-semibold text-primary-600 uppercase tracking-wider">Our Platform</span>
             <h2 className="mt-4 text-balance text-3xl font-extrabold tracking-tight text-primary-950 dark:text-primary-50 sm:text-4xl lg:text-5xl">
-              Built for Insurance Professionals
+              From first quote to renewal, online and human
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
-              From document intake to policy management, our platform covers every step of the broker workflow.
+              The same tools power our advisory team and your client area—secure uploads, clear status, and reminders so nothing important is missed.
             </p>
           </AnimatedSection>
 
@@ -409,7 +409,7 @@ export function HomePage() {
             <Building2 className="mx-auto h-10 w-10 text-accent-400 mb-4" />
             <h2 className="text-3xl font-extrabold text-white sm:text-4xl">Ready to Protect What Matters?</h2>
             <p className="mx-auto mt-4 max-w-xl text-primary-200">
-              Join 700+ clients across Mauritius who trust {COMPANY_NAME_SHORT}. Get your free, no-obligation quote today.
+              Families and businesses across Mauritius trust {COMPANY_NAME_SHORT} for clear advice and a straightforward online experience. Get your free, no-obligation quote today.
             </p>
             <div className="mt-10 flex flex-wrap justify-center gap-4">
               <a
@@ -430,7 +430,7 @@ export function HomePage() {
                 to="/login"
                 className="inline-flex min-h-[48px] items-center gap-2 rounded-xl glass border border-white/20 px-8 py-3.5 text-sm font-semibold text-white hover:bg-white/15 cursor-pointer transition-all duration-200"
               >
-                Access Client Portal
+                Sign in
                 <ArrowRight className="h-4 w-4" aria-hidden />
               </Link>
             </div>
@@ -447,7 +447,7 @@ export function HomePage() {
                 <span className="text-lg font-bold text-white tracking-tight">{COMPANY_NAME_SHORT}</span>
               </div>
               <p className="mt-4 max-w-md text-sm leading-relaxed">
-                Your trusted insurance broker portal. Managing policies, processing documents, and serving clients across Mauritius. Licensed by the Financial Services Commission.
+                Your licensed insurance broker for Mauritius—quotes, renewals, claims guidance, and secure document sharing in one place. Regulated by the Financial Services Commission.
               </p>
               <div className="mt-6 flex flex-wrap items-center gap-3">
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-accent-500/10 px-3 py-1 text-xs font-medium text-accent-400 border border-accent-500/20">
@@ -539,7 +539,7 @@ export function HomePage() {
                   FAQ
                 </a>
                 <Link to="/login" className="block hover:text-white cursor-pointer transition-colors duration-200">
-                  Client Portal
+                  Sign in
                 </Link>
               </div>
             </div>

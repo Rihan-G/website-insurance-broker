@@ -34,33 +34,33 @@ export const insurers = [
 export const services: Array<{ icon: LucideIcon; title: string; desc: string }> = [
   {
     icon: Upload,
-    title: "Secure Document Portal",
-    desc: "Encrypted drag-and-drop uploads. PDF, JPG, PNG up to 25MB with AES-256 at rest and in transit.",
+    title: "Secure document sharing",
+    desc: "Send policies and proof documents through an encrypted portal—simple uploads, clear status, and no email attachments to chase.",
   },
   {
     icon: FileText,
-    title: "OCR Intelligence",
-    desc: "Automatic data extraction from policy documents with confidence scoring, validation, and version control.",
+    title: "Clearer paperwork, faster answers",
+    desc: "We help structure what you send so your cover can be reviewed accurately—less back-and-forth, fewer missed details.",
   },
   {
     icon: BarChart3,
-    title: "Admin Dashboard",
-    desc: "Real-time pipeline status, revenue tracking, client analytics, and comprehensive reporting at a glance.",
+    title: "Your cover in one place",
+    desc: "See renewals, messages, and what needs your attention in a single online hub—whether you have one policy or several.",
   },
   {
     icon: Users,
-    title: "Client Management",
-    desc: "Complete client profiles with policy tracking, document history, communication logs, and payment status.",
+    title: "People you can reach",
+    desc: "Work with licensed advisors who explain options in plain language and stay with you from quote to claim.",
   },
   {
     icon: Lock,
-    title: "Security & Compliance",
-    desc: "Role-based access, 2FA authentication, full audit trails, GDPR-compliant data handling, and AML/KYC.",
+    title: "Privacy & security",
+    desc: "Strong sign-in options, encrypted connections, and handling aligned with data-protection expectations for financial services.",
   },
   {
     icon: Zap,
-    title: "Automated Workflows",
-    desc: "Payment notifications via SMS/WhatsApp, policy expiry alerts, and automatic PDF receipt generation.",
+    title: "Timely reminders",
+    desc: "Renewal and payment prompts by email or WhatsApp (where you opt in) so important dates do not slip past unnoticed.",
   },
 ];
 
@@ -83,7 +83,7 @@ export const testimonials = [
   {
     name: "Jean-Pierre R.",
     role: "Business Client",
-    text: "The dashboard gives me a clear overview of all my commercial policies. Outstanding service and technology. My accountant loves the CSV exports.",
+    text: "I finally have one place to see renewals, messages, and documents for our shop policies. The team is responsive and the online experience feels professional.",
     rating: 5,
   },
   {
@@ -97,18 +97,18 @@ export const testimonials = [
 export const steps = [
   {
     step: "01",
-    title: "Upload Documents",
-    desc: "Drag and drop insurance documents into our encrypted portal. We accept all major formats with 25MB limit.",
+    title: "Tell us what you need",
+    desc: "Use the quick estimate or reach out by phone or WhatsApp. We confirm details and next steps—no obligation.",
   },
   {
     step: "02",
-    title: "Automatic Processing",
-    desc: "Our OCR engine extracts and validates data with confidence scoring, reducing manual entry by 90%.",
+    title: "Share documents securely",
+    desc: "Upload policies or proof documents through our encrypted portal so we can review cover accurately and quickly.",
   },
   {
     step: "03",
-    title: "Manage & Export",
-    desc: "Review, approve, and export processed data. Track policies, generate receipts, and serve clients faster.",
+    title: "Stay covered with support",
+    desc: "Track renewals and messages in your online area, and lean on your advisor when life changes or you need to claim.",
   },
 ];
 

@@ -2,6 +2,8 @@
 
 A modern insurance broker management platform built with React, TypeScript, and Supabase.
 
+The **public homepage** at **`/`** is **one shared marketing entry** for everyone (clients, brokers, and admins). After sign-in, **role-specific** screens live under **`/dashboard/*`** (and optional separate **client vs staff** portal builds—see `frontend/.env.example` and `AGENTS.md`).
+
 ## Demo
 
 ### Screenshots
