@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { FileText, CreditCard, MessageSquare, RefreshCw, Calendar, CheckCircle, Clock, AlertTriangle, ChevronRight, Download, FileWarning, FolderOpen } from "lucide-react";
 import { supabase } from "../lib/supabase";
 import { db } from "../lib/db";
-import { db } from "../lib/db";
 import { useAuth } from "../context/AuthContext";
 import { generatePolicyCertificate } from "../lib/pdfService";
 import { differenceInDays, format } from "date-fns";
@@ -18,6 +17,16 @@ interface Policy {
   start_date: string;
   end_date: string;
   status: string;
+}
+
+interface Payment {
+  id: string;
+  amount: number;
+  currency: string;
+  status: string;
+  description: string | null;
+  created_at: string;
+  paid_at: string | null;
 }
 
 interface ClaimIntakeRow {

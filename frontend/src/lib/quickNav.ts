@@ -22,6 +22,7 @@ export const QUICK_NAV_ITEMS: QuickNavItem[] = [
   { id: "clients", label: "Clients", to: "/dashboard/clients", keywords: "crm people", roles: ["admin", "broker"] },
   { id: "services", label: "Services", to: "/dashboard/services", keywords: "products motor home" },
   { id: "quotes", label: "Quote Calculator", to: "/dashboard/quotes", keywords: "premium estimate motor" },
+  { id: "quote-leads", label: "Quote leads", to: "/dashboard/quote-leads", keywords: "crm pipeline website home estimate", roles: ["admin", "broker"] },
   { id: "mid-term", label: "Mid-Term Adjustments", to: "/dashboard/mid-term", keywords: "mta policy change" },
   { id: "inbox", label: "Inbox", to: "/dashboard/inbox", keywords: "messages mail" },
   { id: "payments", label: "Payments", to: "/dashboard/payments", keywords: "invoice card receipt" },

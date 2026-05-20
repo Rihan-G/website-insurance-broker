@@ -1,4 +1,5 @@
 import { useEffect, useState, useId } from "react";
+import { format as formatDate } from "date-fns";
 import { Link } from "react-router-dom";
 import type { ComponentType } from "react";
 import {
@@ -22,6 +23,7 @@ import {
   Settings,
   Upload,
   CircleAlert,
+  UserPlus,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { DOCUMENT_STATUS_BADGE_CLASS, labelFromMime } from "../lib/documentsDisplay";
@@ -29,6 +31,41 @@ import { supabase } from "../lib/supabase";
 import type { DashboardStats, PipelineItem } from "../types";
 import { useCurrency } from "../context/CurrencyContext";
 import { formatRelativeTime } from "../lib/formatRelativeTime";
+import { describeQuoteSource, quoteLeadContact } from "../lib/quoteLeads";
+
+interface RecentQuoteRow {
+  id: string;
+  product_type: string;
+  estimated_premium: number | null;
+  status: string;
+  created_at: string;
+  input_data: Record<string, unknown> | null;
+  notes: string | null;
+  client: { full_name: string; email: string } | null;
+}
+
+const demoStaffRecentQuotes: RecentQuoteRow[] = [
+  {
+    id: "demo-quote-1",
+    product_type: "motor",
+    estimated_premium: 64_800,
+    status: "draft",
+    created_at: new Date().toISOString(),
+    input_data: { source: "home_quick_quote", lead_email: "prospect@example.com" },
+    notes: null,
+    client: null,
+  },
+  {
+    id: "demo-quote-2",
+    product_type: "home",
+    estimated_premium: 38_200,
+    status: "sent",
+    created_at: new Date(Date.now() - 72_000_000).toISOString(),
+    input_data: { source: "calculator", _displayCurrency: "MUR" },
+    notes: null,
+    client: { full_name: "Marie Laurent", email: "marie@example.com" },
+  },
+];
 
 const demoStats: DashboardStats = {
   totalClients: 347,
@@ -182,12 +219,16 @@ export function DashboardPage() {
   );
   const [loading, setLoading] = useState(!demoAuthActive && Boolean(session && user));
   const [careSnapshot, setCareSnapshot] = useState<CareSnapshot | null>(demoAuthActive ? demoCareSnapshot : null);
+  const [recentQuotes, setRecentQuotes] = useState<RecentQuoteRow[]>(() =>
+    demoAuthActive && (profile?.role === "admin" || profile?.role === "broker") ? demoStaffRecentQuotes : [],
+  );
 
   useEffect(() => {
     if (demoAuthActive) {
       const staff = profile?.role === "admin" || profile?.role === "broker";
       setStats(staff ? demoStats : demoClientStats);
       setPipeline(staff ? demoPipeline : demoClientPipeline);
+      setRecentQuotes(staff ? demoStaffRecentQuotes : []);
       setLoading(false);
       return;
     }
@@ -195,6 +236,7 @@ export function DashboardPage() {
     if (!session || !user?.id || !profile) {
       setStats(null);
       setPipeline([]);
+      setRecentQuotes([]);
       setLoading(false);
       return;
     }
@@ -213,6 +255,7 @@ export function DashboardPage() {
         processedRes,
         paymentsRes,
         pipeRes,
+        quotesRes,
       ] = await Promise.all([
         supabase.from("profiles").select("*", { count: "exact", head: true }).eq("role", "client"),
         supabase.from("policies").select("*", { count: "exact", head: true }).eq("status", "active"),
@@ -237,6 +280,22 @@ export function DashboardPage() {
           )
           .order("created_at", { ascending: false })
           .limit(8),
+        supabase
+          .from("quotes")
+          .select(
+            `
+            id,
+            product_type,
+            estimated_premium,
+            status,
+            created_at,
+            input_data,
+            notes,
+            client:profiles!quotes_client_id_fkey ( full_name, email )
+          `,
+          )
+          .order("created_at", { ascending: false })
+          .limit(6),
       ]);
 
       if (cancelled) return;
@@ -274,6 +333,8 @@ export function DashboardPage() {
           confidence: r.ocr_confidence ?? undefined,
         })),
       );
+
+      setRecentQuotes(((quotesRes.data ?? []) as RecentQuoteRow[]) ?? []);
     }
 
     async function loadClient() {
@@ -332,6 +393,7 @@ export function DashboardPage() {
           confidence: r.ocr_confidence ?? undefined,
         })),
       );
+      setRecentQuotes([]);
     }
 
     setLoading(true);
@@ -434,15 +496,26 @@ export function DashboardPage() {
 
       <div className="dashboard-panel min-w-0 rounded-2xl p-5">
         <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Workflow shortcuts</p>
-        <div className="mt-3 grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5">
+        <div
+          className={`mt-3 grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 ${staffDashboard ? "2xl:grid-cols-6" : "2xl:grid-cols-5"}`}
+        >
           {(
-            [
-              { to: "/dashboard/renewals", label: "Renewals", hint: "Runway & reminders", Icon: CalendarClock },
-              { to: "/dashboard/claims", label: "Claims", hint: "FNOL wizard", Icon: FileWarning },
-              { to: "/dashboard/secure-messages", label: "Secure chat", hint: "Policy threads", Icon: MessagesSquare },
-              { to: "/dashboard/notifications", label: "Alerts", hint: "Activity feed", Icon: BellRing },
-              { to: "/dashboard/tasks", label: "Tasks", hint: "SLAs & follow-ups", Icon: ListTodo },
-            ] as const
+            staffDashboard
+              ? ([
+                  { to: "/dashboard/renewals", label: "Renewals", hint: "Runway & reminders", Icon: CalendarClock },
+                  { to: "/dashboard/claims", label: "Claims", hint: "FNOL wizard", Icon: FileWarning },
+                  { to: "/dashboard/quote-leads", label: "Quote leads", hint: "Site & calculator", Icon: UserPlus },
+                  { to: "/dashboard/secure-messages", label: "Secure chat", hint: "Policy threads", Icon: MessagesSquare },
+                  { to: "/dashboard/notifications", label: "Alerts", hint: "Activity feed", Icon: BellRing },
+                  { to: "/dashboard/tasks", label: "Tasks", hint: "SLAs & follow-ups", Icon: ListTodo },
+                ] as const)
+              : ([
+                  { to: "/dashboard/renewals", label: "Renewals", hint: "Runway & reminders", Icon: CalendarClock },
+                  { to: "/dashboard/claims", label: "Claims", hint: "FNOL wizard", Icon: FileWarning },
+                  { to: "/dashboard/secure-messages", label: "Secure chat", hint: "Policy threads", Icon: MessagesSquare },
+                  { to: "/dashboard/notifications", label: "Alerts", hint: "Activity feed", Icon: BellRing },
+                  { to: "/dashboard/tasks", label: "Tasks", hint: "SLAs & follow-ups", Icon: ListTodo },
+                ] as const)
           ).map(({ to, label, hint, Icon }) => (
             <Link
               key={to}
@@ -555,6 +628,61 @@ export function DashboardPage() {
           </div>
         )}
       </section>
+
+      {staffDashboard && (
+        <section className="dashboard-panel min-w-0 rounded-2xl p-5" aria-label="Quote leads preview">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Quote pipeline</p>
+              <p className="mt-0.5 text-sm text-muted-foreground">Latest calculator saves and website quick-quote leads</p>
+            </div>
+            <Link
+              to="/dashboard/quote-leads"
+              className="text-sm font-semibold text-primary-600 hover:underline dark:text-primary-400 whitespace-nowrap"
+            >
+              Manage leads →
+            </Link>
+          </div>
+          <div className="mt-4 overflow-x-auto rounded-xl border border-border/80">
+            <table className="w-full min-w-[560px] text-left text-sm">
+              <thead className="bg-muted/30 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                <tr>
+                  <th className="px-3 py-2">When</th>
+                  <th className="px-3 py-2">Source</th>
+                  <th className="px-3 py-2">Product</th>
+                  <th className="px-3 py-2">Premium</th>
+                  <th className="px-3 py-2">Contact</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {recentQuotes.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="px-3 py-8 text-center text-muted-foreground">
+                      No quotes yet. Leads appear from the home page widget or dashboard calculator.
+                    </td>
+                  </tr>
+                ) : (
+                  recentQuotes.map((r) => (
+                    <tr key={r.id} className="bg-surface">
+                      <td className="whitespace-nowrap px-3 py-2.5 text-muted-foreground">
+                        {formatDate(new Date(r.created_at), "dd MMM yyyy")}
+                      </td>
+                      <td className="px-3 py-2.5 capitalize text-surface-foreground">{describeQuoteSource(r.input_data)}</td>
+                      <td className="px-3 py-2.5 capitalize text-surface-foreground">{r.product_type}</td>
+                      <td className="px-3 py-2.5 tabular-nums text-surface-foreground">
+                        {r.estimated_premium != null ? `MUR ${Number(r.estimated_premium).toLocaleString()}` : "—"}
+                      </td>
+                      <td className="max-w-[200px] truncate px-3 py-2.5 text-surface-foreground">
+                        {r.client?.full_name ?? quoteLeadContact(r.input_data, r.notes)}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
 
       <div className="grid min-w-0 gap-5 sm:grid-cols-2 xl:grid-cols-4">
         {showStatSkeleton ? (

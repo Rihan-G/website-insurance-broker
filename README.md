@@ -58,7 +58,7 @@ Many screens use **mock data** when demo mode is active; any feature that still 
 ### If something fails
 
 - **404 on refresh:** the workflow copies `index.html` → `404.html`; redeploy from `main`.
-- **Blank page or wrong assets:** confirm `VITE_GH_PAGES_BASE` matches the repo name (`/website-insurance-broker` for this repository).
+- **Blank page or wrong assets:** confirm `VITE_GH_PAGES_BASE` matches the repo name (`/website-insurance-broker` for this repository). See **[docs/GITHUB_PAGES.md](docs/GITHUB_PAGES.md)** for base path case sensitivity and chunk-load errors.
 - **Workflow not listed:** ensure `.github/workflows/deploy-github-pages.yml` exists on the default branch you push.
 
 ## Tech Stack
@@ -70,6 +70,9 @@ Many screens use **mock data** when demo mode is active; any feature that still 
 
 ## Build planning
 
+- **[PHASES.md](PHASES.md)** — Supabase / RLS rollout order (Phase 1–5).  
+- **[docs/FEATURES_BY_PHASE.md](docs/FEATURES_BY_PHASE.md)** — which app features sit in which phase.  
+- **[docs/GITHUB_PAGES.md](docs/GITHUB_PAGES.md)** — Pages URL, base path, demo login, and common CI/runtime errors.  
 - **[docs/BUILD_ROADMAP.md](docs/BUILD_ROADMAP.md)** — execution sequencing for marketing depth, design system, quote persistence, SEO, and state management (complements product phases below).
 - **[docs/FREE_TIER_STACK.md](docs/FREE_TIER_STACK.md)** — free-tier friendly stack (Vite, Vercel, Supabase, optional shadcn/Zustand/RHF, analytics, email) mapped to this repo.
 - **[docs/next-migration/MIGRATION_STRATEGY.md](docs/next-migration/MIGRATION_STRATEGY.md)** — when and how to adopt Next.js, hosting tradeoffs (GitHub Pages vs Vercel), env vars, and App Router folder mapping.
@@ -132,19 +135,23 @@ pnpm lint
 └── package.json           # Root workspace config
 ```
 
-## Phases
+## Phases and features
 
-This project follows a phased rollout:
+**Engineering rollout (use this order for Supabase, RLS, and storage):** **[PHASES.md](PHASES.md)** — five phases from auth through hardening.
 
-1. **Phase 1** – Upload portal, OCR extraction, document storage, export
-2. **Phase 2** – Admin dashboard, 2FA, search/filters, audit trail
-3. **Phase 3** – Client access, secure inbox, notifications, payments
-4. **Phase 4** – PDF receipts, policy documents, financial reporting
-5. **Phase 5** – Service pages, branding, mobile-friendly design
-6. **Phase 6** – Calculators, multi-language, compliance, analytics
-7. **Phase 7** – Document monitoring, WhatsApp integration, e-ID verification
+**What each phase includes in the UI (routes, tables, mock vs live):** **[docs/FEATURES_BY_PHASE.md](docs/FEATURES_BY_PHASE.md)**.
 
-Implementation checklists, Supabase migration order, and “what’s still mock vs live” notes live in **[PHASES.md](PHASES.md)**.
+**GitHub Pages deploy / blank page / chunk errors:** **[docs/GITHUB_PAGES.md](docs/GITHUB_PAGES.md)**.
+
+The numbered list below is a **legacy high-level product roadmap** (themes, not migration order). Several themes span multiple technical phases; see **FEATURES_BY_PHASE.md** for the accurate map.
+
+1. **Theme 1** – Upload portal, OCR extraction, document storage, export  
+2. **Theme 2** – Admin dashboard, 2FA, search/filters, audit trail  
+3. **Theme 3** – Client access, secure inbox, notifications, payments  
+4. **Theme 4** – PDF receipts, policy documents, financial reporting  
+5. **Theme 5** – Service pages, branding, mobile-friendly design  
+6. **Theme 6** – Calculators, multi-language, compliance, analytics  
+7. **Theme 7** – Document monitoring, WhatsApp integration, e-ID verification  
 
 ### What the UI already covers (high level)
 
