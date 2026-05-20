@@ -6,7 +6,7 @@ import {
   ShieldCheck, KeyRound, ClipboardList, MessageSquare, CreditCard,
   Calculator, BarChart3, Bell, MessageCircle, Mic, Shield, ChevronDown,
   Globe, Home, RefreshCw, Award, Calendar, Search, CalendarClock, FileWarning,
-  MessagesSquare, BellRing, ListTodo,
+  MessagesSquare, BellRing, ListTodo, UserPlus,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useAutoLogout } from "../hooks/useAutoLogout";
@@ -71,6 +71,7 @@ const navGroups: Array<{ label: string; items: NavItem[] }> = [
     label: "Admin",
     items: [
       { name: "review", to: "/dashboard/review", icon: ClipboardList, roles: ["admin", "broker"] },
+      { name: "quote-leads", to: "/dashboard/quote-leads", icon: UserPlus, roles: ["admin", "broker"] },
       { name: "analytics", to: "/dashboard/analytics", icon: BarChart3, roles: ["admin", "broker"] },
       { name: "commissions", to: "/dashboard/commissions", icon: Award, roles: ["admin", "broker"] },
       { name: "capacity", to: "/dashboard/capacity", icon: Users, roles: ["admin", "broker"] },
@@ -113,6 +114,7 @@ const navLabels: Record<string, string> = {
   tasks: "Tasks",
   whatsapp: "WhatsApp",
   review: "Doc Review",
+  "quote-leads": "Quote leads",
   analytics: "Analytics",
   commissions: "Commissions",
   capacity: "Capacity Mgmt.",
