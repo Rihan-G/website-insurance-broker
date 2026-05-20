@@ -169,3 +169,5 @@ Implement sections in **this order** (each builds trust for the next):
 - Marketing homepage tells a coherent product story with **one primary CTA** and a working **quote → stored lead** path.
 - Staff experience shows **real or clearly labeled** data; PHASES.md Phase 3 exit criteria trending green.
 - Docs: this roadmap + PHASES.md + migration strategy stay **the single place** new contributors read first.
+
+See also **[FREE_TIER_STACK.md](./FREE_TIER_STACK.md)** for a free-tier friendly tool matrix (Vercel, PostHog, Resend, optional shadcn/Zustand/RHF) aligned with this repo.
