@@ -1,6 +1,0 @@
-# Cloudflare Pages — build output for this monorepo (Vite app in frontend/)
-# Dashboard build command should still run from repo root, e.g.:
-#   corepack enable && corepack prepare pnpm@10 --activate && pnpm install && pnpm build
-name = "securebroker"
-compatibility_date = "2024-11-01"
-pages_build_output_dir = "frontend/dist"

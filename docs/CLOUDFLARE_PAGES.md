@@ -102,10 +102,8 @@ On the setup screen (or **Settings → Builds & deployments**):
 | **Production branch** | `main` |
 | **Framework preset** | None (or Vite if listed) |
 | **Build command** | `pnpm install && pnpm build` |
-| **Build output directory** | `frontend/dist` — **not** `dist` (Vite writes under `frontend/`) |
+| **Build output directory** | `frontend/dist` |
 | **Root directory** | `/` (repository root) |
-
-If the build log says `Output directory "dist" not found`, the dashboard is wrong: change **Build output directory** to `frontend/dist` and redeploy. This repo also includes root `wrangler.toml` with `pages_build_output_dir = "frontend/dist"`.
 
 ### 2.4 Node version
 
