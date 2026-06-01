@@ -20,3 +20,9 @@ Standard dev commands are in root `package.json` and documented in `README.md`:
 - **Database migrations**: SQL migrations are in `supabase/migrations/`. These are for reference and for when Supabase CLI (`supabase db push`) is used.
 - **Split client vs staff portals**: For simultaneous sessions on one machine, deploy two origins (e.g. `portal.*` and `ops.*`). Use `VITE_PORTAL_FLAVOR=client` or `staff`, set `VITE_STAFF_PORTAL_URL` / `VITE_CLIENT_PORTAL_URL` for cross-links, and copy `frontend/.env.portal-client.example` → `frontend/.env.portal-client` (and staff variant) before `pnpm build:portal-client` / `pnpm build:portal-staff`. Each build uses a distinct Supabase `auth.storageKey`. See `frontend/.env.example`.
 - **Centralized public homepage**: The marketing site at **`/`** (`HomePage`) is **shared by all visitors**—clients, brokers, and admins see the same entry before sign-in. Role-specific UX lives under **`/dashboard/*`** (and optional separate portal builds above), not on duplicate home routes.
+
+### Cursor plugins & skills
+
+Recommended marketplace plugins: [`.cursor-plugin/marketplace.json`](.cursor-plugin/marketplace.json) — install with `/add-plugin <name>`. See [PLUGINS.md](PLUGINS.md).
+
+Project agent skills (UI/UX, Impeccable, Emil, taste, marketing/brand, stop-slop, Remotion, context engineering): [SKILLS.md](SKILLS.md) under `.agents/skills/`. Use `/skill-name` to invoke (e.g. `/ui-ux-pro-max`, `/stop-slop`, `/impeccable audit`).

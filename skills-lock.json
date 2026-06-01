@@ -120,6 +120,30 @@
       "sourceType": "github",
       "skillPath": ".claude/skills/ui-ux-pro-max/SKILL.md",
       "computedHash": "0a413bf988d06481f69bb81df2070741c3ba12dd9f1be2706d57f259c905992d"
+    },
+    "impeccable": {
+      "source": "pbakaus/impeccable",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/impeccable/SKILL.md",
+      "computedHash": "26a2d7097b7bd29d8f0b1a3574cd940b05080167710fa6ef5f141d01d87ea29a"
+    },
+    "stop-slop": {
+      "source": "hardikpandya/stop-slop",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/stop-slop/SKILL.md",
+      "computedHash": "c19e33a1b83aab5078e1d5895cdfd232e87199414212db952dceeaa276b91470"
+    },
+    "remotion-best-practices": {
+      "source": "remotion-dev/skills",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/remotion-best-practices/SKILL.md",
+      "computedHash": "2461d2bcaf838175d5f54167b6a894a294a5c3541cadaed53fd77e07554513ba"
+    },
+    "context-engineering-collection": {
+      "source": "muratcankoylan/Agent-Skills-for-Context-Engineering",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/context-engineering-collection/SKILL.md",
+      "computedHash": "18c077d97b6c0ec1f03a7ea397616c0d54af6971b278b51313434f261061810c"
     }
   }
 }

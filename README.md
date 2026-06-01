@@ -74,7 +74,8 @@ Many screens use **mock data** when demo mode is active; any feature that still 
 
 - **[PHASES.md](PHASES.md)** — Supabase / RLS rollout order (Phase 1–5).  
 - **[docs/FEATURES_BY_PHASE.md](docs/FEATURES_BY_PHASE.md)** — which app features sit in which phase.  
-- **[docs/GITHUB_PAGES.md](docs/GITHUB_PAGES.md)** — Pages URL, base path, demo login, and common CI/runtime errors.  
+- **[docs/GITHUB_PAGES.md](docs/GITHUB_PAGES.md)** — Pages URL, base path, demo login, and common CI/runtime errors.
+- **[docs/CLOUDFLARE_PAGES.md](docs/CLOUDFLARE_PAGES.md)** — free Cloudflare Pages + Supabase production hosting (step-by-step).  
 - **[docs/BUILD_ROADMAP.md](docs/BUILD_ROADMAP.md)** — execution sequencing for marketing depth, design system, quote persistence, SEO, and state management (complements product phases below).
 - **[docs/FREE_TIER_STACK.md](docs/FREE_TIER_STACK.md)** — free-tier friendly stack (Vite, Vercel, Supabase, optional shadcn/Zustand/RHF, analytics, email) mapped to this repo.
 - **[docs/next-migration/MIGRATION_STRATEGY.md](docs/next-migration/MIGRATION_STRATEGY.md)** — when and how to adopt Next.js, hosting tradeoffs (GitHub Pages vs Vercel), env vars, and App Router folder mapping.

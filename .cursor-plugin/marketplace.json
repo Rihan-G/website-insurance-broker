@@ -1,0 +1,140 @@
+{
+  "name": "securebroker-plugins",
+  "owner": {
+    "name": "SecureBroker",
+    "email": "dev@securebroker.local"
+  },
+  "metadata": {
+    "description": "Recommended Cursor plugins for the SecureBroker (website-insurance-broker) monorepo — React, Supabase, Vite, Tailwind.",
+    "installBatch": [
+      "supabase",
+      "shadcn",
+      "browse",
+      "cursor-team-kit",
+      "figma",
+      "vercel",
+      "pstack",
+      "agent-compatibility",
+      "continual-learning",
+      "docs-canvas",
+      "create-plugin",
+      "1password"
+    ]
+  },
+  "plugins": [
+    {
+      "name": "supabase",
+      "source": "supabase",
+      "description": "Database, auth, storage, migrations, and project debugging (primary backend).",
+      "category": "required"
+    },
+    {
+      "name": "shadcn",
+      "source": "shadcn",
+      "description": "shadcn/ui registry search, component install, and project audits.",
+      "category": "required"
+    },
+    {
+      "name": "browse",
+      "source": "browse",
+      "description": "Browser automation for local dev smoke tests and UI verification.",
+      "category": "required"
+    },
+    {
+      "name": "figma",
+      "source": "figma",
+      "description": "Design-to-code, Figma MCP, and Code Connect.",
+      "category": "required"
+    },
+    {
+      "name": "vercel",
+      "source": "vercel",
+      "description": "Deployments, env vars, Next.js/Vite guidance, AI SDK patterns.",
+      "category": "required"
+    },
+    {
+      "name": "cloudflare",
+      "source": "cloudflare",
+      "description": "Workers, Wrangler, Durable Objects — use if deploying on Cloudflare.",
+      "category": "optional"
+    },
+    {
+      "name": "cursor-team-kit",
+      "source": "cursor-team-kit",
+      "description": "CI loops, code review, verify-this, smoke tests, shipping workflows.",
+      "category": "required"
+    },
+    {
+      "name": "create-plugin",
+      "source": "create-plugin",
+      "description": "Scaffold and validate Cursor plugins (meta).",
+      "category": "required"
+    },
+    {
+      "name": "agent-compatibility",
+      "source": "agent-compatibility",
+      "description": "Repo compatibility scans — startup, docs, validation paths.",
+      "category": "required"
+    },
+    {
+      "name": "continual-learning",
+      "source": "continual-learning",
+      "description": "Keeps AGENTS.md in sync with durable workspace learnings.",
+      "category": "required"
+    },
+    {
+      "name": "docs-canvas",
+      "source": "docs-canvas",
+      "description": "Architecture notes and runbooks as navigable Canvases.",
+      "category": "required"
+    },
+    {
+      "name": "pstack",
+      "source": "pstack",
+      "description": "Deep planning before implementation — how/why/unslop workflows.",
+      "category": "required"
+    },
+    {
+      "name": "cursor-sdk",
+      "source": "cursor-sdk",
+      "description": "Automate Cursor agents from scripts and CI via @cursor/sdk.",
+      "category": "optional"
+    },
+    {
+      "name": "1password",
+      "source": "1password",
+      "description": "Secure secrets for Supabase keys and env files.",
+      "category": "required"
+    },
+    {
+      "name": "tierzero",
+      "source": "tierzero",
+      "description": "Production incident investigation (enable when you have TierZero).",
+      "category": "optional"
+    },
+    {
+      "name": "notion-workspace",
+      "source": "notion-workspace",
+      "description": "Notion tasks and docs MCP (enable if team uses Notion).",
+      "category": "optional"
+    },
+    {
+      "name": "vantage",
+      "source": "vantage",
+      "description": "Cloud cost visibility (enable if using Vantage).",
+      "category": "optional"
+    },
+    {
+      "name": "huggingface-skills",
+      "source": "huggingface-skills",
+      "description": "HF Hub, training jobs, datasets — only for ML experiments.",
+      "category": "optional"
+    },
+    {
+      "name": "forge-skills",
+      "source": "forge-skills",
+      "description": "Atlassian Forge apps — skip unless building Jira/Confluence extensions.",
+      "category": "optional"
+    }
+  ]
+}
