@@ -1,10 +1,10 @@
 import { FormEvent, useMemo, useState } from "react";
 import { Bot, Sparkles, Loader2, Send } from "lucide-react";
 import { hasAiApiKeys } from "../../lib/aiConfig";
+import { chatViaOpenRouter } from "../../lib/openRouterChat";
 
 /**
- * Lightweight homepage AI assistant.
- * This runs client-side for quick verification in non-production contexts.
+ * Lightweight homepage AI assistant (client-side for quick verification).
  */
 export function HomeAssistantTeaser() {
   const aiReady = hasAiApiKeys();
@@ -16,7 +16,7 @@ export function HomeAssistantTeaser() {
   const statusText = useMemo(() => {
     if (loading) return "Thinking...";
     if (aiReady) return "AI assistant online";
-    return "Add AI key to enable replies";
+    return "Add VITE_OPENROUTER_API_KEY to enable replies";
   }, [loading, aiReady]);
 
   async function askAssistant(message: string): Promise<string> {
@@ -24,36 +24,7 @@ export function HomeAssistantTeaser() {
     const openAiKey = import.meta.env.VITE_OPENAI_API_KEY?.trim() || import.meta.env.VITE_AI_API_KEY?.trim();
 
     if (openRouterKey) {
-      const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${openRouterKey}`,
-        },
-        body: JSON.stringify({
-          model: "openai/gpt-4o-mini",
-          messages: [
-            {
-              role: "system",
-              content:
-                "You are SecureBroker's homepage assistant. Give concise insurance guidance for Mauritius users and suggest contacting a licensed broker for policy binding decisions.",
-            },
-            { role: "user", content: message },
-          ],
-          temperature: 0.4,
-          max_tokens: 220,
-        }),
-      });
-
-      if (!res.ok) {
-        const raw = await res.text();
-        throw new Error(`OpenRouter request failed (${res.status}): ${raw.slice(0, 160)}`);
-      }
-
-      const data = (await res.json()) as {
-        choices?: Array<{ message?: { content?: string } }>;
-      };
-      return data.choices?.[0]?.message?.content?.trim() || "I could not generate a reply. Please try again.";
+      return chatViaOpenRouter(openRouterKey, message);
     }
 
     if (openAiKey) {
@@ -112,21 +83,21 @@ export function HomeAssistantTeaser() {
 
   return (
     <div
-      className="pointer-events-auto fixed z-[35] max-lg:left-4 max-lg:right-4 max-lg:bottom-[calc(5.75rem+env(safe-area-inset-bottom))] lg:bottom-8 lg:right-8 lg:left-auto lg:max-w-md"
+      className="pointer-events-auto fixed z-[35] max-lg:left-4 max-lg:right-4 max-lg:bottom-[calc(5.75rem+env(safe-area-inset-bottom))] lg:bottom-8 lg:right-8 lg:left-auto lg:w-full lg:max-w-md"
       role="region"
       aria-label="Insurance assistant"
     >
-      <div className="rounded-2xl border border-border/90 bg-surface/95 px-3 py-2 shadow-[0_8px_32px_rgba(0,0,0,0.12)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/90 dark:shadow-[0_12px_40px_rgba(0,0,0,0.45)]">
-        <div className="flex items-center gap-2.5">
+      <div className="rounded-2xl border border-slate-200 bg-white px-3 py-2.5 shadow-[0_8px_32px_rgba(0,0,0,0.14)] dark:border-slate-600 dark:bg-slate-900 dark:shadow-[0_12px_40px_rgba(0,0,0,0.5)]">
+        <div className="flex items-start gap-2.5">
           <div
-            className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 shadow-md ring-2 ring-violet-400/30 dark:from-violet-500 dark:to-indigo-500 dark:ring-violet-300/25"
+            className="relative mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 shadow-md ring-2 ring-violet-400/30"
             aria-hidden
           >
             <Bot className="h-5 w-5 text-white" strokeWidth={2} />
             <Sparkles className="absolute -right-1 -top-1 h-3.5 w-3.5 text-amber-200 drop-shadow-sm" strokeWidth={2} />
           </div>
 
-          <form className="min-w-0 flex-1" onSubmit={onSubmit}>
+          <form className="min-w-0 flex-1 space-y-2" onSubmit={onSubmit}>
             <label htmlFor="home-assistant-input" className="sr-only">
               Ask the insurance assistant
             </label>
@@ -140,7 +111,7 @@ export function HomeAssistantTeaser() {
                 onChange={(e) => setPrompt(e.target.value)}
                 placeholder="Ask about cover, renewals, or claims..."
                 title={aiReady ? "Ask a quick question" : "Add AI API key to enable replies"}
-                className="h-10 w-full min-w-0 rounded-xl border border-border/80 bg-muted/50 px-3 text-sm text-surface-foreground placeholder:text-muted-foreground/80 outline-none ring-primary-500/20 focus-visible:ring-2 dark:border-white/10 dark:bg-slate-900/80 dark:text-primary-50 dark:placeholder:text-primary-300/70"
+                className="h-10 min-w-0 flex-1 rounded-xl border border-slate-300 bg-white px-3 text-sm font-medium text-slate-900 caret-primary-600 placeholder:text-slate-500 shadow-inner outline-none ring-primary-500/30 focus-visible:ring-2 disabled:opacity-70 dark:border-slate-500 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-400 dark:caret-primary-300"
                 disabled={loading}
               />
               <button
@@ -153,15 +124,22 @@ export function HomeAssistantTeaser() {
               </button>
             </div>
 
-            <div className="mt-1">
-              <p className="truncate text-[10px] font-medium uppercase tracking-wide text-muted-foreground dark:text-primary-400/90">
-                {statusText}
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">{statusText}</p>
+
+            {error && (
+              <p
+                role="alert"
+                className="rounded-lg border border-red-200 bg-red-50 px-2.5 py-2 text-xs leading-snug text-red-900 dark:border-red-800 dark:bg-red-950/80 dark:text-red-100"
+              >
+                {error}
               </p>
-              {error && <p className="mt-0.5 line-clamp-2 text-[11px] text-danger-600 dark:text-danger-300">{error}</p>}
-              {reply && !error && (
-                <p className="mt-0.5 line-clamp-3 text-[11px] text-surface-foreground dark:text-primary-50">{reply}</p>
-              )}
-            </div>
+            )}
+
+            {reply && !error && (
+              <p className="rounded-lg border border-primary-200 bg-primary-50 px-2.5 py-2 text-sm leading-snug text-slate-900 dark:border-primary-800 dark:bg-slate-800 dark:text-slate-50">
+                {reply}
+              </p>
+            )}
           </form>
         </div>
       </div>

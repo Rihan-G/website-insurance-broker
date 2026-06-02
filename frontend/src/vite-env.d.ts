@@ -26,6 +26,8 @@ interface ImportMetaEnv {
   readonly VITE_GEMINI_API_KEY?: string;
   /** OpenRouter API key (preferred low-cost provider for testing). */
   readonly VITE_OPENROUTER_API_KEY?: string;
+  /** Optional OpenRouter model slug (e.g. google/gemini-2.0-flash-lite-001). */
+  readonly VITE_OPENROUTER_MODEL?: string;
   /** Generic AI provider key hook (optional). */
   readonly VITE_AI_API_KEY?: string;
   /** OpenAI-compatible API key (optional). */
