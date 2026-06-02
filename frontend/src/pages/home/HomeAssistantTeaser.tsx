@@ -1,8 +1,9 @@
-import { Bot, Sparkles } from "lucide-react";
+import { Bot, Sparkles, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 /**
- * Visual placeholder for a future insurance assistant (no backend / no model wired yet).
- * Icon + text field sit side‑by‑side; input is read-only so visitors are not misled into expecting replies.
+ * Homepage assistant teaser.
+ * Until chat is fully wired, provide a clear fallback action instead of a broken-looking status.
  */
 export function HomeAssistantTeaser() {
   return (
@@ -21,7 +22,7 @@ export function HomeAssistantTeaser() {
         </div>
         <div className="min-w-0 flex-1">
           <label htmlFor="home-assistant-teaser-input" className="sr-only">
-            Insurance assistant (coming soon)
+            Insurance assistant preview
           </label>
           <input
             id="home-assistant-teaser-input"
@@ -31,12 +32,21 @@ export function HomeAssistantTeaser() {
             tabIndex={-1}
             autoComplete="off"
             placeholder="Ask about cover, renewals, or claims…"
-            title="Assistant is not connected yet — use Get a quote, WhatsApp, or call us for now."
+            title="AI assistant beta is being prepared. Use quote request for immediate help."
             className="h-10 w-full min-w-0 cursor-default rounded-xl border border-border/80 bg-muted/50 px-3 text-sm text-surface-foreground placeholder:text-muted-foreground/80 outline-none ring-primary-500/20 focus-visible:ring-2 dark:border-white/10 dark:bg-slate-900/80 dark:text-primary-50 dark:placeholder:text-primary-300/70"
           />
-          <p className="mt-1 truncate text-[10px] font-medium uppercase tracking-wide text-muted-foreground dark:text-primary-400/90">
-            Assistant coming soon · not connected
-          </p>
+          <div className="mt-1 flex items-center justify-between gap-2">
+            <p className="truncate text-[10px] font-medium uppercase tracking-wide text-muted-foreground dark:text-primary-400/90">
+              AI assistant beta soon
+            </p>
+            <Link
+              to="/login"
+              className="inline-flex items-center gap-1 text-[10px] font-semibold text-primary-600 hover:underline dark:text-primary-300"
+            >
+              Start now
+              <ArrowRight className="h-3 w-3" aria-hidden />
+            </Link>
+          </div>
         </div>
       </div>
     </div>
