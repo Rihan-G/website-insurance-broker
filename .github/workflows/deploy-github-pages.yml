@@ -43,17 +43,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 10
-
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
           cache: "pnpm"
 
       - name: Install
-        run: pnpm install
+        run: |
+          corepack enable
+          corepack prepare pnpm@10 --activate
+          pnpm install --frozen-lockfile
 
       - name: Set Vite base path for GitHub Pages
         run: |
@@ -82,7 +81,7 @@ jobs:
           if [ -z "${VITE_ALLOW_DEMO_LOGIN:-}" ]; then
             export VITE_ALLOW_DEMO_LOGIN=true
           fi
-          pnpm build
+          npm run build
 
       - name: SPA fallback + Jekyll bypass
         run: |
