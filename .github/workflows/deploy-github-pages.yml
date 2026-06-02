@@ -41,17 +41,17 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          node-version: "20"
+          node-version: "22"
 
       - name: Install
         run: |
           corepack enable
-          corepack prepare pnpm@10 --activate
-          pnpm install --frozen-lockfile
+          corepack prepare pnpm@10.17.1 --activate
+          corepack pnpm install --frozen-lockfile
 
       - name: Set Vite base path for GitHub Pages
         run: |
@@ -80,7 +80,7 @@ jobs:
           if [ -z "${VITE_ALLOW_DEMO_LOGIN:-}" ]; then
             export VITE_ALLOW_DEMO_LOGIN=true
           fi
-          npm run build
+          corepack pnpm build
 
       - name: SPA fallback + Jekyll bypass
         run: |
