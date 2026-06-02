@@ -1,5 +1,5 @@
 import type { User } from "./supabase";
-import { supabase } from "./supabase";
+import { db } from "./db";
 import type { Profile } from "../types";
 
 const VALID_ROLES = new Set<Profile["role"]>(["admin", "broker", "client"]);
@@ -29,7 +29,7 @@ export async function insertProfileForUser(user: User): Promise<Profile | null> 
     role: roleFromUser(user),
   };
 
-  const { data, error } = await supabase.from("profiles").insert(row).select("*").single();
+  const { data, error } = await db.profiles().insert(row).select("*").single();
 
   if (!error && data) return data as Profile;
 
@@ -38,14 +38,14 @@ export async function insertProfileForUser(user: User): Promise<Profile | null> 
     console.warn("[ensureProfile] insert failed:", error.message);
   }
 
-  const { data: existing } = await supabase.from("profiles").select("*").eq("id", user.id).single();
+  const { data: existing } = await db.profiles().select("*").eq("id", user.id).single();
   return (existing as Profile | null) ?? null;
 }
 
 /** Fetch profile; retry briefly; backfill row if missing. */
 export async function resolveProfileForUser(user: User, attempts = 4): Promise<Profile | null> {
   for (let i = 0; i < attempts; i++) {
-    const { data, error } = await supabase.from("profiles").select("*").eq("id", user.id).single();
+    const { data, error } = await db.profiles().select("*").eq("id", user.id).single();
 
     if (data) return data as Profile;
 
