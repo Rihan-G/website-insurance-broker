@@ -136,13 +136,13 @@ export function VoiceUploadPage() {
           </p>
           <ul className="mt-2 list-disc space-y-1 pl-5 text-xs sm:text-sm">
             <li>
-              <code className="font-mono">VITE_GEMINI_API_KEY</code> — recommended for Gemini Flash Lite speech workflows
+              <code className="font-mono">VITE_OPENROUTER_API_KEY</code> — recommended low-cost default for this project (OpenRouter)
             </li>
             <li>
-              <code className="font-mono">VITE_AI_API_KEY</code> — generic hook for a future provider abstraction
+              <code className="font-mono">VITE_GEMINI_API_KEY</code> — Gemini fallback / alternative provider
             </li>
             <li>
-              <code className="font-mono">VITE_OPENAI_API_KEY</code> — optional OpenAI-compatible endpoint
+              <code className="font-mono">VITE_OPENAI_API_KEY</code> or <code className="font-mono">VITE_AI_API_KEY</code> — optional compatibility hooks
             </li>
           </ul>
         </div>
@@ -182,7 +182,7 @@ export function VoiceUploadPage() {
             <div className="rounded-lg border border-dashed border-border bg-surface/80 p-3 dark:bg-surface/40">
               <p className="text-xs font-semibold text-surface-foreground">Broker desk (placeholder)</p>
               <p className="mt-2 text-xs italic text-muted-foreground">
-                [Assistant summary will appear here after <code className="not-italic">VITE_GEMINI_API_KEY</code> or another supported key is set and the Edge pipeline is connected.]
+                [Assistant summary will appear here after <code className="not-italic">VITE_OPENROUTER_API_KEY</code> (or another supported key) is set and the Edge pipeline is connected.]
               </p>
             </div>
             <div className="rounded-lg border border-dashed border-border bg-surface/80 p-3 dark:bg-surface/40">

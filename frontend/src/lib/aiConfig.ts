@@ -10,10 +10,13 @@ function isConfiguredKey(value: string | undefined): boolean {
 
 /**
  * True when at least one Vite env key is set for AI-backed features (voice transcription, future assistants).
- * Add `VITE_GEMINI_API_KEY` (or another supported key) in `frontend/.env` for production builds.
+ * For this project we prefer OpenRouter for low-cost testing:
+ *   - `VITE_OPENROUTER_API_KEY`
+ * Existing compatibility keys are still supported.
  */
 export function hasAiApiKeys(): boolean {
   return [
+    import.meta.env.VITE_OPENROUTER_API_KEY,
     import.meta.env.VITE_GEMINI_API_KEY,
     import.meta.env.VITE_AI_API_KEY,
     import.meta.env.VITE_OPENAI_API_KEY,

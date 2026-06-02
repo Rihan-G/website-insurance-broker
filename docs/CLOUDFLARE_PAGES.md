@@ -122,6 +122,7 @@ Same place — **Production** variables:
 | `VITE_SUPABASE_URL` | `https://YOUR_REF.supabase.co` |
 | `VITE_SUPABASE_PUBLISHABLE_KEY` | your publishable key |
 | `VITE_ALLOW_DEMO_LOGIN` | `false` |
+| `VITE_OPENROUTER_API_KEY` | optional AI key for voice/assistant testing (`sk-or-...`) |
 
 Use `VITE_SUPABASE_ANON_KEY` instead of publishable if that is what your project provides.
 
