@@ -468,10 +468,22 @@ export function DashboardPage() {
 
   if (!demoAuthActive && session && user && !profile) {
     return (
-      <div className="flex min-h-[40vh] items-center justify-center text-muted-foreground">
-        <div className="flex flex-col items-center gap-3">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary-600 border-t-transparent dark:border-primary-400" />
-          <p className="text-sm">Loading your profile…</p>
+      <div className="flex min-h-[40vh] items-center justify-center px-4">
+        <div className="max-w-md rounded-2xl border border-border bg-surface p-6 text-center shadow-sm">
+          <CircleAlert className="mx-auto h-10 w-10 text-warning-600" aria-hidden />
+          <h3 className="mt-3 text-lg font-semibold text-surface-foreground">We could not load your account profile</h3>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Your sign-in worked, but the portal profile row is missing. Apply Supabase migrations (including{" "}
+            <code className="rounded bg-muted px-1 text-xs">00011_profiles_self_insert.sql</code>) or ask an admin to
+            create your profile, then refresh.
+          </p>
+          <button
+            type="button"
+            className="mt-4 rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-700"
+            onClick={() => window.location.reload()}
+          >
+            Retry
+          </button>
         </div>
       </div>
     );

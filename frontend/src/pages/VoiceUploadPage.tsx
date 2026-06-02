@@ -89,7 +89,11 @@ export function VoiceUploadPage() {
 
       if (dbError) throw dbError;
 
-      toast.success("Voice note uploaded. Transcription will be ready shortly.");
+      toast.success(
+        aiReady
+          ? "Voice note uploaded. Transcription will be ready shortly."
+          : "Voice note uploaded. Add an AI key later to enable transcription.",
+      );
       setAudioBlob(null);
       setAudioUrl(null);
       setDuration(0);
@@ -198,111 +202,88 @@ export function VoiceUploadPage() {
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Recorder */}
         <div className="rounded-xl border border-border bg-surface p-6 space-y-5">
-          {aiReady ? (
-            <>
-              <div className="flex items-center gap-3">
-                <Globe className="h-5 w-5 text-muted-foreground" />
-                <select
-                  aria-label="Select transcription language"
-                  value={language}
-                  onChange={(e) => setLanguage(e.target.value)}
-                  className="rounded-lg border border-border bg-surface px-3 py-2 text-sm focus:border-primary-500 focus:outline-none cursor-pointer"
-                >
-                  <option value="mfe">Kreol Morisien</option>
-                  <option value="en">English</option>
-                  <option value="fr">Français</option>
-                </select>
-              </div>
+          <div className="flex items-center gap-3">
+            <Globe className="h-5 w-5 text-muted-foreground" />
+            <select
+              aria-label="Select transcription language"
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}
+              className="rounded-lg border border-border bg-surface px-3 py-2 text-sm focus:border-primary-500 focus:outline-none cursor-pointer"
+            >
+              <option value="mfe">Kreol Morisien</option>
+              <option value="en">English</option>
+              <option value="fr">Français</option>
+            </select>
+          </div>
 
-              <div className="flex flex-col items-center gap-4 py-4">
-                {recording ? (
-                  <>
-                    <div className="relative flex h-24 w-24 items-center justify-center rounded-full bg-danger-50 border-4 border-danger-200">
-                      <div className="absolute inset-0 rounded-full bg-danger-200 animate-ping opacity-30" />
-                      <Mic className="h-10 w-10 text-danger-600" />
-                    </div>
-                    <p className="text-2xl font-mono font-bold text-surface-foreground">{formatDuration(duration)}</p>
-                    <p className="text-sm text-danger-600 font-medium animate-pulse">Recording in {languageLabels[language]}…</p>
-                    <button
-                      onClick={stopRecording}
-                      className="inline-flex items-center gap-2 rounded-full bg-danger-600 px-6 py-3 text-sm font-semibold text-white hover:bg-danger-700 cursor-pointer transition-colors duration-200"
-                    >
-                      <Square className="h-4 w-4" />
-                      Stop Recording
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <div className="flex h-24 w-24 items-center justify-center rounded-full bg-primary-50 border-4 border-primary-200">
-                      <Mic className="h-10 w-10 text-primary-600" />
-                    </div>
-                    <p className="text-sm text-muted-foreground text-center">Click to start recording your voice note in {languageLabels[language]}</p>
-                    <button
-                      onClick={startRecording}
-                      className="inline-flex items-center gap-2 rounded-full bg-primary-600 px-6 py-3 text-sm font-semibold text-white hover:bg-primary-700 cursor-pointer transition-colors duration-200"
-                    >
-                      <Mic className="h-4 w-4" />
-                      Start Recording
-                    </button>
-                  </>
-                )}
-              </div>
-
-              {audioUrl && !recording && (
-                <div className="rounded-xl border border-border bg-muted p-4 space-y-3">
-                  <p className="text-sm font-medium text-surface-foreground">Recording ready ({formatDuration(duration)})</p>
-                  <audio controls src={audioUrl} className="w-full" />
-                  <div className="flex gap-3">
-                    <button
-                      onClick={() => { setAudioBlob(null); setAudioUrl(null); setDuration(0); }}
-                      className="flex-1 rounded-lg border border-border py-2 text-sm font-medium text-muted-foreground hover:bg-muted cursor-pointer"
-                    >
-                      Discard
-                    </button>
-                    <button
-                      onClick={uploadNote}
-                      disabled={uploading}
-                      className="flex-1 inline-flex items-center justify-center gap-2 rounded-lg bg-primary-600 py-2 text-sm font-semibold text-white hover:bg-primary-700 disabled:opacity-50 cursor-pointer"
-                    >
-                      {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
-                      {uploading ? "Uploading…" : "Upload & Transcribe"}
-                    </button>
-                  </div>
+          <div className="flex flex-col items-center gap-4 py-4">
+            {recording ? (
+              <>
+                <div className="relative flex h-24 w-24 items-center justify-center rounded-full bg-danger-50 border-4 border-danger-200">
+                  <div className="absolute inset-0 rounded-full bg-danger-200 animate-ping opacity-30" />
+                  <Mic className="h-10 w-10 text-danger-600" />
                 </div>
-              )}
-
-              <div className="rounded-lg bg-primary-50 border border-primary-200 p-4 text-sm text-primary-800 dark:bg-primary-950/55 dark:border-primary-700/50 dark:text-primary-100">
-                <strong>Powered by Speech-to-Text AI</strong> — Supports Kreol Morisien (Mauritian Creole), English, and French transcription via Gemini Flash Lite.
-              </div>
-            </>
-          ) : (
-            <>
-              <div className="flex flex-col items-center gap-4 rounded-xl border border-dashed border-border bg-muted/20 py-10 px-4 text-center">
-                <div className="flex h-24 w-24 items-center justify-center rounded-full border-2 border-dashed border-muted-foreground/30 bg-muted/40">
-                  <Mic className="h-10 w-10 text-muted-foreground/50" aria-hidden />
-                </div>
-                <p className="text-sm font-medium text-surface-foreground">Recorder (placeholder)</p>
-                <p className="max-w-sm text-xs text-muted-foreground">
-                  Start recording, language selection, and upload run after you set a supported API key in <code className="rounded bg-muted px-1 py-0.5 font-mono text-[11px]">frontend/.env</code> and restart the dev server.
-                </p>
+                <p className="text-2xl font-mono font-bold text-surface-foreground">{formatDuration(duration)}</p>
+                <p className="text-sm text-danger-600 font-medium animate-pulse">Recording in {languageLabels[language]}…</p>
                 <button
-                  type="button"
-                  disabled
-                  className="inline-flex cursor-not-allowed items-center gap-2 rounded-full border border-border bg-muted px-6 py-3 text-sm font-semibold text-muted-foreground opacity-70"
+                  onClick={stopRecording}
+                  className="inline-flex items-center gap-2 rounded-full bg-danger-600 px-6 py-3 text-sm font-semibold text-white hover:bg-danger-700 cursor-pointer transition-colors duration-200"
+                >
+                  <Square className="h-4 w-4" />
+                  Stop Recording
+                </button>
+              </>
+            ) : (
+              <>
+                <div className="flex h-24 w-24 items-center justify-center rounded-full bg-primary-50 border-4 border-primary-200">
+                  <Mic className="h-10 w-10 text-primary-600" />
+                </div>
+                <p className="text-sm text-muted-foreground text-center">Click to start recording your voice note in {languageLabels[language]}</p>
+                <button
+                  onClick={startRecording}
+                  className="inline-flex items-center gap-2 rounded-full bg-primary-600 px-6 py-3 text-sm font-semibold text-white hover:bg-primary-700 cursor-pointer transition-colors duration-200"
                 >
                   <Mic className="h-4 w-4" />
                   Start Recording
                 </button>
-                <div className="w-full max-w-xs rounded-lg border border-dashed border-border bg-surface/60 p-3 text-left">
-                  <p className="text-[11px] font-semibold text-muted-foreground">Upload &amp; transcribe</p>
-                  <p className="mt-1 text-xs italic text-muted-foreground">Appears here once recording is enabled.</p>
-                </div>
+              </>
+            )}
+          </div>
+
+          {audioUrl && !recording && (
+            <div className="rounded-xl border border-border bg-muted p-4 space-y-3">
+              <p className="text-sm font-medium text-surface-foreground">Recording ready ({formatDuration(duration)})</p>
+              <audio controls src={audioUrl} className="w-full" />
+              <div className="flex gap-3">
+                <button
+                  onClick={() => { setAudioBlob(null); setAudioUrl(null); setDuration(0); }}
+                  className="flex-1 rounded-lg border border-border py-2 text-sm font-medium text-muted-foreground hover:bg-muted cursor-pointer"
+                >
+                  Discard
+                </button>
+                <button
+                  onClick={uploadNote}
+                  disabled={uploading}
+                  className="flex-1 inline-flex items-center justify-center gap-2 rounded-lg bg-primary-600 py-2 text-sm font-semibold text-white hover:bg-primary-700 disabled:opacity-50 cursor-pointer"
+                >
+                  {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                  {uploading ? "Uploading…" : aiReady ? "Upload & Transcribe" : "Upload Note"}
+                </button>
               </div>
-              <div className="rounded-lg border border-dashed border-amber-300/60 bg-amber-50/80 p-4 text-sm text-amber-950 dark:border-amber-700/50 dark:bg-amber-950/35 dark:text-amber-50">
-                <strong className="text-surface-foreground dark:text-amber-50">Transcription</strong> — Provider-specific branding and live speech-to-text appear after API keys are configured; until then this panel stays in preview layout only.
-              </div>
-            </>
+            </div>
           )}
+
+          <div className="rounded-lg border p-4 text-sm dark:text-primary-100/95 bg-primary-50 border-primary-200 text-primary-800 dark:bg-primary-950/55 dark:border-primary-700/50">
+            {aiReady ? (
+              <>
+                <strong>Powered by Speech-to-Text AI</strong> — Supports Kreol Morisien (Mauritian Creole), English, and French transcription via your configured provider.
+              </>
+            ) : (
+              <>
+                <strong>Upload API is active.</strong> Voice notes save to Supabase now; add an AI key later to enable automatic transcription.
+              </>
+            )}
+          </div>
         </div>
 
         {/* Past notes */}

@@ -475,7 +475,8 @@ export function AppLayout() {
         if (item.roles?.length === 1 && item.roles[0] === "client") return false;
       }
       if (!item.roles) return true;
-      return profile?.role ? item.roles.includes(profile.role) : false;
+      const role = profile?.role ?? "client";
+      return item.roles.includes(role);
     }),
   })).filter((group) => group.items.length > 0);
 

@@ -2,6 +2,7 @@
 import { createContext, useContext, useEffect, useState, useCallback, useRef } from "react";
 import type { User, Session } from "@supabase/supabase-js";
 import { supabase } from "../lib/supabase";
+import { resolveProfileForUser } from "../lib/ensureProfile";
 import type { Profile } from "../types";
 import {
   DEMO_STORAGE_KEY,
@@ -62,9 +63,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const demoActiveRef = useRef(false);
 
-  const fetchProfile = useCallback(async (userId: string) => {
-    const { data } = await supabase.from("profiles").select("*").eq("id", userId).single();
-    const next = data ?? null;
+  const fetchProfile = useCallback(async (authUser: User) => {
+    const next = await resolveProfileForUser(authUser);
     setProfile(next);
     return next;
   }, []);
@@ -93,11 +93,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(false);
     } else {
       if (stored) clearDemoSession();
-      void supabase.auth.getSession().then(({ data: { session: s } }) => {
+      void supabase.auth.getSession().then(async ({ data: { session: s } }) => {
         setSession(s);
         setUser(s?.user ?? null);
         if (s?.user) {
-          void fetchProfile(s.user.id);
+          await fetchProfile(s.user);
         }
         setLoading(false);
       });
@@ -113,11 +113,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setSession(s);
       setUser(s?.user ?? null);
       if (s?.user) {
-        void fetchProfile(s.user.id);
+        setLoading(true);
+        void fetchProfile(s.user).finally(() => setLoading(false));
       } else {
         setProfile(null);
+        setLoading(false);
       }
-      setLoading(false);
     });
 
     return () => subscription.unsubscribe();
@@ -153,19 +154,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       setSession(data.session);
       setUser(data.user);
-      const p = await fetchProfile(data.user.id);
+      const p = await fetchProfile(data.user);
       return { error: null, profile: p };
     },
     [fetchProfile, clearDemoSession],
   );
 
   const signUp = async (email: string, password: string, fullName: string) => {
-    const { error } = await supabase.auth.signUp({
-      email,
+    const { data, error } = await supabase.auth.signUp({
+      email: email.trim(),
       password,
-      options: { data: { full_name: fullName } },
+      options: { data: { full_name: fullName.trim(), role: "client" } },
     });
-    return { error: error as Error | null };
+    if (error) return { error: error as Error };
+
+    if (data.session?.user) {
+      setSession(data.session);
+      setUser(data.session.user);
+      await fetchProfile(data.session.user);
+    }
+
+    return { error: null };
   };
 
   const signOut = async () => {
