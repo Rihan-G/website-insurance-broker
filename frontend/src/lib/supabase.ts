@@ -1,4 +1,4 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type User as SupabaseUser } from "@supabase/supabase-js";
 import type { Database } from "../types/database";
 import { getPortalFlavor } from "./portalFlavor";
 
@@ -20,3 +20,5 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseKey, {
     ...(authStorageKey ? { storageKey: authStorageKey } : {}),
   },
 });
+
+export type User = SupabaseUser;

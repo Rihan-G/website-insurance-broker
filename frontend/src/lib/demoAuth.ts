@@ -1,4 +1,4 @@
-import type { User } from "@supabase/supabase-js";
+import type { User } from "./supabase";
 import type { Profile } from "../types";
 
 /** sessionStorage payload */
@@ -134,21 +134,13 @@ function buildUser(profile: Profile): User {
   } as User;
 }
 
-function supabaseLooksUnconfigured(): boolean {
-  const key =
-    import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY?.trim() ??
-    import.meta.env.VITE_SUPABASE_ANON_KEY?.trim() ??
-    "";
-  return !key || key.includes("placeholder");
-}
-
-/** Demo login when Supabase env is not wired, or when `VITE_ALLOW_DEMO_LOGIN=true`. */
+/** Demo login is explicit in production: only `VITE_ALLOW_DEMO_LOGIN=true` enables it. */
 export function isDemoAuthEnabled(): boolean {
   if (import.meta.env.VITE_ALLOW_DEMO_LOGIN === "false") return false;
   if (import.meta.env.VITE_ALLOW_DEMO_LOGIN === "true") return true;
   // Local `pnpm dev`: always offer demo sign-in unless explicitly disabled above.
   if (import.meta.env.DEV) return true;
-  return supabaseLooksUnconfigured();
+  return false;
 }
 
 /** Resolve built-in demo credentials for a role (first account when multiple share the role). */
