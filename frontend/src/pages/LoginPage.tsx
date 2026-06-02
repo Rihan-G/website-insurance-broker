@@ -5,7 +5,6 @@ import { useAuth } from "../context/AuthContext";
 import { DEMO_ACCOUNTS, getDemoCredentialsByRole } from "../lib/demoAuth";
 import { COMPANY_NAME_SHORT } from "../lib/branding";
 import { getPortalFlavor, staffPortalBaseUrl } from "../lib/portalFlavor";
-import { ParticleField } from "../components/ParticleField";
 import { ThemeToggle } from "../components/ThemeToggle";
 
 const trustSignals = [
@@ -88,11 +87,7 @@ export function LoginPage() {
           <div className="aurora-orb-4 aurora-login-4" />
         </div>
 
-        {/* Scan line */}
-        <div className="scan-line" />
-
-        {/* Rising particles */}
-        <ParticleField count={22} variant="rise" />
+        {/* Decorative motion intentionally reduced for readability */}
 
         {/* Dot grid overlay */}
         <div className="absolute inset-0 dot-grid opacity-20" />
@@ -114,11 +109,11 @@ export function LoginPage() {
             FSC Licensed · Mauritius
           </div>
 
-          <h1 className="mb-4 text-4xl font-bold leading-tight text-white">
+          <h1 className="ui-title mb-4 text-4xl font-bold text-white">
             Your Trusted<br />
             <span className="text-gradient-warm">Insurance Portal</span>
           </h1>
-          <p className="text-base text-primary-200 max-w-sm leading-relaxed">
+          <p className="ui-body max-w-sm text-primary-200">
             Sign in to your secure area for renewals, messages, and uploads—backed by licensed advisors when you need a person on the line.
           </p>
 
@@ -133,7 +128,7 @@ export function LoginPage() {
             ))}
           </div>
 
-          <div className="mt-10 grid grid-cols-3 gap-6">
+          <div className="mt-10 grid grid-cols-3 gap-4">
             {[
               { value: "15+", label: "Years of local advisory experience" },
               { value: "12+", label: "Insurer partnerships" },
@@ -141,7 +136,7 @@ export function LoginPage() {
             ].map((s) => (
               <div key={s.label} className="rounded-xl glass p-4 text-center">
                 <p className="text-2xl font-bold text-white">{s.value}</p>
-                <p className="text-xs text-primary-300 mt-1 font-medium">{s.label}</p>
+                <p className="ui-caption mt-1 font-medium text-primary-300">{s.label}</p>
               </div>
             ))}
           </div>
@@ -166,8 +161,8 @@ export function LoginPage() {
             <div className="inline-flex rounded-2xl bg-primary-100 dark:bg-primary-900/35 p-4 mb-4">
               <ShieldCheck className="h-12 w-12 text-primary-600 dark:text-primary-400" />
             </div>
-            <h1 className="text-2xl font-bold text-primary-900 dark:text-primary-50">{COMPANY_NAME_SHORT}</h1>
-            <p className="text-sm text-muted-foreground mt-1">Insurance Portal</p>
+            <h1 className="ui-title text-2xl font-bold text-primary-900 dark:text-primary-50">{COMPANY_NAME_SHORT}</h1>
+            <p className="ui-caption mt-1 text-muted-foreground">Insurance Portal</p>
           </div>
 
           {!isSignUp && demoAuthAvailable && (

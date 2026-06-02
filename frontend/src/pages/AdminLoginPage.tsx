@@ -5,7 +5,6 @@ import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import { ThemeToggle } from "../components/ThemeToggle";
 import { CurrencySwitcher } from "../components/CurrencySwitcher";
-import { ParticleField } from "../components/ParticleField";
 import { DEMO_ACCOUNTS } from "../lib/demoAuth";
 import { COMPANY_NAME_SHORT } from "../lib/branding";
 import { formatHolidayDate, upcomingMauritiusHolidays, type MauritiusHoliday } from "../lib/mauritiusHolidays";
@@ -102,8 +101,7 @@ export function AdminLoginPage() {
           <div className="aurora-orb-2 aurora-login-2" />
           <div className="aurora-orb-3 aurora-login-3" />
         </div>
-        <div className="scan-line opacity-60" />
-        <ParticleField count={18} variant="rise" className="opacity-50" />
+        <div className="scan-line opacity-35" />
         <div className="absolute inset-0 dot-grid opacity-25" />
 
         <div className="relative z-10 max-w-lg">
@@ -122,12 +120,12 @@ export function AdminLoginPage() {
             Dark mode, currencies & calendars — same as the main portal
           </div>
 
-          <h1 className="mb-3 text-3xl font-bold leading-tight text-white xl:text-4xl">
+          <h1 className="ui-title mb-3 text-3xl font-bold text-white xl:text-4xl">
             Secure staff
             <br />
             <span className="text-gradient-warm">control centre</span>
           </h1>
-          <p className="max-w-md text-sm leading-relaxed text-primary-200">
+          <p className="ui-body max-w-md text-primary-200">
             After sign-in you get the full dashboard: team calendar (your schedule plus Mauritius holiday reference), expiry monitor, analytics, audit log, and
             the same theme toggle and currency switcher you use here.
           </p>
@@ -203,10 +201,10 @@ export function AdminLoginPage() {
             <div className="mb-4 inline-flex rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-sm lg:hidden">
               <ShieldCheck className="h-12 w-12 text-accent-400" />
             </div>
-            <h1 className="text-2xl font-bold tracking-tight text-white lg:text-surface-foreground dark:lg:text-white">
+            <h1 className="ui-title text-2xl font-bold tracking-tight text-white lg:text-surface-foreground dark:lg:text-white">
               Administrator access
             </h1>
-            <p className="mt-2 text-sm text-primary-200 lg:text-muted-foreground dark:lg:text-primary-200">
+            <p className="ui-caption mt-2 text-primary-200 lg:text-muted-foreground dark:lg:text-primary-200">
               {COMPANY_NAME_SHORT} — staff and operations
             </p>
           </div>
@@ -217,8 +215,8 @@ export function AdminLoginPage() {
                 <Lock className="h-5 w-5 text-accent-400 lg:text-primary-600 dark:lg:text-accent-400" />
               </div>
               <div>
-                <h2 className="text-lg font-bold text-white lg:text-surface-foreground">Sign in</h2>
-                <p className="text-xs text-primary-300 lg:text-muted-foreground">Use your administrator credentials</p>
+                <h2 className="ui-title text-lg font-bold text-white lg:text-surface-foreground">Sign in</h2>
+                <p className="ui-caption text-primary-300 lg:text-muted-foreground">Use your administrator credentials</p>
               </div>
             </div>
 

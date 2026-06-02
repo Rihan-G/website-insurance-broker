@@ -74,6 +74,26 @@ body {
   min-height: -webkit-fill-available;
 }
 
+/* Shared typography helpers for consistent hierarchy */
+.ui-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.ui-title {
+  letter-spacing: -0.015em;
+  line-height: 1.15;
+}
+.ui-body {
+  font-size: 0.925rem;
+  line-height: 1.6;
+}
+.ui-caption {
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+
 /* Prevent horizontal “empty gutter + clipped content” on narrow viewports (flex + wide descendants). */
 #root {
   display: flex;
@@ -625,7 +645,7 @@ button, a, input, select, textarea {
               border-color 0.25s ease;
 }
 .card-hover:hover {
-  transform: translateY(-4px);
+  transform: translateY(-2px);
   box-shadow: 0 12px 40px rgba(3, 105, 161, 0.12), 0 4px 12px rgba(3, 105, 161, 0.08);
   border-color: #7DD3FC;
 }
@@ -934,6 +954,32 @@ button, a, input, select, textarea {
   .animate-slide-right {
     animation: none !important;
     opacity: 1;
+    transform: none;
+  }
+  .aurora-orb-1,
+  .aurora-orb-2,
+  .aurora-orb-3,
+  .aurora-orb-4,
+  .scan-line,
+  .particle,
+  .particle-rise,
+  .particle-drift,
+  .animated-mesh,
+  .dashboard-bg,
+  .animate-marquee,
+  .wave-flow,
+  .wave-flow-slow,
+  .wave-flow-reverse,
+  .badge-float,
+  .ring-pulse,
+  .ring-pulse-green,
+  .glow-card-anim,
+  .animate-float,
+  .animate-float-delayed,
+  .animate-float-delayed-2 {
+    animation: none !important;
+  }
+  .card-hover:hover {
     transform: none;
   }
 }

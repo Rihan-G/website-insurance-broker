@@ -82,7 +82,7 @@ export function HomePage() {
 
         <div className="scan-line" />
 
-        <ParticleField count={35} variant="rise" />
+        <ParticleField count={16} variant="rise" />
 
         <div className="absolute inset-0 dot-grid opacity-20" />
 
@@ -95,13 +95,13 @@ export function HomePage() {
               <span className="h-2 w-2 rounded-full bg-accent-400 animate-pulse ring-2 ring-accent-400/40" aria-hidden />
             </div>
 
-            <h1 className="text-balance text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl lg:leading-[1.06]">
+            <h1 className="ui-title text-balance text-4xl font-extrabold text-white sm:text-5xl lg:text-6xl lg:leading-[1.06]">
               Protect What Matters Most
             </h1>
             <p className="mt-5 max-w-2xl text-xl font-semibold leading-snug text-primary-50 sm:text-2xl">
               Fast, affordable insurance coverage for individuals and businesses.
             </p>
-            <p className="mt-5 max-w-2xl text-base leading-relaxed text-primary-200/95 sm:text-lg">
+            <p className="ui-body mt-5 max-w-2xl text-primary-200/95 sm:text-lg">
               Get an indicative quote in minutes, share documents through a secure channel, and work with licensed advisors who place cover
               with leading insurers—all in one place.
             </p>
@@ -204,7 +204,7 @@ export function HomePage() {
           <div className="aurora-orb-3 aurora-home-stats-1" />
           <div className="aurora-orb-4 aurora-home-stats-2" />
         </div>
-        <ParticleField count={12} variant="drift" />
+        <ParticleField count={6} variant="drift" />
         <div className="absolute inset-0 dot-grid opacity-10" />
         <div className="relative mx-auto grid max-w-7xl grid-cols-2 gap-5 px-6 py-14 md:grid-cols-4">
           {[
@@ -238,7 +238,7 @@ export function HomePage() {
         <div className="mx-auto max-w-7xl px-5 sm:px-6">
           <AnimatedSection className="text-center">
             <span className="text-sm font-semibold text-primary-600 uppercase tracking-wider">Insurance Products</span>
-            <h2 className="mt-4 text-balance text-3xl font-extrabold tracking-tight text-primary-950 dark:text-primary-50 sm:text-4xl lg:text-5xl">
+            <h2 className="ui-title mt-4 text-balance text-3xl font-extrabold text-primary-950 dark:text-primary-50 sm:text-4xl lg:text-5xl">
               Comprehensive Coverage for Every Need
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
@@ -308,7 +308,7 @@ export function HomePage() {
         <div className="mx-auto max-w-7xl px-5 sm:px-6">
           <AnimatedSection className="text-center">
             <span className="text-sm font-semibold text-primary-600 uppercase tracking-wider">Our Platform</span>
-            <h2 className="mt-4 text-balance text-3xl font-extrabold tracking-tight text-primary-950 dark:text-primary-50 sm:text-4xl lg:text-5xl">
+            <h2 className="ui-title mt-4 text-balance text-3xl font-extrabold text-primary-950 dark:text-primary-50 sm:text-4xl lg:text-5xl">
               From first quote to renewal, online and human
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
@@ -339,7 +339,7 @@ export function HomePage() {
         <div className="mx-auto max-w-7xl px-5 sm:px-6">
           <AnimatedSection className="text-center">
             <span className="text-sm font-semibold text-primary-600 uppercase tracking-wider">Client Stories</span>
-            <h2 className="mt-4 text-balance text-3xl font-extrabold tracking-tight text-primary-950 dark:text-primary-50 sm:text-4xl lg:text-5xl">
+            <h2 className="ui-title mt-4 text-balance text-3xl font-extrabold text-primary-950 dark:text-primary-50 sm:text-4xl lg:text-5xl">
               Trusted by Clients Across Mauritius
             </h2>
           </AnimatedSection>
@@ -378,7 +378,7 @@ export function HomePage() {
         <div className="mx-auto max-w-3xl px-5 sm:px-6">
           <div className="text-center">
             <span className="text-sm font-semibold uppercase tracking-wider text-primary-600">FAQ</span>
-            <h2 className="mt-3 text-balance text-3xl font-extrabold tracking-tight text-primary-950 dark:text-primary-50 sm:text-4xl">
+            <h2 className="ui-title mt-3 text-balance text-3xl font-extrabold text-primary-950 dark:text-primary-50 sm:text-4xl">
               Common questions
             </h2>
             <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
@@ -412,7 +412,7 @@ export function HomePage() {
           <div className="aurora-orb-3 aurora-home-cta-3" />
         </div>
         <div className="scan-line scan-line-delayed" />
-        <ParticleField count={20} variant="rise" />
+        <ParticleField count={10} variant="rise" />
         <div className="absolute inset-0 dot-grid opacity-12" />
         <div className="relative mx-auto max-w-7xl px-6 py-20 lg:py-28">
           <AnimatedSection className="text-center">
