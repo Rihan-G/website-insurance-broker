@@ -49,9 +49,7 @@ jobs:
 
       - name: Install
         run: |
-          corepack enable
-          corepack prepare pnpm@10.17.1 --activate
-          corepack pnpm install --frozen-lockfile
+          npm --prefix frontend install
 
       - name: Set Vite base path for GitHub Pages
         run: |
@@ -80,7 +78,7 @@ jobs:
           if [ -z "${VITE_ALLOW_DEMO_LOGIN:-}" ]; then
             export VITE_ALLOW_DEMO_LOGIN=true
           fi
-          corepack pnpm build
+          npm --prefix frontend run build
 
       - name: SPA fallback + Jekyll bypass
         run: |
