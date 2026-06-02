@@ -101,7 +101,7 @@ On the setup screen (or **Settings → Builds & deployments**):
 |---------|--------|
 | **Production branch** | `main` |
 | **Framework preset** | None (or Vite if listed) |
-| **Build command** | `pnpm install && pnpm build` |
+| **Build command** | `npm run build:cloudflare` |
 | **Build output directory** | `frontend/dist` |
 | **Root directory** | `/` (repository root) |
 

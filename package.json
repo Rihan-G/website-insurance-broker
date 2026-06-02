@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "corepack pnpm --filter frontend dev",
     "build": "corepack pnpm --filter frontend build",
+    "build:cloudflare": "corepack enable && corepack prepare pnpm@10 --activate && corepack pnpm install && corepack pnpm build",
     "build:portal-client": "corepack pnpm --filter frontend build:portal-client",
     "build:portal-staff": "corepack pnpm --filter frontend build:portal-staff",
     "lint": "corepack pnpm --filter frontend lint",
