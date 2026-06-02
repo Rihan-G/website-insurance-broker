@@ -127,6 +127,47 @@ const navLabels: Record<string, string> = {
   settings: "Settings",
 };
 
+const navEmoji: Record<string, string> = {
+  dashboard: "🏠",
+  "my-policies": "🧾",
+  documents: "📄",
+  upload: "📤",
+  clients: "👥",
+  services: "🧰",
+  quotes: "🧮",
+  "mid-term": "🔁",
+  inbox: "📥",
+  payments: "💳",
+  renewals: "📅",
+  claims: "⚠️",
+  "secure-messages": "💬",
+  notifications: "🔔",
+  tasks: "✅",
+  whatsapp: "🟢",
+  review: "🗂️",
+  "quote-leads": "🎯",
+  analytics: "📈",
+  commissions: "🏅",
+  capacity: "🧑‍🤝‍🧑",
+  audit: "🔒",
+  expiry: "⏰",
+  calendar: "🗓️",
+  voice: "🎤",
+  compliance: "🛡️",
+  "2fa": "🔑",
+  settings: "⚙️",
+};
+
+function navLabel(name: string): string {
+  return navLabels[name] ?? name;
+}
+
+function navLabelWithEmoji(name: string): string {
+  const label = navLabel(name);
+  const emoji = navEmoji[name];
+  return emoji ? `${emoji} ${label}` : label;
+}
+
 type VisibleNavGroup = { label: string; items: NavItem[] };
 
 const DESKTOP_SHELL_MIN_PX = 1024;
@@ -167,6 +208,13 @@ function subscribeShellLayout(cb: () => void) {
   };
 }
 
+function dashboardLabelFromPath(pathname: string, withEmoji: boolean): string {
+  if (pathname === "/dashboard") return withEmoji ? navLabelWithEmoji("dashboard") : navLabel("dashboard");
+  if (!pathname.startsWith("/dashboard/")) return withEmoji ? navLabelWithEmoji("dashboard") : navLabel("dashboard");
+  const slug = pathname.slice("/dashboard/".length).split("/")[0] ?? "";
+  return withEmoji ? navLabelWithEmoji(slug) : navLabel(slug);
+}
+
 function DashboardSidebarPanel({
   onNavLinkClick,
   onSignOut,
@@ -175,6 +223,7 @@ function DashboardSidebarPanel({
   toggleGroup,
   notifBadge,
   profile,
+  showEmojiHints,
 }: {
   onNavLinkClick: () => void;
   onSignOut: () => void | Promise<void>;
@@ -183,6 +232,7 @@ function DashboardSidebarPanel({
   toggleGroup: (label: string) => void;
   notifBadge: number | null;
   profile: Profile | null;
+  showEmojiHints: boolean;
 }) {
   const { i18n } = useTranslation();
 
@@ -214,7 +264,26 @@ function DashboardSidebarPanel({
               onClick={() => toggleGroup(group.label)}
               className="flex w-full cursor-pointer items-center justify-between px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-primary-500 transition-colors duration-200 hover:text-primary-300"
             >
-              {group.label}
+              <span className="inline-flex items-center gap-1.5">
+                {showEmojiHints && (
+                  <span aria-hidden>
+                    {group.label === "Core"
+                      ? "🧭"
+                      : group.label === "Services"
+                        ? "🧩"
+                        : group.label === "Communication"
+                          ? "💬"
+                          : group.label === "Care"
+                            ? "🩺"
+                            : group.label === "Admin"
+                              ? "🛠️"
+                              : group.label === "Tools"
+                                ? "🧪"
+                                : "👤"}
+                  </span>
+                )}
+                {group.label}
+              </span>
               <ChevronDown
                 className={`h-3 w-3 transition-transform duration-200 ${collapsedGroups.has(group.label) ? "-rotate-90" : ""}`}
               />
@@ -247,7 +316,7 @@ function DashboardSidebarPanel({
                         <item.icon
                           className={`h-4 w-4 shrink-0 transition-colors duration-200 ${isActive ? "text-accent-400" : "text-primary-400 group-hover:text-primary-200"}`}
                         />
-                        <span className="truncate">{navLabels[item.name] ?? item.name}</span>
+                        <span className="truncate">{showEmojiHints ? navLabelWithEmoji(item.name) : navLabel(item.name)}</span>
                         {badgeText && (
                           <span className="ml-auto rounded-full bg-danger-500 px-1.5 py-0.5 text-xs font-bold leading-none text-white">
                             {badgeText}
@@ -310,6 +379,7 @@ function DashboardSidebarPanel({
 export function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [cmdOpen, setCmdOpen] = useState(false);
+  const [quickCreateOpen, setQuickCreateOpen] = useState(false);
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
   const { profile, signOut, session, demoAuthActive } = useAuth();
   const navigate = useNavigate();
@@ -321,6 +391,7 @@ export function AppLayout() {
 
   useEffect(() => {
     mainRef.current?.scrollTo(0, 0);
+    setQuickCreateOpen(false);
   }, [location.pathname]);
 
   useEffect(() => {
@@ -367,6 +438,19 @@ export function AppLayout() {
 
   const jumpShortcut =
     typeof navigator !== "undefined" && /Mac|iPhone|iPad|iPod/i.test(navigator.userAgent) ? "⌘K" : "Ctrl+K";
+  const currentPageLabel = dashboardLabelFromPath(location.pathname, !isLg);
+  const quickActions = profile?.role === "client"
+    ? [
+        { to: "/dashboard/upload", label: "New upload", icon: "📤" },
+        { to: "/dashboard/claims", label: "Start claim", icon: "⚠️" },
+        { to: "/dashboard/secure-messages", label: "New message", icon: "💬" },
+      ]
+    : [
+        { to: "/dashboard/upload", label: "New upload", icon: "📤" },
+        { to: "/dashboard/quotes", label: "Create quote", icon: "🧮" },
+        { to: "/dashboard/tasks", label: "Create task", icon: "✅" },
+        { to: "/dashboard/claims", label: "Start claim", icon: "⚠️" },
+      ];
 
   const handleSignOut = async () => {
     await signOut();
@@ -427,6 +511,7 @@ export function AppLayout() {
                 toggleGroup={toggleGroup}
                 notifBadge={notifBadge}
                 profile={profile}
+                showEmojiHints
               />
             </aside>
           </>,
@@ -450,6 +535,7 @@ export function AppLayout() {
             toggleGroup={toggleGroup}
             notifBadge={notifBadge}
             profile={profile}
+            showEmojiHints={false}
           />
         </aside>
       ) : null}
@@ -481,7 +567,10 @@ export function AppLayout() {
           </button>
           <div className="flex min-w-0 flex-1 items-center gap-2">
             <ShieldCheck className="h-5 w-5 shrink-0 text-primary-500 hidden sm:block" />
-            <h1 className="truncate text-base font-bold text-surface-foreground">{PORTAL_HEADING}</h1>
+            <div className="min-w-0">
+              <h1 className="truncate text-base font-bold text-surface-foreground">{PORTAL_HEADING}</h1>
+              <p className="hidden truncate text-[11px] text-muted-foreground md:block">{currentPageLabel}</p>
+            </div>
           </div>
           <div className="ml-auto flex shrink-0 items-center gap-2 sm:gap-3">
             <button
@@ -494,6 +583,36 @@ export function AppLayout() {
               <span className="max-w-[8rem] truncate">Jump to…</span>
               <kbd className="hidden rounded border border-border bg-muted px-1 font-mono text-[10px] text-muted-foreground md:inline">{jumpShortcut}</kbd>
             </button>
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setQuickCreateOpen((v) => !v)}
+                className="inline-flex items-center gap-1.5 rounded-xl bg-primary-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-primary-700"
+                aria-expanded={quickCreateOpen}
+                aria-haspopup="menu"
+              >
+                <span className="text-sm leading-none">＋</span>
+                <span className="hidden sm:inline">New</span>
+              </button>
+              {quickCreateOpen && (
+                <div className="absolute right-0 top-[calc(100%+0.4rem)] z-30 min-w-44 rounded-xl border border-border bg-surface p-1.5 shadow-xl">
+                  {quickActions.map((a) => (
+                    <button
+                      key={a.to}
+                      type="button"
+                      className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left text-sm text-surface-foreground hover:bg-muted"
+                      onClick={() => {
+                        setQuickCreateOpen(false);
+                        navigate(a.to);
+                      }}
+                    >
+                      <span aria-hidden>{a.icon}</span>
+                      {a.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
             <CurrencySwitcher />
             <ThemeToggle />
             <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-accent-50 border border-accent-200/60 px-3 py-1 text-xs font-semibold text-accent-700 dark:border-accent-600/40 dark:bg-accent-950/50 dark:text-accent-300">

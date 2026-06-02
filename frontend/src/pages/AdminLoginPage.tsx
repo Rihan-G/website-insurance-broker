@@ -11,6 +11,7 @@ import { COMPANY_NAME_SHORT } from "../lib/branding";
 import { formatHolidayDate, upcomingMauritiusHolidays, type MauritiusHoliday } from "../lib/mauritiusHolidays";
 
 const adminDemo = DEMO_ACCOUNTS[0];
+const LAST_ADMIN_EMAIL_KEY = "sb_last_admin_email";
 
 const trustSignals = [
   "Role-based access for administrators",
@@ -44,6 +45,15 @@ export function AdminLoginPage() {
     return () => mq.removeEventListener("change", sync);
   }, []);
 
+  useEffect(() => {
+    try {
+      const remembered = localStorage.getItem(LAST_ADMIN_EMAIL_KEY);
+      if (remembered) setEmail(remembered);
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
   /** Mobile layout is always on the dark hero; at lg+ the form sits on surface (light in light theme). */
   const chromeOnDark = !isLg || resolved === "dark";
 
@@ -54,7 +64,8 @@ export function AdminLoginPage() {
     setError("");
     setLoading(true);
 
-    const result = await signIn(email, password);
+    const normalizedEmail = email.trim();
+    const result = await signIn(normalizedEmail, password);
     if (result.error) {
       setError(result.error.message);
       setLoading(false);
@@ -68,6 +79,11 @@ export function AdminLoginPage() {
       return;
     }
 
+    try {
+      localStorage.setItem(LAST_ADMIN_EMAIL_KEY, normalizedEmail);
+    } catch {
+      /* ignore */
+    }
     navigate("/dashboard");
   };
 
@@ -227,6 +243,8 @@ export function AdminLoginPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   autoComplete="username"
+                  autoFocus
+                  disabled={loading}
                   className="w-full rounded-xl border border-white/15 bg-black/25 px-4 py-3 text-sm text-white placeholder:text-primary-400/70 focus:border-accent-400 focus:outline-none focus:ring-2 focus:ring-accent-500/25 lg:border-border lg:bg-surface lg:text-surface-foreground lg:placeholder:text-muted-foreground dark:lg:border-white/15 dark:lg:bg-black/30 dark:lg:text-white"
                   placeholder="admin@company.com"
                 />
@@ -240,6 +258,7 @@ export function AdminLoginPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     autoComplete="current-password"
+                    disabled={loading}
                     className="w-full rounded-xl border border-white/15 bg-black/25 px-4 py-3 pr-11 text-sm text-white placeholder:text-primary-400/70 focus:border-accent-400 focus:outline-none focus:ring-2 focus:ring-accent-500/25 lg:border-border lg:bg-surface lg:text-surface-foreground lg:placeholder:text-muted-foreground dark:lg:border-white/15 dark:lg:bg-black/30 dark:lg:text-white"
                     placeholder="••••••••"
                   />
@@ -257,10 +276,16 @@ export function AdminLoginPage() {
               <button
                 type="submit"
                 disabled={loading}
+                aria-busy={loading}
                 className="w-full rounded-xl bg-gradient-to-r from-accent-600 to-accent-500 py-3 text-sm font-semibold text-white shadow-lg shadow-accent-900/40 transition hover:from-accent-500 hover:to-accent-400 disabled:opacity-50"
               >
                 {loading ? "Signing in…" : "Sign in as administrator"}
               </button>
+              {loading && (
+                <p className="text-center text-xs text-primary-300 lg:text-muted-foreground" aria-live="polite">
+                  Verifying administrator role and preparing secure workspace...
+                </p>
+              )}
             </form>
 
             {demoAuthAvailable && (

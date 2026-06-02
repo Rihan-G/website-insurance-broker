@@ -6,6 +6,7 @@ import { useAuth } from "../context/AuthContext";
 import { db } from "../lib/db";
 import { loadBrokerTaskMeta, saveBrokerTaskMeta, upsertBrokerTaskMeta, type BrokerTaskMetaMap } from "../lib/portalBrokerTaskMeta";
 import { appendStaffCalendarEvent } from "../lib/portalCalendarEvents";
+import { StatusPill } from "../components/StatusPill";
 
 type TaskStatus = "open" | "in_progress" | "done";
 
@@ -355,14 +356,11 @@ export function TasksPage() {
             <code className="text-xs">broker_tasks</code> plus local accent metadata.
           </p>
         </div>
-        <span
-          className={`inline-flex w-fit items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold ${
-            live ? "border-accent-200 bg-accent-50 text-accent-800 dark:border-accent-700 dark:bg-accent-950/40 dark:text-accent-200" : "border-border bg-muted text-muted-foreground"
-          }`}
-        >
-          <Database className="h-3.5 w-3.5" aria-hidden />
-          {loading ? "Loading…" : live ? "Live" : "Demo"}
-        </span>
+        <StatusPill
+          tone={live ? "success" : "neutral"}
+          icon={<Database className="h-3.5 w-3.5" aria-hidden />}
+          label={loading ? "Loading…" : live ? "Live" : "Demo"}
+        />
       </div>
 
       <div className="dashboard-panel rounded-2xl space-y-4 p-5">
@@ -430,7 +428,10 @@ export function TasksPage() {
         {loading ? (
           <div className="p-8 text-center text-sm text-muted-foreground">Loading…</div>
         ) : visibleTasks.length === 0 ? (
-          <div className="p-8 text-center text-sm text-muted-foreground">No tasks in this view.</div>
+          <div className="p-8 text-center text-sm text-muted-foreground">
+            <p>No tasks in this view.</p>
+            <p className="mt-1 text-xs">Create one to keep client follow-ups visible and within SLA.</p>
+          </div>
         ) : (
           <ul className="divide-y divide-border/80">
             {visibleTasks.map((t) => {

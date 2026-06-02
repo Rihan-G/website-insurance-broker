@@ -54,6 +54,12 @@ export function HomePage() {
 
   return (
     <div className="min-h-screen bg-primary-50 max-lg:pb-[calc(9.25rem+env(safe-area-inset-bottom))] lg:pb-0 dark:bg-background">
+      <a
+        href="#quote"
+        className="absolute left-4 top-2 z-[100] -translate-y-12 rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white shadow transition-transform focus:translate-y-0 focus:outline-none focus:ring-2 focus:ring-primary-300"
+      >
+        Skip to quote form
+      </a>
       <ScrollProgress />
       <BackToTop />
       <HomeMarketingNav />
@@ -103,6 +109,7 @@ export function HomePage() {
             <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
               <a
                 href="#quote"
+                aria-label="Jump to free quote form"
                 className="btn-glow ring-pulse inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-accent-500 to-accent-600 px-8 py-3.5 text-sm font-bold text-white shadow-lg shadow-accent-500/40 transition-all duration-200 hover:from-accent-600 hover:to-accent-700 cursor-pointer sm:inline-flex"
               >
                 <Calculator className="h-4 w-4 shrink-0" aria-hidden />
@@ -117,6 +124,7 @@ export function HomePage() {
               </a>
               <Link
                 to="/login"
+                aria-label="Open secure sign in page"
                 className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/5 px-8 py-3.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-white/10 cursor-pointer sm:inline-flex"
               >
                 Sign in

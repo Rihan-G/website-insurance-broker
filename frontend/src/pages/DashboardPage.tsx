@@ -10,6 +10,7 @@ import {
   TrendingUp,
   ArrowUpRight,
   ArrowDownRight,
+  ArrowRight,
   ShieldCheck,
   ClipboardCheck,
   CalendarClock,
@@ -32,6 +33,7 @@ import type { DashboardStats, PipelineItem } from "../types";
 import { useCurrency } from "../context/CurrencyContext";
 import { formatRelativeTime } from "../lib/formatRelativeTime";
 import { describeQuoteSource, quoteLeadContact } from "../lib/quoteLeads";
+import { StatusPill } from "../components/StatusPill";
 
 interface RecentQuoteRow {
   id: string;
@@ -222,6 +224,13 @@ export function DashboardPage() {
   const [recentQuotes, setRecentQuotes] = useState<RecentQuoteRow[]>(() =>
     demoAuthActive && (profile?.role === "admin" || profile?.role === "broker") ? demoStaffRecentQuotes : [],
   );
+  const [showOnboardingTip, setShowOnboardingTip] = useState(() => {
+    try {
+      return localStorage.getItem("sb_dashboard_tip_dismissed") !== "1";
+    } catch {
+      return true;
+    }
+  });
 
   useEffect(() => {
     if (demoAuthActive) {
@@ -455,6 +464,7 @@ export function DashboardPage() {
   }, [demoAuthActive, session, profile]);
 
   const revenueHeights = [65, 72, 58, 80, 85, 78, 92, 88, 95, 90, 98, 100];
+  const snapshotLabel = formatDate(new Date(), "dd MMM yyyy, HH:mm");
 
   if (!demoAuthActive && session && user && !profile) {
     return (
@@ -487,12 +497,38 @@ export function DashboardPage() {
                 ? "Syncing with your Supabase project…"
                 : "Overview of your insurance brokerage"}
           </p>
+          <p className="text-xs text-muted-foreground">Snapshot: {snapshotLabel}</p>
         </div>
         <span className="inline-flex w-fit items-center gap-2 rounded-full border border-accent-200/90 bg-gradient-to-r from-accent-50 to-accent-100/80 px-3.5 py-1.5 text-xs font-semibold text-accent-800 shadow-sm dark:border-accent-600/35 dark:from-accent-950/60 dark:to-accent-950/30 dark:text-accent-200">
-          <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-accent-600 dark:text-accent-400" aria-hidden />
-          {demoAuthActive ? "Demo session" : "Live data"}
+          <StatusPill
+            tone={demoAuthActive ? "neutral" : "success"}
+            icon={<ShieldCheck className="h-3.5 w-3.5 shrink-0" aria-hidden />}
+            label={demoAuthActive ? "Demo session" : "Live data"}
+          />
         </span>
       </div>
+      {showOnboardingTip && (
+        <div className="rounded-xl border border-primary-200 bg-primary-50/80 p-4 text-sm text-primary-900 dark:border-primary-700/40 dark:bg-primary-950/30 dark:text-primary-100">
+          <p className="font-semibold">Tip: Start with quick actions, then watch care counters.</p>
+          <p className="mt-1 text-xs text-primary-700 dark:text-primary-200/90">
+            Upload documents or open quote leads first, then monitor notifications and tasks to keep client work on track.
+          </p>
+          <button
+            type="button"
+            className="mt-2 text-xs font-semibold underline"
+            onClick={() => {
+              setShowOnboardingTip(false);
+              try {
+                localStorage.setItem("sb_dashboard_tip_dismissed", "1");
+              } catch {
+                /* ignore */
+              }
+            }}
+          >
+            Dismiss tip
+          </button>
+        </div>
+      )}
 
       <div className="dashboard-panel min-w-0 rounded-2xl p-5">
         <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Workflow shortcuts</p>
@@ -638,9 +674,9 @@ export function DashboardPage() {
             </div>
             <Link
               to="/dashboard/quote-leads"
-              className="text-sm font-semibold text-primary-600 hover:underline dark:text-primary-400 whitespace-nowrap"
+              className="inline-flex items-center gap-1 text-sm font-semibold text-primary-600 hover:underline dark:text-primary-400 whitespace-nowrap"
             >
-              Manage leads →
+              Manage leads <ArrowRight className="h-3.5 w-3.5" aria-hidden />
             </Link>
           </div>
           <div className="mt-4 overflow-x-auto rounded-xl border border-border/80">

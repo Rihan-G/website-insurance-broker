@@ -9,6 +9,7 @@ import {
   markDemoPortalNotificationRead,
   markAllDemoPortalNotificationsRead,
 } from "../lib/demoClientNotifications";
+import { StatusPill } from "../components/StatusPill";
 
 type NotifKind = "document" | "payment" | "security" | "system";
 
@@ -52,6 +53,8 @@ export function NotificationsPage() {
   const [items, setItems] = useState<NotifItem[]>([]);
   const [live, setLive] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [showUnreadOnly, setShowUnreadOnly] = useState(false);
+  const [kindFilter, setKindFilter] = useState<"all" | NotifKind>("all");
 
   const load = useCallback(async () => {
     if (!user) {
@@ -104,6 +107,7 @@ export function NotificationsPage() {
   }, [load]);
 
   const unread = items.filter((i) => !i.read).length;
+  const visibleItems = items.filter((i) => (showUnreadOnly ? !i.read : true)).filter((i) => (kindFilter === "all" ? true : i.kind === kindFilter));
 
   const markRead = async (id: string) => {
     setItems((prev) => prev.map((i) => (i.id === id ? { ...i, read: true } : i)));
@@ -143,14 +147,30 @@ export function NotificationsPage() {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <span
-            className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold ${
-              live ? "border-accent-200 bg-accent-50 text-accent-800 dark:border-accent-700 dark:bg-accent-950/40 dark:text-accent-200" : "border-border bg-muted text-muted-foreground"
-            }`}
+          <StatusPill
+            tone={live ? "success" : "neutral"}
+            icon={<Database className="h-3.5 w-3.5" aria-hidden />}
+            label={loading ? "Loading…" : live ? "Live" : "Demo"}
+          />
+          <button
+            type="button"
+            onClick={() => setShowUnreadOnly((v) => !v)}
+            className={`rounded-lg border px-3 py-1.5 text-xs font-semibold ${showUnreadOnly ? "border-primary-300 bg-primary-50 text-primary-800 dark:border-primary-700 dark:bg-primary-950/40 dark:text-primary-200" : "border-border bg-surface text-muted-foreground"}`}
           >
-            <Database className="h-3.5 w-3.5" aria-hidden />
-            {loading ? "Loading…" : live ? "Live" : "Demo"}
-          </span>
+            Unread only
+          </button>
+          <select
+            value={kindFilter}
+            onChange={(e) => setKindFilter(e.target.value as "all" | NotifKind)}
+            className="rounded-lg border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-surface-foreground"
+            aria-label="Filter by notification type"
+          >
+            <option value="all">All types</option>
+            <option value="document">Documents</option>
+            <option value="payment">Payments</option>
+            <option value="security">Security</option>
+            <option value="system">System</option>
+          </select>
           {unread > 0 && (
             <button
               type="button"
@@ -167,10 +187,13 @@ export function NotificationsPage() {
       <div className="dashboard-panel rounded-2xl divide-y divide-border/80">
         {loading ? (
           <div className="p-8 text-center text-sm text-muted-foreground">Loading…</div>
-        ) : items.length === 0 ? (
-          <div className="p-8 text-center text-sm text-muted-foreground">No notifications yet.</div>
+        ) : visibleItems.length === 0 ? (
+          <div className="p-8 text-center text-sm text-muted-foreground">
+            <p>No notifications in this view yet.</p>
+            <p className="mt-1 text-xs">Keeping this list clear helps you spot urgent policy actions faster.</p>
+          </div>
         ) : (
-          items.map((n) => {
+          visibleItems.map((n) => {
             const Icon = ICONS[n.kind] ?? Bell;
             return (
               <button

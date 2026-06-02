@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, CornerDownLeft, X } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
-import { quickNavForRole, type AppRole } from "../lib/quickNav";
+import { quickNavForRole, type AppRole, type QuickNavItem } from "../lib/quickNav";
 
 interface CommandPaletteProps {
   open: boolean;
@@ -18,7 +18,48 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   const listRef = useRef<HTMLDivElement>(null);
 
   const role = profile?.role as AppRole | undefined;
-  const matches = useMemo(() => quickNavForRole(role, q), [role, q]);
+  const recentKey = `sb_recent_nav_${role ?? "client"}`;
+  const [recentIds, setRecentIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(recentKey);
+      const parsed = raw ? (JSON.parse(raw) as string[]) : [];
+      setRecentIds(Array.isArray(parsed) ? parsed : []);
+    } catch {
+      setRecentIds([]);
+    }
+  }, [recentKey]);
+
+  const roleActions: QuickNavItem[] = useMemo(
+    () =>
+      role === "client"
+        ? [
+            { id: "action-upload", label: "Action: Upload document", to: "/dashboard/upload", keywords: "new create upload action" },
+            { id: "action-claim", label: "Action: Start claim", to: "/dashboard/claims", keywords: "new create claim action" },
+          ]
+        : [
+            { id: "action-upload", label: "Action: Upload document", to: "/dashboard/upload", keywords: "new create upload action" },
+            { id: "action-quote", label: "Action: Create quote", to: "/dashboard/quotes", keywords: "new create quote action" },
+            { id: "action-task", label: "Action: Create task", to: "/dashboard/tasks", keywords: "new create task action" },
+          ],
+    [role],
+  );
+
+  const matches = useMemo(() => {
+    const base = quickNavForRole(role, q);
+    if (q.trim()) {
+      const qv = q.trim().toLowerCase();
+      const actionHits = roleActions.filter((a) => `${a.label} ${a.keywords ?? ""}`.toLowerCase().includes(qv));
+      return [...actionHits, ...base];
+    }
+    const recent = recentIds
+      .map((id) => base.find((b) => b.id === id))
+      .filter((v): v is QuickNavItem => Boolean(v))
+      .slice(0, 4);
+    const withoutRecent = base.filter((b) => !recent.some((r) => r.id === b.id));
+    return [...recent, ...roleActions, ...withoutRecent];
+  }, [role, q, roleActions, recentIds]);
 
   useEffect(() => {
     setActive(0);
@@ -30,11 +71,20 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   }, [onOpenChange]);
 
   const go = useCallback(
-    (to: string) => {
+    (to: string, id?: string) => {
+      if (id) {
+        try {
+          const next = [id, ...recentIds.filter((x) => x !== id)].slice(0, 8);
+          localStorage.setItem(recentKey, JSON.stringify(next));
+          setRecentIds(next);
+        } catch {
+          /* ignore */
+        }
+      }
       navigate(to);
       close();
     },
-    [navigate, close],
+    [navigate, close, recentIds, recentKey],
   );
 
   useEffect(() => {
@@ -75,7 +125,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
       setActive((i) => Math.max(0, i - 1));
     } else if (e.key === "Enter" && matches.length > 0 && matches[active]) {
       e.preventDefault();
-      go(matches[active]!.to);
+      go(matches[active]!.to, matches[active]!.id);
     }
   };
 
@@ -128,7 +178,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                 key={item.id}
                 type="button"
                 data-idx={idx}
-                onClick={() => go(item.to)}
+                onClick={() => go(item.to, item.id)}
                 onMouseEnter={() => setActive(idx)}
                 className={`flex w-full items-center justify-between gap-3 px-4 py-2.5 text-left text-sm cursor-pointer transition-colors ${
                   idx === active ? "bg-primary-50 text-primary-900 dark:bg-primary-950/60 dark:text-primary-100" : "text-surface-foreground hover:bg-muted/80"

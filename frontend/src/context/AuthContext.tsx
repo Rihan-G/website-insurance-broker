@@ -17,6 +17,15 @@ interface SignInResult {
   profile: Profile | null;
 }
 
+function friendlyAuthErrorMessage(raw: string): string {
+  const m = raw.toLowerCase();
+  if (m.includes("invalid login credentials")) return "Email or password is incorrect. Please check and try again.";
+  if (m.includes("email not confirmed")) return "Your email is not confirmed yet. Check your inbox for the verification link.";
+  if (m.includes("too many requests")) return "Too many attempts. Please wait a moment, then try again.";
+  if (m.includes("network")) return "Network issue while signing in. Check your internet connection and retry.";
+  return raw;
+}
+
 interface AuthState {
   user: User | null;
   profile: Profile | null;
@@ -138,7 +147,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       clearDemoSession();
       const { data, error } = await supabase.auth.signInWithPassword({ email: trimmed, password });
       if (error) {
-        return { error: error as Error, profile: null };
+        const friendly = new Error(friendlyAuthErrorMessage(error.message));
+        return { error: friendly, profile: null };
       }
 
       setSession(data.session);

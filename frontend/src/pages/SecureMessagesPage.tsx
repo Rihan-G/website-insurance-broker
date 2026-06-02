@@ -4,6 +4,7 @@ import { format } from "date-fns";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
 import { db } from "../lib/db";
+import { StatusPill } from "../components/StatusPill";
 
 type ThreadRow = {
   id: string;
@@ -225,14 +226,11 @@ export function SecureMessagesPage() {
             Backed by <code className="text-xs">secure_threads</code> and <code className="text-xs">secure_messages</code>. Demo login uses local mock threads.
           </p>
         </div>
-        <span
-          className={`inline-flex w-fit items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold ${
-            live ? "border-accent-200 bg-accent-50 text-accent-800 dark:border-accent-700 dark:bg-accent-950/40 dark:text-accent-200" : "border-border bg-muted text-muted-foreground"
-          }`}
-        >
-          <Database className="h-3.5 w-3.5" aria-hidden />
-          {loading ? "Loading…" : live ? "Live data" : "Demo / offline"}
-        </span>
+        <StatusPill
+          tone={live ? "success" : "neutral"}
+          icon={<Database className="h-3.5 w-3.5" aria-hidden />}
+          label={loading ? "Loading…" : live ? "Live data" : "Demo / offline"}
+        />
       </div>
 
       {showNew && (
@@ -275,7 +273,12 @@ export function SecureMessagesPage() {
             </button>
           </div>
           <ul className="max-h-[min(60vh,28rem)] divide-y divide-border/80 overflow-y-auto">
-            {threads.map((t) => (
+            {threads.length === 0 ? (
+              <li className="px-4 py-6 text-center text-sm text-muted-foreground">
+                <p>No threads yet.</p>
+                <p className="mt-1 text-xs">Start a secure thread to keep claim and renewal context in one place.</p>
+              </li>
+            ) : threads.map((t) => (
               <li key={t.id}>
                 <button
                   type="button"
@@ -309,14 +312,23 @@ export function SecureMessagesPage() {
           </div>
 
           <div className="flex flex-1 flex-col gap-3 overflow-y-auto p-4 sm:p-6">
-            {messages.map((m) => (
+            {messages.length === 0 ? (
+              <div className="rounded-xl border border-dashed border-border bg-muted/20 px-4 py-6 text-center text-sm text-muted-foreground">
+                No messages yet. Send the first secure message to begin this thread.
+              </div>
+            ) : messages.map((m) => (
               <div
                 key={m.id}
                 className={`max-w-[90%] rounded-2xl px-4 py-2.5 text-sm sm:max-w-[75%] ${
                   m.mine ? "ml-auto bg-primary-600 text-white" : "mr-auto border border-border bg-muted/40 text-surface-foreground dark:bg-muted/25"
                 }`}
               >
-                <p className="text-[10px] font-semibold uppercase tracking-wide opacity-80">{m.from}</p>
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-black/15 text-[10px] font-bold text-current">
+                    {m.from.charAt(0).toUpperCase()}
+                  </span>
+                  <p className="text-[10px] font-semibold uppercase tracking-wide opacity-80">{m.from}</p>
+                </div>
                 <p className="mt-1 leading-relaxed">{m.body}</p>
                 <p className={`mt-1 text-[10px] ${m.mine ? "text-primary-100" : "text-muted-foreground"}`}>{format(m.at, "HH:mm")}</p>
               </div>

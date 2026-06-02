@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { ShieldCheck, Eye, EyeOff, Lock, CheckCircle, Sparkles, AlertTriangle } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
@@ -15,6 +15,7 @@ const trustSignals = [
   "Role-Based Access Control",
 ];
 
+const LAST_LOGIN_EMAIL_KEY = "sb_last_login_email";
 
 export function LoginPage() {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -29,13 +30,33 @@ export function LoginPage() {
   const staffBase = staffPortalBaseUrl();
   const adminHref = getPortalFlavor() === "client" && staffBase ? `${staffBase}/admin` : "/admin";
 
+  useEffect(() => {
+    try {
+      const remembered = localStorage.getItem(LAST_LOGIN_EMAIL_KEY);
+      if (remembered) setEmail(remembered);
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
-    const result = isSignUp ? await signUp(email, password, fullName) : await signIn(email, password);
-    if (result.error) { setError(result.error.message); setLoading(false); }
-    else navigate("/dashboard");
+    const normalizedEmail = email.trim();
+    const result = isSignUp ? await signUp(normalizedEmail, password, fullName.trim()) : await signIn(normalizedEmail, password);
+    if (result.error) {
+      setError(result.error.message);
+      setLoading(false);
+      return;
+    }
+
+    try {
+      localStorage.setItem(LAST_LOGIN_EMAIL_KEY, normalizedEmail);
+    } catch {
+      /* ignore */
+    }
+    navigate("/dashboard");
   };
 
   const signInDemoRole = async (role: "client" | "broker") => {
@@ -241,6 +262,9 @@ export function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
+                  autoComplete="username"
+                  autoFocus
+                  disabled={loading}
                   placeholder="you@company.com"
                   className="w-full rounded-xl border border-border/90 bg-white/90 px-4 py-3 text-sm text-surface-foreground shadow-sm placeholder:text-muted-foreground focus:border-primary-500 focus:ring-2 focus:ring-primary-500/25 focus:outline-none dark:border-border dark:bg-surface/90 dark:shadow-none"
                 />
@@ -254,6 +278,8 @@ export function LoginPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
+                    autoComplete={isSignUp ? "new-password" : "current-password"}
+                    disabled={loading}
                     placeholder="••••••••"
                     className="w-full rounded-xl border border-border/90 bg-white/90 px-4 py-3 pr-11 text-sm text-surface-foreground shadow-sm placeholder:text-muted-foreground focus:border-primary-500 focus:ring-2 focus:ring-primary-500/25 focus:outline-none dark:border-border dark:bg-surface/90 dark:shadow-none"
                   />
@@ -270,6 +296,7 @@ export function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
+                aria-busy={loading}
                 className="btn-glow w-full rounded-xl bg-gradient-to-r from-primary-600 via-primary-600 to-primary-500 px-4 py-3.5 text-sm font-semibold text-white shadow-lg shadow-primary-600/25 hover:from-primary-700 hover:via-primary-600 hover:to-primary-600 focus:ring-2 focus:ring-primary-500/35 focus:outline-none disabled:opacity-50 cursor-pointer transition-[box-shadow,filter] duration-200"
               >
                 {loading ? (
@@ -279,6 +306,11 @@ export function LoginPage() {
                   </span>
                 ) : isSignUp ? "Create Account" : "Sign In Securely"}
               </button>
+              {loading && (
+                <p className="text-center text-xs text-muted-foreground" aria-live="polite">
+                  Validating credentials and preparing your dashboard...
+                </p>
+              )}
             </form>
 
             <p className="mt-6 text-center text-sm text-muted-foreground">
