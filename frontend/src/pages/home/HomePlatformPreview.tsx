@@ -56,7 +56,7 @@ export function HomePlatformPreview() {
             <AnimatedSection
               key={card.title}
               className={`stagger-${i + 1} ${i === 0 ? "lg:col-span-7" : i === 1 ? "lg:col-span-5" : "lg:col-span-12"}`}
-              animation="animate-scale-in"
+              animation="animate-fade-in"
             >
               <div className="home-feature-card group relative h-full overflow-hidden rounded-2xl border border-primary-200/70 bg-white p-7 shadow-sm transition-[transform,box-shadow] duration-[240ms] ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-xl dark:border-border dark:bg-slate-900/80">
                 <div

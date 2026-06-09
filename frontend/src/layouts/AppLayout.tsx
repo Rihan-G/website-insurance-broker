@@ -11,7 +11,6 @@ import {
 import { useAuth } from "../context/AuthContext";
 import { useAutoLogout } from "../hooks/useAutoLogout";
 import { useTranslation } from "react-i18next";
-import { ParticleField } from "../components/ParticleField";
 import { ThemeToggle } from "../components/ThemeToggle";
 import { CommandPalette } from "../components/CommandPalette";
 import { DashboardAccessSentinel } from "../components/DashboardAccessSentinel";
@@ -238,13 +237,14 @@ function DashboardSidebarPanel({
 
   return (
     <>
-      <div className="absolute inset-0 bg-gradient-to-b from-primary-950 via-primary-900 to-primary-950" />
-      <div className="aurora-bg opacity-70">
-        <div className="aurora-orb-1 aurora-sidebar-1" />
-        <div className="aurora-orb-2 aurora-sidebar-2" />
-        <div className="aurora-orb-3 aurora-sidebar-3" />
-      </div>
-      <ParticleField count={10} variant="rise" className="opacity-60" />
+      <div className="absolute inset-0 bg-gradient-to-b from-primary-950 via-[#0a3554] to-primary-950" />
+      <div
+        className="pointer-events-none absolute inset-0 opacity-40"
+        style={{
+          background:
+            "radial-gradient(circle at 20% 10%, rgba(56,189,248,0.18), transparent 45%), radial-gradient(circle at 80% 90%, rgba(22,163,74,0.12), transparent 40%)",
+        }}
+      />
 
       <div className="relative flex h-16 shrink-0 items-center gap-3 border-b border-white/8 px-5">
         <div className="rounded-lg border border-white/15 bg-white/10 p-1.5 shrink-0">
@@ -616,8 +616,8 @@ export function AppLayout() {
             </div>
             <CurrencySwitcher />
             <ThemeToggle />
-            <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-accent-50 border border-accent-200/60 px-3 py-1 text-xs font-semibold text-accent-700 dark:border-accent-600/40 dark:bg-accent-950/50 dark:text-accent-300">
-              <span className="h-1.5 w-1.5 rounded-full bg-accent-500 animate-pulse" />
+            <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-accent-200/70 bg-accent-50 px-3 py-1 text-xs font-semibold text-accent-800 dark:border-accent-600/40 dark:bg-accent-950/50 dark:text-accent-300">
+              <span className="h-1.5 w-1.5 rounded-full bg-accent-500" />
               Protected · {profile?.role === "client" ? "Member" : profile?.role ?? "client"}
             </span>
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-accent-500 text-xs font-bold text-white shadow-sm sm:hidden">

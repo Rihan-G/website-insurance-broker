@@ -3,12 +3,15 @@ import { claimsJourney } from "./homeMarketingData";
 
 export function HomeClaimsJourney() {
   return (
-    <section id="claims" className="relative overflow-hidden bg-gradient-to-br from-primary-950 via-primary-900 to-slate-950 py-20 text-white lg:py-28">
-      <div className="aurora-bg opacity-80" aria-hidden>
-        <div className="aurora-orb-2 aurora-home-claims-1" />
-        <div className="aurora-orb-3 aurora-home-claims-2" />
-      </div>
-      <div className="scan-line scan-line-delayed opacity-60" aria-hidden />
+    <section id="claims" className="relative overflow-hidden border-y border-primary-800/40 bg-gradient-to-br from-primary-950 via-primary-900 to-slate-950 py-20 text-white lg:py-28">
+      <div
+        className="pointer-events-none absolute inset-0 opacity-50"
+        aria-hidden
+        style={{
+          background:
+            "radial-gradient(circle at 85% 15%, rgba(56,189,248,0.14), transparent 42%), radial-gradient(circle at 10% 90%, rgba(22,163,74,0.1), transparent 38%)",
+        }}
+      />
       <div className="relative mx-auto max-w-7xl px-5 sm:px-6">
         <AnimatedSection className="text-center">
           <span className="text-sm font-semibold uppercase tracking-wider text-accent-300">Claims support</span>
@@ -22,7 +25,7 @@ export function HomeClaimsJourney() {
           {claimsJourney.map((step, i) => (
             <li key={step.title}>
               <AnimatedSection className={`stagger-${i + 1} h-full`} animation="animate-on-scroll">
-                <div className="home-claims-step relative h-full rounded-2xl border border-white/15 bg-white/5 p-5 backdrop-blur-sm">
+                <div className="home-claims-step relative h-full rounded-2xl border border-white/15 bg-white/[0.06] p-5">
                   <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-accent-500/20 text-sm font-bold text-accent-200 ring-1 ring-accent-400/40">
                     {step.step}
                   </span>

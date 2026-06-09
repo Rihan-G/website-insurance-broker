@@ -136,9 +136,9 @@ function StatCard({
 }) {
   return (
     <div
-      className={`card-hover card-glow group relative min-w-0 overflow-hidden rounded-2xl border p-6 ${
+      className={`card-hover group relative min-w-0 overflow-hidden rounded-2xl border p-6 ${
         accent
-          ? "border-primary-400/25 bg-gradient-to-br from-primary-600 via-primary-700 to-primary-900 text-white shadow-lg shadow-primary-950/15 ring-1 ring-white/10"
+          ? "dashboard-stat-accent border-primary-500/30 bg-gradient-to-br from-primary-600 via-primary-700 to-primary-900 text-white shadow-md shadow-primary-950/10 ring-1 ring-white/10"
           : "dashboard-panel border-border/90 ring-1 ring-primary-950/[0.03] dark:ring-white/[0.05]"
       }`}
     >
@@ -164,7 +164,7 @@ function StatCard({
             <Icon className={`h-5 w-5 ${accent ? "text-white" : ""}`} />
           </div>
         </div>
-        <p className={`mt-3 text-3xl font-extrabold tracking-tight tabular-nums animate-number-pop ${accent ? "text-white" : "text-surface-foreground"}`}>{value}</p>
+        <p className={`mt-3 text-3xl font-extrabold tracking-tight tabular-nums ${accent ? "text-white" : "text-surface-foreground"}`}>{value}</p>
         {change !== undefined && (
           <div className="mt-2 flex items-center gap-1 text-sm">
             {change > 0 ? (
@@ -496,28 +496,46 @@ export function DashboardPage() {
   const careLoading = careSnapshot === null && !demoAuthActive && Boolean(session && user && profile);
   const isClientCare = profile?.role === "client";
 
+  const firstName = profile?.full_name?.split(" ")[0] ?? "there";
+
   return (
     <div className="min-w-0 space-y-8">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div className="space-y-1">
-          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary-600/80 dark:text-primary-400/90">Overview</p>
-          <h2 className="text-2xl font-bold tracking-tight text-surface-foreground sm:text-3xl">Dashboard</h2>
-          <p className="max-w-xl text-sm leading-relaxed text-muted-foreground">
-            {demoAuthActive
-              ? "Demo data — sign in with Supabase to see live metrics."
-              : loading
-                ? "Syncing with your Supabase project…"
-                : "Overview of your insurance brokerage"}
-          </p>
-          <p className="text-xs text-muted-foreground">Snapshot: {snapshotLabel}</p>
+      <div className="dashboard-welcome rounded-2xl p-5 sm:p-6">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="space-y-1">
+            <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary-600 dark:text-primary-400">
+              {staffDashboard ? "Broker workspace" : "Your portal"}
+            </p>
+            <h2 className="text-2xl font-bold tracking-tight text-surface-foreground sm:text-3xl">
+              Good day, {firstName}
+            </h2>
+            <p className="max-w-xl text-sm leading-relaxed text-muted-foreground">
+              {demoAuthActive
+                ? "Demo data. Connect Supabase for live metrics."
+                : loading
+                  ? "Syncing with your project…"
+                  : staffDashboard
+                    ? "Policies, documents, and client care in one place."
+                    : "Your policies, documents, and messages in one place."}
+            </p>
+            <p className="text-xs text-muted-foreground">Updated {snapshotLabel}</p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <StatusPill
+              tone={demoAuthActive ? "neutral" : "success"}
+              icon={<ShieldCheck className="h-3.5 w-3.5 shrink-0" aria-hidden />}
+              label={demoAuthActive ? "Demo session" : "Live data"}
+            />
+            {careSnapshot && !careLoading && (
+              <>
+                <StatusPill tone="info" label={`${careSnapshot.unread} alerts`} icon={<BellRing className="h-3.5 w-3.5" aria-hidden />} />
+                {staffDashboard && (
+                  <StatusPill tone="warning" label={`${careSnapshot.openTasks} tasks`} icon={<ListTodo className="h-3.5 w-3.5" aria-hidden />} />
+                )}
+              </>
+            )}
+          </div>
         </div>
-        <span className="inline-flex w-fit items-center gap-2 rounded-full border border-accent-200/90 bg-gradient-to-r from-accent-50 to-accent-100/80 px-3.5 py-1.5 text-xs font-semibold text-accent-800 shadow-sm dark:border-accent-600/35 dark:from-accent-950/60 dark:to-accent-950/30 dark:text-accent-200">
-          <StatusPill
-            tone={demoAuthActive ? "neutral" : "success"}
-            icon={<ShieldCheck className="h-3.5 w-3.5 shrink-0" aria-hidden />}
-            label={demoAuthActive ? "Demo session" : "Live data"}
-          />
-        </span>
       </div>
       {showOnboardingTip && (
         <div className="rounded-xl border border-primary-200 bg-primary-50/80 p-4 text-sm text-primary-900 dark:border-primary-700/40 dark:bg-primary-950/30 dark:text-primary-100">
@@ -541,6 +559,71 @@ export function DashboardPage() {
           </button>
         </div>
       )}
+
+      <div className="grid min-w-0 gap-5 sm:grid-cols-2 xl:grid-cols-4">
+        {showStatSkeleton ? (
+          <StatGridSkeleton />
+        ) : profile?.role === "client" ? (
+          <>
+            <StatCard
+              title="Active Policies"
+              value={viewStats.activePolices.toLocaleString()}
+              icon={FileText}
+              iconBg="bg-accent-50 text-accent-600"
+            />
+            <StatCard
+              title="Pending Documents"
+              value={viewStats.pendingDocuments.toLocaleString()}
+              icon={Clock}
+              iconBg="bg-warning-50 text-warning-600"
+            />
+            <StatCard
+              title="Paid This Month"
+              value={format(viewStats.monthlyRevenue)}
+              icon={DollarSign}
+              iconBg="bg-primary-50 text-primary-600"
+              accent
+            />
+            <StatCard
+              title="Processed Documents"
+              value={viewStats.documentsProcessed.toLocaleString()}
+              icon={ClipboardCheck}
+              iconBg="bg-primary-100 text-primary-600"
+            />
+          </>
+        ) : (
+          <>
+            <StatCard
+              title="Total Clients"
+              value={viewStats.totalClients.toLocaleString()}
+              change={demoAuthActive ? 8.2 : undefined}
+              icon={Users}
+              iconBg="bg-primary-100 text-primary-600"
+            />
+            <StatCard
+              title="Active Policies"
+              value={viewStats.activePolices.toLocaleString()}
+              change={demoAuthActive ? demoStats.revenueChange : undefined}
+              icon={FileText}
+              iconBg="bg-accent-50 text-accent-600"
+            />
+            <StatCard
+              title="Pending Documents"
+              value={viewStats.pendingDocuments.toLocaleString()}
+              icon={Clock}
+              iconBg="bg-warning-50 text-warning-600"
+            />
+            <StatCard
+              title="Monthly Revenue"
+              value={format(viewStats.monthlyRevenue)}
+              change={demoAuthActive ? demoStats.revenueChange : undefined}
+              icon={DollarSign}
+              iconBg="bg-primary-50 text-primary-600"
+              accent
+            />
+          </>
+        )}
+      </div>
 
       <div className="dashboard-panel min-w-0 rounded-2xl p-5">
         <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Workflow shortcuts</p>
@@ -731,71 +814,6 @@ export function DashboardPage() {
           </div>
         </section>
       )}
-
-      <div className="grid min-w-0 gap-5 sm:grid-cols-2 xl:grid-cols-4">
-        {showStatSkeleton ? (
-          <StatGridSkeleton />
-        ) : profile?.role === "client" ? (
-          <>
-            <StatCard
-              title="Active Policies"
-              value={viewStats.activePolices.toLocaleString()}
-              icon={FileText}
-              iconBg="bg-accent-50 text-accent-600"
-            />
-            <StatCard
-              title="Pending Documents"
-              value={viewStats.pendingDocuments.toLocaleString()}
-              icon={Clock}
-              iconBg="bg-warning-50 text-warning-600"
-            />
-            <StatCard
-              title="Paid This Month"
-              value={format(viewStats.monthlyRevenue)}
-              icon={DollarSign}
-              iconBg="bg-primary-50 text-primary-600"
-              accent
-            />
-            <StatCard
-              title="Processed Documents"
-              value={viewStats.documentsProcessed.toLocaleString()}
-              icon={ClipboardCheck}
-              iconBg="bg-primary-100 text-primary-600"
-            />
-          </>
-        ) : (
-          <>
-            <StatCard
-              title="Total Clients"
-              value={viewStats.totalClients.toLocaleString()}
-              change={demoAuthActive ? 8.2 : undefined}
-              icon={Users}
-              iconBg="bg-primary-100 text-primary-600"
-            />
-            <StatCard
-              title="Active Policies"
-              value={viewStats.activePolices.toLocaleString()}
-              change={demoAuthActive ? demoStats.revenueChange : undefined}
-              icon={FileText}
-              iconBg="bg-accent-50 text-accent-600"
-            />
-            <StatCard
-              title="Pending Documents"
-              value={viewStats.pendingDocuments.toLocaleString()}
-              icon={Clock}
-              iconBg="bg-warning-50 text-warning-600"
-            />
-            <StatCard
-              title="Monthly Revenue"
-              value={format(viewStats.monthlyRevenue)}
-              change={demoAuthActive ? demoStats.revenueChange : undefined}
-              icon={DollarSign}
-              iconBg="bg-primary-50 text-primary-600"
-              accent
-            />
-          </>
-        )}
-      </div>
 
       <div className="grid min-w-0 gap-6 xl:grid-cols-3">
         <div className="dashboard-panel min-w-0 overflow-hidden rounded-2xl xl:col-span-2">
