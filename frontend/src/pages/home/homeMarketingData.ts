@@ -15,6 +15,10 @@ import {
   Plane,
   Heart,
   HeartHandshake,
+  Headphones,
+  Clock,
+  BadgeCheck,
+  Sparkles,
 } from "lucide-react";
 import { COMPANY_NAME_SHORT } from "../../lib/branding";
 
@@ -117,4 +121,54 @@ export const certifications: Array<{ icon: LucideIcon; label: string }> = [
   { icon: ShieldCheck, label: "Data Protection Act Compliant" },
   { icon: Lock, label: "AES-256 Encryption" },
   { icon: Globe, label: "GDPR Ready" },
+];
+
+export const whyChooseUs: Array<{ icon: LucideIcon; title: string; desc: string; tone: string }> = [
+  {
+    icon: BadgeCheck,
+    title: "Licensed & regulated",
+    desc: "FSC-authorised brokerage with transparent advice and insurer partnerships you can verify.",
+    tone: "from-primary-600 to-primary-800",
+  },
+  {
+    icon: Clock,
+    title: "Faster turnaround",
+    desc: "Structured uploads and digital workflows reduce back-and-forth so cover can move quicker.",
+    tone: "from-sky-500 to-primary-700",
+  },
+  {
+    icon: Headphones,
+    title: "Human when it counts",
+    desc: "Phone, email, and WhatsApp access to advisors—not a faceless call centre.",
+    tone: "from-emerald-500 to-teal-800",
+  },
+  {
+    icon: Sparkles,
+    title: "Smart reminders",
+    desc: "Renewal and payment nudges help you avoid lapses and last-minute scrambles.",
+    tone: "from-amber-500 to-orange-700",
+  },
+];
+
+export const claimsJourney = [
+  {
+    step: "01",
+    title: "Report the incident",
+    desc: "Capture what happened, where, and when using a guided first-notice flow.",
+  },
+  {
+    step: "02",
+    title: "Upload evidence",
+    desc: "Add photos, reports, or estimates through the secure client portal.",
+  },
+  {
+    step: "03",
+    title: "Broker review",
+    desc: "Your advisor checks completeness and liaises with the insurer on your behalf.",
+  },
+  {
+    step: "04",
+    title: "Track progress",
+    desc: "Follow status updates and messages until the claim reaches a clear outcome.",
+  },
 ];

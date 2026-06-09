@@ -19,7 +19,7 @@ export function HomeHeroDashboardMockup() {
       aria-hidden
     >
       <div className="absolute -inset-4 rounded-[2rem] bg-gradient-to-br from-accent-500/25 via-primary-500/15 to-transparent blur-2xl" />
-      <div className="relative overflow-hidden rounded-2xl border border-white/20 bg-slate-950/75 shadow-[0_24px_80px_-20px_rgba(0,0,0,0.65)] ring-1 ring-white/10 backdrop-blur-xl">
+      <div className="animate-float-delayed relative overflow-hidden rounded-2xl border border-white/20 bg-slate-950/75 shadow-[0_24px_80px_-20px_rgba(0,0,0,0.65)] ring-1 ring-white/10 backdrop-blur-xl">
         <div className="flex items-center gap-2 border-b border-white/10 bg-slate-900/80 px-4 py-3">
           <div className="flex gap-1.5">
             <span className="h-2.5 w-2.5 rounded-full bg-red-400/90" />
