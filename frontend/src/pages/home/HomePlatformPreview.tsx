@@ -4,7 +4,7 @@ import { AnimatedSection } from "./HomeAnimatedPrimitives";
 /** Enterprise-style “SaaS” preview band — static content written for all visitors (clients & staff share this homepage). */
 export function HomePlatformPreview() {
   return (
-    <section id="platform" className="border-y border-primary-100 bg-gradient-to-b from-primary-50/90 via-sky-50/50 to-white py-24 lg:py-32 dark:border-primary-900/40 dark:from-slate-950 dark:via-slate-950 dark:to-slate-900">
+    <section id="platform" className="home-section-soft border-y border-primary-100 py-24 lg:py-32 dark:border-border">
       <div className="mx-auto max-w-7xl px-5 sm:px-6">
         <AnimatedSection className="mx-auto max-w-3xl text-center">
           <span className="text-sm font-semibold uppercase tracking-wider text-primary-600 dark:text-primary-400">Platform</span>
@@ -58,7 +58,7 @@ export function HomePlatformPreview() {
               className={`stagger-${i + 1} ${i === 0 ? "lg:col-span-7" : i === 1 ? "lg:col-span-5" : "lg:col-span-12"}`}
               animation="animate-fade-in"
             >
-              <div className="home-feature-card group relative h-full overflow-hidden rounded-2xl border border-primary-200/70 bg-white p-7 shadow-sm transition-[transform,box-shadow] duration-[240ms] ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-xl dark:border-border dark:bg-slate-900/80">
+              <div className="home-feature-card group relative h-full overflow-hidden rounded-2xl border border-primary-200/70 bg-surface p-7 shadow-sm transition-[transform,box-shadow] duration-[240ms] ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-xl dark:border-border dark:bg-surface">
                 <div
                   className={`pointer-events-none absolute inset-0 bg-gradient-to-br opacity-0 transition-opacity duration-300 group-hover:opacity-15 ${card.tone}`}
                 />

@@ -22,7 +22,7 @@ export function HomeWhyChooseUs() {
             <li key={item.title}>
               <AnimatedSection className={`stagger-${i + 1}`} animation="animate-slide-left">
                 <div
-                  className={`home-feature-row flex flex-col gap-5 rounded-2xl border border-primary-200/80 bg-white p-6 shadow-sm dark:border-primary-800/50 dark:bg-slate-900/80 sm:flex-row sm:items-center ${
+                  className={`home-feature-row flex flex-col gap-5 rounded-2xl border border-primary-200/80 bg-surface p-6 shadow-sm dark:border-border dark:bg-surface sm:flex-row sm:items-center ${
                     i % 2 === 1 ? "sm:flex-row-reverse" : ""
                   }`}
                 >

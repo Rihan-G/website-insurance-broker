@@ -52,8 +52,8 @@ export function HomeMarketingNav() {
   const closeMobile = () => setMobileOpen(false);
 
   const bar = scrolled
-    ? "border-b border-primary-200/90 bg-white/92 shadow-[0_8px_30px_-12px_rgba(3,105,161,0.2)] backdrop-blur-xl dark:border-border dark:bg-surface/95 dark:shadow-[0_12px_40px_-8px_rgba(0,0,0,0.55)]"
-    : "border-b border-white/10 bg-slate-950/35 shadow-none backdrop-blur-md dark:border-white/10 dark:bg-slate-950/45";
+    ? "border-b border-primary-200/90 bg-white/92 shadow-[0_8px_30px_-12px_rgba(3,105,161,0.2)] backdrop-blur-xl dark:border-border dark:bg-surface/96 dark:shadow-[0_12px_40px_-8px_rgba(0,0,0,0.45)]"
+    : "border-b border-white/10 bg-slate-950/35 shadow-none backdrop-blur-md dark:border-white/8 dark:bg-black/25";
 
   const linkBase =
     "relative py-1 transition-colors duration-200 after:absolute after:bottom-0 after:left-0 after:h-0.5 after:rounded-full after:bg-current after:transition-all after:duration-200 after:content-[''] ";
@@ -93,13 +93,13 @@ export function HomeMarketingNav() {
             Get Quote
           </a>
           <CurrencySwitcher />
-          <ThemeToggle />
+          <ThemeToggle variant={scrolled ? "default" : "onDark"} />
           <Link
             to="/login"
             className={`rounded-lg px-3 py-2.5 text-sm font-semibold transition-colors duration-200 sm:px-4 ${
               scrolled
-                ? "bg-primary-600 text-white hover:bg-primary-700"
-                : "bg-white text-primary-900 hover:bg-primary-50"
+                ? "bg-primary-600 text-white hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600"
+                : "bg-white/15 text-white ring-1 ring-white/25 hover:bg-white/25 dark:bg-white/10 dark:ring-white/20 dark:hover:bg-white/15"
             }`}
           >
             Sign in

@@ -16,7 +16,6 @@ import {
   Facebook,
 } from "lucide-react";
 import { useInView } from "../hooks/useInView";
-import { ParticleField } from "../components/ParticleField";
 import { WaveDivider } from "../components/WaveDivider";
 import { useTheme } from "../context/ThemeContext";
 import { ScrollProgress } from "../components/ScrollProgress";
@@ -40,6 +39,9 @@ import { HomeAssistantTeaser } from "./home/HomeAssistantTeaser";
 import { homeFaqItems } from "./home/homeFaqData";
 import { HomeHeroDashboardMockup } from "./home/HomeHeroDashboardMockup";
 import { HomePlatformPreview } from "./home/HomePlatformPreview";
+import { HomeBackgroundSampler } from "./home/HomeBackgroundSampler";
+import { HomeDarkBandBackground, HomeHeroBackground } from "./home/HomeHeroBackground";
+import { useHomeHeroBackground } from "./home/useHomeHeroBackground";
 import {
   insurers,
   services,
@@ -51,11 +53,12 @@ import {
 
 export function HomePage() {
   const heroRef = useInView();
+  const { preset: heroBg, setPreset: setHeroBg } = useHomeHeroBackground();
   const { resolved } = useTheme();
   const waveLightFill = resolved === "dark" ? "#111c2f" : "#ffffff";
 
   return (
-    <div className="min-h-screen bg-white max-lg:pb-[calc(9.25rem+env(safe-area-inset-bottom))] lg:pb-0 dark:bg-background">
+    <div className="min-h-screen bg-background max-lg:pb-[calc(9.25rem+env(safe-area-inset-bottom))] lg:pb-0">
       <a
         href="#quote"
         className="absolute left-4 top-2 z-[100] -translate-y-12 rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white shadow transition-transform focus:translate-y-0 focus:outline-none focus:ring-2 focus:ring-primary-300"
@@ -68,17 +71,11 @@ export function HomePage() {
       <HomeAssistantTeaser />
       <HomeStickyCta />
 
-      <section className="home-hero-bg relative overflow-hidden pt-20 sm:pt-24 md:pt-28">
-        <div className="aurora-bg aurora-calm pointer-events-none">
-          <div className="aurora-orb-1 aurora-home-hero-1" />
-          <div className="aurora-orb-2 aurora-home-hero-2" />
-        </div>
+      <section className="relative overflow-hidden pt-20 sm:pt-24 md:pt-28">
+        <HomeHeroBackground preset={heroBg} />
+        <HomeBackgroundSampler preset={heroBg} onChange={setHeroBg} />
 
-        <ParticleField count={8} variant="rise" className="opacity-60" />
-
-        <div className="pointer-events-none absolute inset-0 dot-grid opacity-[0.12]" />
-
-        <div className="relative mx-auto max-w-7xl px-5 py-28 sm:px-6 sm:py-32 md:py-36 lg:py-40">
+        <div className="relative z-10 mx-auto max-w-7xl px-5 py-28 pb-36 sm:px-6 sm:py-32 sm:pb-40 md:py-36 md:pb-44 lg:py-40 lg:pb-48">
           <div ref={heroRef.ref} className={`grid items-center gap-12 lg:grid-cols-2 lg:gap-14 xl:gap-16 animate-on-scroll ${heroRef.isInView ? "in-view" : ""}`}>
             <div className="min-w-0 max-w-3xl">
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/20 bg-primary-900/50 px-4 py-2 text-sm font-semibold text-accent-200 ring-1 ring-accent-500/25">
@@ -173,7 +170,7 @@ export function HomePage() {
         <WaveDivider topColor="#082F49" bottomColor={waveLightFill} height={80} />
       </section>
 
-      <section className="home-insurer-band border-y border-primary-200/70 bg-gradient-to-r from-primary-50 via-sky-50 to-emerald-50 py-6 overflow-hidden dark:border-primary-900/50 dark:from-slate-900 dark:via-slate-900 dark:to-slate-950">
+      <section className="home-insurer-band border-y border-primary-200/70 bg-gradient-to-r from-primary-50 via-sky-50 to-emerald-50 py-6 overflow-hidden dark:border-border dark:from-surface dark:via-background dark:to-surface">
         <p className="text-center text-xs font-bold text-muted-foreground uppercase tracking-widest mb-5">Partnered with leading insurers</p>
         <div className="marquee-container">
           <div className="flex animate-marquee gap-0">
@@ -241,7 +238,7 @@ export function HomePage() {
                 <a
                   key={p.name}
                   href="#quote"
-                  className="home-coverage-pill inline-flex items-center gap-2 rounded-full border border-primary-200 bg-white px-4 py-2 text-sm font-semibold text-primary-800 shadow-sm transition-[transform,box-shadow] duration-[200ms] ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:shadow-md dark:border-primary-800 dark:bg-slate-900 dark:text-primary-100"
+                  className="home-coverage-pill inline-flex items-center gap-2 rounded-full border border-primary-200 bg-surface px-4 py-2 text-sm font-semibold text-primary-800 shadow-sm transition-[transform,box-shadow] duration-[200ms] ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:shadow-md dark:border-border dark:bg-primary-50 dark:text-primary-100"
                 >
                   <p.icon className="h-4 w-4 text-primary-600 dark:text-primary-300" aria-hidden />
                   {p.name}
@@ -253,7 +250,7 @@ export function HomePage() {
           <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {policyTypes.map((p, i) => (
               <AnimatedSection key={p.name} className={`stagger-${i + 1}`} animation="animate-fade-in">
-                <a href="#quote" className="home-feature-card card-hover card-glow group flex items-start gap-4 rounded-2xl border border-primary-200/70 bg-white p-6 cursor-pointer dark:border-border dark:bg-surface">
+                <a href="#quote" className="home-feature-card card-hover group flex items-start gap-4 rounded-2xl border border-primary-200/70 bg-surface p-6 cursor-pointer dark:border-border dark:bg-surface">
                   <div className="rounded-xl bg-gradient-to-br from-primary-50 to-primary-100 p-3 group-hover:from-primary-100 group-hover:to-primary-200 transition-all duration-300 shrink-0 shadow-sm">
                     <p.icon className="h-6 w-6 text-primary-600" />
                   </div>
@@ -271,7 +268,7 @@ export function HomePage() {
         </div>
       </section>
 
-      <section id="quote" className="bg-surface py-24 lg:py-32 border-y border-border">
+      <section id="quote" className="border-y border-border bg-surface py-24 lg:py-32 dark:bg-background">
         <div className="mx-auto max-w-7xl px-5 sm:px-6">
           <div className="grid gap-12 lg:grid-cols-2 lg:items-start">
             <div>
@@ -339,7 +336,7 @@ export function HomePage() {
         </div>
       </section>
 
-      <section id="testimonials" className="bg-surface py-24 lg:py-32 border-y border-border">
+      <section id="testimonials" className="border-y border-border bg-surface py-24 lg:py-32">
         <div className="mx-auto max-w-7xl px-5 sm:px-6">
           <AnimatedSection className="text-center">
             <span className="text-sm font-semibold text-primary-600 uppercase tracking-wider">Client Stories</span>
@@ -378,7 +375,7 @@ export function HomePage() {
         </div>
       </section>
 
-      <section id="faq" className="border-y border-border bg-white py-24 lg:py-32 dark:bg-slate-950">
+      <section id="faq" className="home-section-soft border-y border-border py-24 lg:py-32">
         <div className="mx-auto max-w-3xl px-5 sm:px-6">
           <div className="text-center">
             <span className="text-sm font-semibold uppercase tracking-wider text-primary-600">FAQ</span>
@@ -408,9 +405,9 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="home-cta-calm relative overflow-hidden border-t border-primary-700/40">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_80%_at_50%_0%,rgba(56,189,248,0.15),transparent_55%)]" />
-        <div className="relative mx-auto max-w-7xl px-5 py-20 sm:px-6 lg:py-28">
+      <section className="relative overflow-hidden border-t border-primary-700/40">
+        <HomeDarkBandBackground preset={heroBg} />
+        <div className="relative z-10 mx-auto max-w-7xl px-5 py-20 sm:px-6 lg:py-28">
           <AnimatedSection className="text-center">
             <Building2 className="mx-auto h-10 w-10 text-accent-400 mb-4" />
             <h2 className="text-3xl font-extrabold text-white sm:text-4xl">Ready to Protect What Matters?</h2>

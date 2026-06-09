@@ -554,7 +554,7 @@ export function AppLayout() {
         <CommandPalette open={cmdOpen} onOpenChange={setCmdOpen} />
 
         <header
-          className={`relative z-10 flex h-16 min-w-0 shrink-0 items-center gap-4 border-b border-border/70 bg-white/85 shadow-[0_1px_0_rgba(255,255,255,0.65)_inset,0_8px_28px_-16px_rgba(3,105,161,0.12)] backdrop-blur-xl dark:border-border dark:bg-surface/75 dark:shadow-[0_1px_0_rgba(255,255,255,0.05)_inset,0_12px_40px_-12px_rgba(0,0,0,0.5)] ${isLg ? "px-8" : "px-6"}`}
+          className={`relative z-10 flex h-16 min-w-0 shrink-0 items-center gap-4 border-b border-border/70 bg-white/90 shadow-[0_1px_0_rgba(255,255,255,0.65)_inset,0_8px_28px_-16px_rgba(3,105,161,0.12)] backdrop-blur-xl dark:border-border/80 dark:bg-surface/92 dark:shadow-[0_1px_0_rgba(255,255,255,0.04)_inset,0_8px_32px_-12px_rgba(0,0,0,0.45)] ${isLg ? "px-8" : "px-6"}`}
         >
           <button
             type="button"
