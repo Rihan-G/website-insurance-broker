@@ -18,6 +18,31 @@ export function AnimatedSection({
   );
 }
 
+/** Staggered kinetic headline — one word animates in at a time. */
+export function KineticHeading({
+  text,
+  className = "",
+}: {
+  text: string;
+  className?: string;
+}) {
+  const words = text.split(" ");
+  return (
+    <h1 className={className} aria-label={text}>
+      {words.map((word, i) => (
+        <span
+          key={`${word}-${i}`}
+          className="word-animate inline-block"
+          style={{ animationDelay: `${i * 0.08}s` }}
+        >
+          {word}
+          {i < words.length - 1 ? "\u00a0" : ""}
+        </span>
+      ))}
+    </h1>
+  );
+}
+
 export function StatCounter({ value, suffix, label }: { value: number; suffix: string; label: string }) {
   const { ref, isInView } = useInView();
   const count = useCounter(value, isInView);

@@ -30,7 +30,9 @@ import {
   WEBSITE_DOMAIN,
   COMPANY_NAME_SHORT,
 } from "../lib/branding";
-import { AnimatedSection, StatCounter } from "./home/HomeAnimatedPrimitives";
+import { AnimatedSection, KineticHeading, StatCounter } from "./home/HomeAnimatedPrimitives";
+import { HomeWhyChooseUs } from "./home/HomeWhyChooseUs";
+import { HomeClaimsJourney } from "./home/HomeClaimsJourney";
 import { HomeQuoteCalculator } from "./home/HomeQuoteCalculator";
 import { HomeMarketingNav } from "./home/HomeMarketingNav";
 import { HomeStickyCta } from "./home/HomeStickyCta";
@@ -53,7 +55,7 @@ export function HomePage() {
   const waveLightFill = resolved === "dark" ? "#111c2f" : "#ffffff";
 
   return (
-    <div className="min-h-screen bg-primary-50 max-lg:pb-[calc(9.25rem+env(safe-area-inset-bottom))] lg:pb-0 dark:bg-background">
+    <div className="min-h-screen bg-white max-lg:pb-[calc(9.25rem+env(safe-area-inset-bottom))] lg:pb-0 dark:bg-background">
       <a
         href="#quote"
         className="absolute left-4 top-2 z-[100] -translate-y-12 rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white shadow transition-transform focus:translate-y-0 focus:outline-none focus:ring-2 focus:ring-primary-300"
@@ -82,7 +84,7 @@ export function HomePage() {
 
         <div className="scan-line" />
 
-        <ParticleField count={16} variant="rise" />
+        <ParticleField count={30} variant="rise" />
 
         <div className="absolute inset-0 dot-grid opacity-20" />
 
@@ -95,9 +97,11 @@ export function HomePage() {
               <span className="h-2 w-2 rounded-full bg-accent-400 animate-pulse ring-2 ring-accent-400/40" aria-hidden />
             </div>
 
-            <h1 className="ui-title text-balance text-4xl font-extrabold text-white sm:text-5xl lg:text-6xl lg:leading-[1.06]">
-              Protect What Matters Most
-            </h1>
+            <KineticHeading
+              text="Protect What Matters Most"
+              className="text-balance text-4xl font-extrabold text-white sm:text-5xl lg:text-6xl lg:leading-[1.06]"
+            />
+            <p className="mt-2 text-xl font-bold text-gradient-warm sm:text-2xl">Insurance made clear for Mauritius</p>
             <p className="mt-5 max-w-2xl text-xl font-semibold leading-snug text-primary-50 sm:text-2xl">
               Fast, affordable insurance coverage for individuals and businesses.
             </p>
@@ -180,7 +184,7 @@ export function HomePage() {
         <WaveDivider topColor="#082F49" bottomColor={waveLightFill} height={80} />
       </section>
 
-      <section className="bg-white dark:bg-slate-900 border-y border-border py-6 overflow-hidden">
+      <section className="home-insurer-band border-y border-primary-200/70 bg-gradient-to-r from-primary-50 via-sky-50 to-emerald-50 py-6 overflow-hidden dark:border-primary-900/50 dark:from-slate-900 dark:via-slate-900 dark:to-slate-950">
         <p className="text-center text-xs font-bold text-muted-foreground uppercase tracking-widest mb-5">Partnered with leading insurers</p>
         <div className="marquee-container">
           <div className="flex animate-marquee gap-0">
@@ -197,6 +201,7 @@ export function HomePage() {
       </section>
 
       <HomePlatformPreview />
+      <HomeWhyChooseUs />
 
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 animated-mesh" />
@@ -204,7 +209,7 @@ export function HomePage() {
           <div className="aurora-orb-3 aurora-home-stats-1" />
           <div className="aurora-orb-4 aurora-home-stats-2" />
         </div>
-        <ParticleField count={6} variant="drift" />
+        <ParticleField count={14} variant="drift" />
         <div className="absolute inset-0 dot-grid opacity-10" />
         <div className="relative mx-auto grid max-w-7xl grid-cols-2 gap-5 px-6 py-14 md:grid-cols-4">
           {[
@@ -234,7 +239,9 @@ export function HomePage() {
         </div>
       </section>
 
-      <section id="products" className="py-24 lg:py-32">
+      <HomeClaimsJourney />
+
+      <section id="products" className="home-section-soft py-24 lg:py-32">
         <div className="mx-auto max-w-7xl px-5 sm:px-6">
           <AnimatedSection className="text-center">
             <span className="text-sm font-semibold text-primary-600 uppercase tracking-wider">Insurance Products</span>
@@ -249,7 +256,7 @@ export function HomePage() {
           <div className="mt-16 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {policyTypes.map((p, i) => (
               <AnimatedSection key={p.name} className={`stagger-${i + 1}`} animation="animate-scale-in">
-                <a href="#quote" className="card-hover card-glow group flex items-start gap-4 rounded-2xl border border-border bg-surface p-6 cursor-pointer">
+                <a href="#quote" className="home-feature-card card-hover card-glow group flex items-start gap-4 rounded-2xl border border-primary-200/70 bg-white p-6 cursor-pointer dark:border-border dark:bg-surface">
                   <div className="rounded-xl bg-gradient-to-br from-primary-50 to-primary-100 p-3 group-hover:from-primary-100 group-hover:to-primary-200 transition-all duration-300 shrink-0 shadow-sm">
                     <p.icon className="h-6 w-6 text-primary-600" />
                   </div>
@@ -412,7 +419,7 @@ export function HomePage() {
           <div className="aurora-orb-3 aurora-home-cta-3" />
         </div>
         <div className="scan-line scan-line-delayed" />
-        <ParticleField count={10} variant="rise" />
+        <ParticleField count={18} variant="rise" />
         <div className="absolute inset-0 dot-grid opacity-12" />
         <div className="relative mx-auto max-w-7xl px-6 py-20 lg:py-28">
           <AnimatedSection className="text-center">
