@@ -7,6 +7,7 @@ import { COMPANY_NAME_SHORT } from "../../lib/branding";
 
 const navLinks = [
   { href: "#platform", label: "Platform" },
+  { href: "#claims", label: "Claims" },
   { href: "#services", label: "Services" },
   { href: "#products", label: "Products" },
   { href: "#quote", label: "Get Quote" },

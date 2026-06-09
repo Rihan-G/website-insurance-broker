@@ -50,6 +50,12 @@
 
   /* Background for dashboard */
   --color-background: #F8FBFF;
+
+  /* Motion tokens (impeccable: expo ease-out, 200–300ms UI) */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --duration-ui: 240ms;
+  --duration-entrance: 560ms;
 }
 
 html {
@@ -258,10 +264,10 @@ button, a, input, select, textarea {
 }
 
 /* Placed aurora orbs — avoids inline styles (Edge Tools / a11y linters) */
-.aurora-home-hero-1 { width: 500px; height: 500px; top: -5%; left: -3%; background: rgba(14, 165, 233, 0.75); }
-.aurora-home-hero-2 { width: 420px; height: 420px; bottom: -5%; right: 0%; background: rgba(22, 163, 74, 0.7); }
-.aurora-home-hero-3 { width: 300px; height: 300px; top: 25%; right: 18%; background: rgba(56, 189, 248, 0.65); }
-.aurora-home-hero-4 { width: 220px; height: 220px; bottom: 15%; left: 22%; background: rgba(245, 158, 11, 0.55); animation-delay: 5s; }
+.aurora-home-hero-1 { width: 520px; height: 520px; top: -5%; left: -3%; background: rgba(14, 165, 233, 0.82); }
+.aurora-home-hero-2 { width: 440px; height: 440px; bottom: -5%; right: 0%; background: rgba(22, 163, 74, 0.78); }
+.aurora-home-hero-3 { width: 320px; height: 320px; top: 25%; right: 18%; background: rgba(56, 189, 248, 0.72); }
+.aurora-home-hero-4 { width: 240px; height: 240px; bottom: 15%; left: 22%; background: rgba(245, 158, 11, 0.62); animation-delay: 5s; }
 .aurora-home-hero-5 {
   width: 160px; height: 160px; top: 10%; right: 8%; background: rgba(255, 255, 255, 0.25);
   animation-delay: 2s; animation-duration: 7s;
@@ -271,6 +277,8 @@ button, a, input, select, textarea {
 .aurora-home-cta-1 { width: 480px; height: 480px; top: -20%; right: 5%; background: rgba(14, 165, 233, 0.72); }
 .aurora-home-cta-2 { width: 400px; height: 400px; bottom: -20%; left: 8%; background: rgba(22, 163, 74, 0.65); }
 .aurora-home-cta-3 { width: 260px; height: 260px; top: 40%; left: 40%; background: rgba(56, 189, 248, 0.5); }
+.aurora-home-claims-1 { width: 360px; height: 360px; top: -15%; right: 5%; background: rgba(14, 165, 233, 0.55); }
+.aurora-home-claims-2 { width: 300px; height: 300px; bottom: -20%; left: 10%; background: rgba(22, 163, 74, 0.5); animation-delay: 2s; }
 .aurora-login-1 { width: 460px; height: 460px; top: -10%; left: -5%; background: rgba(14, 165, 233, 0.78); }
 .aurora-login-2 { width: 380px; height: 380px; bottom: -5%; right: -8%; background: rgba(22, 163, 74, 0.72); }
 .aurora-login-3 { width: 280px; height: 280px; top: 40%; right: 18%; background: rgba(56, 189, 248, 0.62); }
@@ -762,9 +770,10 @@ button, a, input, select, textarea {
    ────────────────────────────────────────────────────── */
 .animate-on-scroll {
   opacity: 0;
-  transform: translateY(32px);
-  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateY(28px);
+  transition:
+    opacity var(--duration-entrance) var(--ease-out-expo),
+    transform var(--duration-entrance) var(--ease-out-expo);
 }
 .animate-on-scroll.in-view {
   opacity: 1;
@@ -779,8 +788,10 @@ button, a, input, select, textarea {
 
 .animate-scale-in {
   opacity: 0;
-  transform: scale(0.92);
-  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: scale(0.96);
+  transition:
+    opacity var(--duration-entrance) var(--ease-out-expo),
+    transform var(--duration-entrance) var(--ease-out-expo);
 }
 .animate-scale-in.in-view {
   opacity: 1;
@@ -789,8 +800,10 @@ button, a, input, select, textarea {
 
 .animate-slide-left {
   opacity: 0;
-  transform: translateX(-40px);
-  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateX(-32px);
+  transition:
+    opacity var(--duration-entrance) var(--ease-out-expo),
+    transform var(--duration-entrance) var(--ease-out-expo);
 }
 .animate-slide-left.in-view {
   opacity: 1;
@@ -799,8 +812,10 @@ button, a, input, select, textarea {
 
 .animate-slide-right {
   opacity: 0;
-  transform: translateX(40px);
-  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateX(32px);
+  transition:
+    opacity var(--duration-entrance) var(--ease-out-expo),
+    transform var(--duration-entrance) var(--ease-out-expo);
 }
 .animate-slide-right.in-view {
   opacity: 1;
@@ -814,6 +829,86 @@ button, a, input, select, textarea {
 .stagger-4 { transition-delay: 0.4s; }
 .stagger-5 { transition-delay: 0.5s; }
 .stagger-6 { transition-delay: 0.6s; }
+
+/* ──────────────────────────────────────────────────────
+   HOMEPAGE — richer sections & motion
+   ────────────────────────────────────────────────────── */
+.home-section-soft {
+  background: linear-gradient(
+    180deg,
+    var(--color-primary-50) 0%,
+    var(--color-surface) 55%,
+    var(--color-background) 100%
+  );
+}
+.dark .home-section-soft {
+  background: linear-gradient(180deg, #0c1424 0%, #0f172a 55%, #0c1424 100%);
+}
+.home-section-tint {
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-50) 0%,
+    var(--color-accent-50) 48%,
+    var(--color-warning-50) 100%
+  );
+}
+.dark .home-section-tint {
+  background: linear-gradient(135deg, #0b1220 0%, #0f1a14 50%, #14120b 100%);
+}
+.home-feature-row {
+  transition:
+    transform var(--duration-ui) var(--ease-out-expo),
+    box-shadow var(--duration-ui) var(--ease-out-expo);
+}
+.home-feature-row:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 40px -24px rgba(3, 105, 161, 0.45);
+}
+.home-coverage-pill:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+}
+.home-insurer-band .animate-marquee {
+  animation-duration: 28s;
+}
+
+@keyframes icon-bob {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-4px) scale(1.04); }
+}
+.home-icon-bob {
+  animation: icon-bob 3.2s ease-in-out infinite;
+}
+
+@keyframes home-card-shine {
+  0% { transform: translateX(-120%) skewX(-18deg); opacity: 0; }
+  35% { opacity: 0.35; }
+  100% { transform: translateX(220%) skewX(-18deg); opacity: 0; }
+}
+.home-feature-card {
+  position: relative;
+  overflow: hidden;
+}
+.home-feature-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, 0.55) 50%, transparent 65%);
+  transform: translateX(-120%) skewX(-18deg);
+  pointer-events: none;
+}
+.home-feature-card:hover::after {
+  animation: home-card-shine 0.9s ease-out;
+}
+
+.home-claims-step {
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+.home-claims-step:hover {
+  transform: translateY(-4px);
+  border-color: rgba(56, 189, 248, 0.45);
+  box-shadow: 0 12px 30px rgba(2, 132, 199, 0.18);
+}
 
 /* ──────────────────────────────────────────────────────
    EXISTING KEYFRAME ANIMATIONS
@@ -976,8 +1071,19 @@ button, a, input, select, textarea {
   .glow-card-anim,
   .animate-float,
   .animate-float-delayed,
-  .animate-float-delayed-2 {
+  .animate-float-delayed-2,
+  .home-icon-bob,
+  .word-animate {
     animation: none !important;
+  }
+  .home-feature-card::after {
+    display: none;
+  }
+  .home-claims-step:hover,
+  .home-feature-row:hover,
+  .home-coverage-pill:hover {
+    transform: none;
+    box-shadow: none;
   }
   .card-hover:hover {
     transform: none;

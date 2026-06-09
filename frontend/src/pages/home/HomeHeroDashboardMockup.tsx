@@ -60,7 +60,7 @@ export function HomeHeroDashboardMockup() {
                 </li>
               ))}
             </ul>
-            <p className="mt-2 text-[10px] text-primary-200/80">Illustrative preview — not your real data.</p>
+            <p className="mt-2 text-[10px] text-primary-200/80">Illustrative preview, not your real data.</p>
           </div>
           <div className="space-y-2 rounded-xl border border-white/10 bg-white/5 p-3">
             <p className="text-[10px] font-bold uppercase tracking-wide text-primary-200">Updates</p>

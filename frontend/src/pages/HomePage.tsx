@@ -91,7 +91,7 @@ export function HomePage() {
         <div className="relative mx-auto max-w-7xl px-5 py-28 sm:px-6 sm:py-32 md:py-36 lg:py-40">
           <div ref={heroRef.ref} className={`grid items-center gap-12 lg:grid-cols-2 lg:gap-14 xl:gap-16 animate-on-scroll ${heroRef.isInView ? "in-view" : ""}`}>
             <div className="min-w-0 max-w-3xl">
-            <div className="mb-6 badge-float inline-flex items-center gap-2 rounded-full glass px-4 py-2 text-sm font-semibold text-accent-200 ring-1 ring-accent-500/35">
+            <div className="mb-6 badge-float inline-flex items-center gap-2 rounded-full border border-white/20 bg-primary-900/40 px-4 py-2 text-sm font-semibold text-accent-200 ring-1 ring-accent-500/35 backdrop-blur-sm">
               <ShieldCheck className="h-4 w-4 text-accent-400" aria-hidden />
               <span className="text-primary-50/95">FSC-licensed broker · Mauritius</span>
               <span className="h-2 w-2 rounded-full bg-accent-400 animate-pulse ring-2 ring-accent-400/40" aria-hidden />
@@ -101,13 +101,13 @@ export function HomePage() {
               text="Protect What Matters Most"
               className="text-balance text-4xl font-extrabold text-white sm:text-5xl lg:text-6xl lg:leading-[1.06]"
             />
-            <p className="mt-2 text-xl font-bold text-gradient-warm sm:text-2xl">Insurance made clear for Mauritius</p>
+            <p className="mt-2 text-xl font-bold text-accent-200 sm:text-2xl">Insurance made clear for Mauritius</p>
             <p className="mt-5 max-w-2xl text-xl font-semibold leading-snug text-primary-50 sm:text-2xl">
               Fast, affordable insurance coverage for individuals and businesses.
             </p>
             <p className="ui-body mt-5 max-w-2xl text-primary-200/95 sm:text-lg">
               Get an indicative quote in minutes, share documents through a secure channel, and work with licensed advisors who place cover
-              with leading insurers—all in one place.
+              with leading insurers, all in one place.
             </p>
 
             <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
@@ -121,7 +121,7 @@ export function HomePage() {
               </a>
               <a
                 href={`tel:${CONTACT_PHONE_TEL}`}
-                className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl glass border border-white/30 px-8 py-3.5 text-sm font-bold text-white transition-all duration-200 hover:bg-white/15 cursor-pointer sm:inline-flex"
+                className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl border border-white/30 bg-primary-900/35 px-8 py-3.5 text-sm font-bold text-white transition-[background-color,transform] duration-[240ms] ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-primary-800/50 active:scale-[0.98] cursor-pointer sm:inline-flex"
               >
                 <Phone className="h-4 w-4 shrink-0" aria-hidden />
                 Talk to an Advisor
@@ -244,7 +244,7 @@ export function HomePage() {
       <section id="products" className="home-section-soft py-24 lg:py-32">
         <div className="mx-auto max-w-7xl px-5 sm:px-6">
           <AnimatedSection className="text-center">
-            <span className="text-sm font-semibold text-primary-600 uppercase tracking-wider">Insurance Products</span>
+            <p className="ui-eyebrow text-primary-600 dark:text-primary-400">Insurance products</p>
             <h2 className="ui-title mt-4 text-balance text-3xl font-extrabold text-primary-950 dark:text-primary-50 sm:text-4xl lg:text-5xl">
               Comprehensive Coverage for Every Need
             </h2>
@@ -253,7 +253,22 @@ export function HomePage() {
             </p>
           </AnimatedSection>
 
-          <div className="mt-16 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <AnimatedSection className="mt-10" animation="animate-fade-in">
+            <div className="flex flex-wrap justify-center gap-2">
+              {policyTypes.map((p) => (
+                <a
+                  key={p.name}
+                  href="#quote"
+                  className="home-coverage-pill inline-flex items-center gap-2 rounded-full border border-primary-200 bg-white px-4 py-2 text-sm font-semibold text-primary-800 shadow-sm transition-[transform,box-shadow] duration-[200ms] ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:shadow-md dark:border-primary-800 dark:bg-slate-900 dark:text-primary-100"
+                >
+                  <p.icon className="h-4 w-4 text-primary-600 dark:text-primary-300" aria-hidden />
+                  {p.name}
+                </a>
+              ))}
+            </div>
+          </AnimatedSection>
+
+          <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {policyTypes.map((p, i) => (
               <AnimatedSection key={p.name} className={`stagger-${i + 1}`} animation="animate-scale-in">
                 <a href="#quote" className="home-feature-card card-hover card-glow group flex items-start gap-4 rounded-2xl border border-primary-200/70 bg-white p-6 cursor-pointer dark:border-border dark:bg-surface">
@@ -319,7 +334,7 @@ export function HomePage() {
               From first quote to renewal, online and human
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
-              The same tools power our advisory team and your client area—secure uploads, clear status, and reminders so nothing important is missed.
+              The same tools power our advisory team and your client area: secure uploads, clear status, and reminders so nothing important is missed.
             </p>
           </AnimatedSection>
 
@@ -464,7 +479,7 @@ export function HomePage() {
                 <span className="text-lg font-bold text-white tracking-tight">{COMPANY_NAME_SHORT}</span>
               </div>
               <p className="mt-4 max-w-md text-sm leading-relaxed">
-                Your licensed insurance broker for Mauritius—quotes, renewals, claims guidance, and secure document sharing in one place. Regulated by the Financial Services Commission.
+                Your licensed insurance broker for Mauritius: quotes, renewals, claims guidance, and secure document sharing in one place. Regulated by the Financial Services Commission.
               </p>
               <div className="mt-6 flex flex-wrap items-center gap-3">
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-accent-500/10 px-3 py-1 text-xs font-medium text-accent-400 border border-accent-500/20">
@@ -478,7 +493,7 @@ export function HomePage() {
               </div>
               <div className="mt-8 max-w-md">
                 <h4 className="text-sm font-semibold text-white uppercase tracking-wider">Newsletter</h4>
-                <p className="mt-2 text-xs text-primary-300/90">Regulatory updates and product tips — opt out anytime.</p>
+                <p className="mt-2 text-xs text-primary-300/90">Regulatory updates and product tips. Opt out anytime.</p>
                 <form
                   className="mt-3 flex flex-col gap-2 sm:flex-row"
                   onSubmit={(e) => {
