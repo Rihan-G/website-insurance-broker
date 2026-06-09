@@ -30,7 +30,7 @@ import {
   WEBSITE_DOMAIN,
   COMPANY_NAME_SHORT,
 } from "../lib/branding";
-import { AnimatedSection, KineticHeading, StatCounter } from "./home/HomeAnimatedPrimitives";
+import { AnimatedSection, StatCounter } from "./home/HomeAnimatedPrimitives";
 import { HomeWhyChooseUs } from "./home/HomeWhyChooseUs";
 import { HomeClaimsJourney } from "./home/HomeClaimsJourney";
 import { HomeQuoteCalculator } from "./home/HomeQuoteCalculator";
@@ -68,39 +68,28 @@ export function HomePage() {
       <HomeAssistantTeaser />
       <HomeStickyCta />
 
-      {/* ═══════════════════════════════════════════════════════════════
-           Hero — Aurora UI + Motion-Driven + Kinetic Typography
-          ═══════════════════════════════════════════════════════════════ */}
-      <section className="relative overflow-hidden pt-20 sm:pt-24 md:pt-28">
-        <div className="absolute inset-0 animated-mesh" />
-
-        <div className="aurora-bg">
+      <section className="home-hero-bg relative overflow-hidden pt-20 sm:pt-24 md:pt-28">
+        <div className="aurora-bg aurora-calm pointer-events-none">
           <div className="aurora-orb-1 aurora-home-hero-1" />
           <div className="aurora-orb-2 aurora-home-hero-2" />
-          <div className="aurora-orb-3 aurora-home-hero-3" />
-          <div className="aurora-orb-4 aurora-home-hero-4" />
-          <div className="aurora-orb-1 aurora-home-hero-5" />
         </div>
 
-        <div className="scan-line" />
+        <ParticleField count={8} variant="rise" className="opacity-60" />
 
-        <ParticleField count={30} variant="rise" />
-
-        <div className="absolute inset-0 dot-grid opacity-20" />
+        <div className="pointer-events-none absolute inset-0 dot-grid opacity-[0.12]" />
 
         <div className="relative mx-auto max-w-7xl px-5 py-28 sm:px-6 sm:py-32 md:py-36 lg:py-40">
           <div ref={heroRef.ref} className={`grid items-center gap-12 lg:grid-cols-2 lg:gap-14 xl:gap-16 animate-on-scroll ${heroRef.isInView ? "in-view" : ""}`}>
             <div className="min-w-0 max-w-3xl">
-            <div className="mb-6 badge-float inline-flex items-center gap-2 rounded-full border border-white/20 bg-primary-900/40 px-4 py-2 text-sm font-semibold text-accent-200 ring-1 ring-accent-500/35 backdrop-blur-sm">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/20 bg-primary-900/50 px-4 py-2 text-sm font-semibold text-accent-200 ring-1 ring-accent-500/25">
               <ShieldCheck className="h-4 w-4 text-accent-400" aria-hidden />
               <span className="text-primary-50/95">FSC-licensed broker · Mauritius</span>
-              <span className="h-2 w-2 rounded-full bg-accent-400 animate-pulse ring-2 ring-accent-400/40" aria-hidden />
+              <span className="h-2 w-2 rounded-full bg-accent-400 ring-2 ring-accent-400/30" aria-hidden />
             </div>
 
-            <KineticHeading
-              text="Protect What Matters Most"
-              className="text-balance text-4xl font-extrabold text-white sm:text-5xl lg:text-6xl lg:leading-[1.06]"
-            />
+            <h1 className="text-balance text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl lg:leading-[1.06]">
+              Protect What Matters Most
+            </h1>
             <p className="mt-2 text-xl font-bold text-accent-200 sm:text-2xl">Insurance made clear for Mauritius</p>
             <p className="mt-5 max-w-2xl text-xl font-semibold leading-snug text-primary-50 sm:text-2xl">
               Fast, affordable insurance coverage for individuals and businesses.
@@ -114,7 +103,7 @@ export function HomePage() {
               <a
                 href="#quote"
                 aria-label="Jump to free quote form"
-                className="btn-glow ring-pulse inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-accent-500 to-accent-600 px-8 py-3.5 text-sm font-bold text-white shadow-lg shadow-accent-500/40 transition-all duration-200 hover:from-accent-600 hover:to-accent-700 cursor-pointer sm:inline-flex"
+                className="btn-glow inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-accent-500 to-accent-600 px-8 py-3.5 text-sm font-bold text-white shadow-lg shadow-accent-500/30 transition-[background,transform] duration-[240ms] ease-[cubic-bezier(0.16,1,0.3,1)] hover:from-accent-600 hover:to-accent-700 hover:-translate-y-0.5 cursor-pointer sm:inline-flex"
               >
                 <Calculator className="h-4 w-4 shrink-0" aria-hidden />
                 Get a Free Quote
@@ -203,27 +192,20 @@ export function HomePage() {
       <HomePlatformPreview />
       <HomeWhyChooseUs />
 
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 animated-mesh" />
-        <div className="aurora-bg">
-          <div className="aurora-orb-3 aurora-home-stats-1" />
-          <div className="aurora-orb-4 aurora-home-stats-2" />
-        </div>
-        <ParticleField count={14} variant="drift" />
-        <div className="absolute inset-0 dot-grid opacity-10" />
-        <div className="relative mx-auto grid max-w-7xl grid-cols-2 gap-5 px-6 py-14 md:grid-cols-4">
+      <section className="border-y border-primary-800/30 bg-gradient-to-b from-primary-900 to-primary-950 py-16 lg:py-20">
+        <div className="relative mx-auto grid max-w-7xl grid-cols-2 gap-4 px-5 sm:px-6 md:grid-cols-4 md:gap-5">
           {[
             { value: 15, suffix: "+", label: "Years serving Mauritius" },
             { value: 12, suffix: "+", label: "Insurer partners" },
             { value: 98, suffix: "%", label: "Clients who would recommend us*" },
             { value: 1, suffix: "", label: "Licensed team on your side" },
           ].map((s) => (
-            <div key={s.label} className="glass glow-card-anim rounded-2xl p-5 text-center ring-1 ring-white/10">
+            <div key={s.label} className="home-stat-panel rounded-2xl p-5 text-center">
               <StatCounter value={s.value} suffix={s.suffix} label={s.label} />
             </div>
           ))}
         </div>
-        <WaveDivider topColor="#082F49" bottomColor={waveLightFill} height={60} flip />
+        <p className="mt-6 text-center text-xs text-primary-300/70">*Based on client feedback surveys</p>
       </section>
 
       <section className="bg-surface border-b border-border">
@@ -270,7 +252,7 @@ export function HomePage() {
 
           <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {policyTypes.map((p, i) => (
-              <AnimatedSection key={p.name} className={`stagger-${i + 1}`} animation="animate-scale-in">
+              <AnimatedSection key={p.name} className={`stagger-${i + 1}`} animation="animate-fade-in">
                 <a href="#quote" className="home-feature-card card-hover card-glow group flex items-start gap-4 rounded-2xl border border-primary-200/70 bg-white p-6 cursor-pointer dark:border-border dark:bg-surface">
                   <div className="rounded-xl bg-gradient-to-br from-primary-50 to-primary-100 p-3 group-hover:from-primary-100 group-hover:to-primary-200 transition-all duration-300 shrink-0 shadow-sm">
                     <p.icon className="h-6 w-6 text-primary-600" />
@@ -326,7 +308,7 @@ export function HomePage() {
         </div>
       </section>
 
-      <section id="services" className="py-24 lg:py-32">
+      <section id="services" className="home-section-soft py-24 lg:py-32">
         <div className="mx-auto max-w-7xl px-5 sm:px-6">
           <AnimatedSection className="text-center">
             <span className="text-sm font-semibold text-primary-600 uppercase tracking-wider">Our Platform</span>
@@ -340,7 +322,7 @@ export function HomePage() {
 
           <div className="mt-16 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {services.map((service, i) => (
-              <AnimatedSection key={service.title} className={`stagger-${i + 1}`} animation="animate-scale-in">
+              <AnimatedSection key={service.title} className={`stagger-${i + 1}`} animation="animate-fade-in">
                 <div className="card-hover card-glow group rounded-2xl border border-border bg-surface p-7 cursor-default relative overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-br from-primary-50/0 to-primary-50/0 group-hover:from-primary-50/40 group-hover:to-transparent transition-all duration-300 pointer-events-none" />
                   <div className="relative">
@@ -426,17 +408,9 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 animated-mesh" />
-        <div className="aurora-bg">
-          <div className="aurora-orb-1 aurora-home-cta-1" />
-          <div className="aurora-orb-2 aurora-home-cta-2" />
-          <div className="aurora-orb-3 aurora-home-cta-3" />
-        </div>
-        <div className="scan-line scan-line-delayed" />
-        <ParticleField count={18} variant="rise" />
-        <div className="absolute inset-0 dot-grid opacity-12" />
-        <div className="relative mx-auto max-w-7xl px-6 py-20 lg:py-28">
+      <section className="home-cta-calm relative overflow-hidden border-t border-primary-700/40">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_80%_at_50%_0%,rgba(56,189,248,0.15),transparent_55%)]" />
+        <div className="relative mx-auto max-w-7xl px-5 py-20 sm:px-6 lg:py-28">
           <AnimatedSection className="text-center">
             <Building2 className="mx-auto h-10 w-10 text-accent-400 mb-4" />
             <h2 className="text-3xl font-extrabold text-white sm:text-4xl">Ready to Protect What Matters?</h2>
