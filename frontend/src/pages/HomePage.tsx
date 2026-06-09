@@ -39,9 +39,7 @@ import { HomeAssistantTeaser } from "./home/HomeAssistantTeaser";
 import { homeFaqItems } from "./home/homeFaqData";
 import { HomeHeroDashboardMockup } from "./home/HomeHeroDashboardMockup";
 import { HomePlatformPreview } from "./home/HomePlatformPreview";
-import { HomeBackgroundSampler } from "./home/HomeBackgroundSampler";
 import { HomeDarkBandBackground, HomeHeroBackground } from "./home/HomeHeroBackground";
-import { useHomeHeroBackground } from "./home/useHomeHeroBackground";
 import {
   insurers,
   services,
@@ -53,9 +51,10 @@ import {
 
 export function HomePage() {
   const heroRef = useInView();
-  const { preset: heroBg, setPreset: setHeroBg } = useHomeHeroBackground();
   const { resolved } = useTheme();
-  const waveLightFill = resolved === "dark" ? "#111c2f" : "#ffffff";
+  const isDark = resolved === "dark";
+  const waveLightFill = isDark ? "#111c2f" : "#ffffff";
+  const heroWaveTop = isDark ? "#082F49" : "#bae6fd";
 
   return (
     <div className="min-h-screen bg-background max-lg:pb-[calc(9.25rem+env(safe-area-inset-bottom))] lg:pb-0">
@@ -72,26 +71,31 @@ export function HomePage() {
       <HomeStickyCta />
 
       <section className="relative overflow-hidden pt-20 sm:pt-24 md:pt-28">
-        <HomeHeroBackground preset={heroBg} />
-        <HomeBackgroundSampler preset={heroBg} onChange={setHeroBg} />
+        <HomeHeroBackground />
 
         <div className="relative z-10 mx-auto max-w-7xl px-5 py-28 pb-36 sm:px-6 sm:py-32 sm:pb-40 md:py-36 md:pb-44 lg:py-40 lg:pb-48">
           <div ref={heroRef.ref} className={`grid items-center gap-12 lg:grid-cols-2 lg:gap-14 xl:gap-16 animate-on-scroll ${heroRef.isInView ? "in-view" : ""}`}>
             <div className="min-w-0 max-w-3xl">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/20 bg-primary-900/50 px-4 py-2 text-sm font-semibold text-accent-200 ring-1 ring-accent-500/25">
-              <ShieldCheck className="h-4 w-4 text-accent-400" aria-hidden />
-              <span className="text-primary-50/95">FSC-licensed broker · Mauritius</span>
-              <span className="h-2 w-2 rounded-full bg-accent-400 ring-2 ring-accent-400/30" aria-hidden />
+            <div
+              className={`mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold ring-1 ${
+                isDark
+                  ? "border-white/20 bg-primary-900/50 text-accent-200 ring-accent-500/25"
+                  : "border-primary-200/90 bg-white/75 text-accent-800 ring-accent-300/40 backdrop-blur-sm"
+              }`}
+            >
+              <ShieldCheck className={`h-4 w-4 ${isDark ? "text-accent-400" : "text-accent-600"}`} aria-hidden />
+              <span className={isDark ? "text-primary-50/95" : "text-primary-900"}>FSC-licensed broker · Mauritius</span>
+              <span className={`h-2 w-2 rounded-full ring-2 ${isDark ? "bg-accent-400 ring-accent-400/30" : "bg-accent-500 ring-accent-500/30"}`} aria-hidden />
             </div>
 
-            <h1 className="text-balance text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl lg:leading-[1.06]">
+            <h1 className={`text-balance text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl lg:leading-[1.06] ${isDark ? "text-white" : "text-primary-950"}`}>
               Protect What Matters Most
             </h1>
-            <p className="mt-2 text-xl font-bold text-accent-200 sm:text-2xl">Insurance made clear for Mauritius</p>
-            <p className="mt-5 max-w-2xl text-xl font-semibold leading-snug text-primary-50 sm:text-2xl">
+            <p className={`mt-2 text-xl font-bold sm:text-2xl ${isDark ? "text-accent-200" : "text-accent-700"}`}>Insurance made clear for Mauritius</p>
+            <p className={`mt-5 max-w-2xl text-xl font-semibold leading-snug sm:text-2xl ${isDark ? "text-primary-50" : "text-primary-900"}`}>
               Fast, affordable insurance coverage for individuals and businesses.
             </p>
-            <p className="ui-body mt-5 max-w-2xl text-primary-200/95 sm:text-lg">
+            <p className={`ui-body mt-5 max-w-2xl sm:text-lg ${isDark ? "text-primary-200/95" : "text-primary-800/90"}`}>
               Get an indicative quote in minutes, share documents through a secure channel, and work with licensed advisors who place cover
               with leading insurers, all in one place.
             </p>
@@ -107,7 +111,11 @@ export function HomePage() {
               </a>
               <a
                 href={`tel:${CONTACT_PHONE_TEL}`}
-                className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl border border-white/30 bg-primary-900/35 px-8 py-3.5 text-sm font-bold text-white transition-[background-color,transform] duration-[240ms] ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-primary-800/50 active:scale-[0.98] cursor-pointer sm:inline-flex"
+                className={`inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl border px-8 py-3.5 text-sm font-bold transition-[background-color,transform] duration-[240ms] ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-[0.98] cursor-pointer sm:inline-flex ${
+                  isDark
+                    ? "border-white/30 bg-primary-900/35 text-white hover:bg-primary-800/50"
+                    : "border-primary-300/80 bg-white/70 text-primary-900 hover:bg-white/90"
+                }`}
               >
                 <Phone className="h-4 w-4 shrink-0" aria-hidden />
                 Talk to an Advisor
@@ -115,7 +123,11 @@ export function HomePage() {
               <Link
                 to="/login"
                 aria-label="Open secure sign in page"
-                className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/5 px-8 py-3.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-white/10 cursor-pointer sm:inline-flex"
+                className={`inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl border px-8 py-3.5 text-sm font-semibold transition-all duration-200 cursor-pointer sm:inline-flex ${
+                  isDark
+                    ? "border-white/15 bg-white/5 text-white hover:bg-white/10"
+                    : "border-primary-200/90 bg-primary-50/60 text-primary-900 hover:bg-primary-100/70"
+                }`}
               >
                 Sign in
                 <ArrowRight className="h-4 w-4 shrink-0" aria-hidden />
@@ -130,32 +142,36 @@ export function HomePage() {
               ].map((row) => (
                 <div
                   key={row.label}
-                  className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-center backdrop-blur-sm sm:text-left"
+                  className={`home-stat-panel rounded-xl px-4 py-3 text-center backdrop-blur-sm sm:text-left ${isDark ? "" : "shadow-sm"}`}
                 >
-                  <p className="text-2xl font-extrabold text-white sm:text-3xl">{row.stat}</p>
-                  <p className="mt-1 text-xs font-medium leading-snug text-primary-200/90">{row.label}</p>
+                  <p className={`text-2xl font-extrabold sm:text-3xl ${isDark ? "text-white" : "text-primary-950"}`}>{row.stat}</p>
+                  <p className={`mt-1 text-xs font-medium leading-snug ${isDark ? "text-primary-200/90" : "text-primary-700/90"}`}>{row.label}</p>
                 </div>
               ))}
             </div>
 
-            <div className="mt-6 flex flex-wrap items-center gap-x-2 gap-y-2 text-sm text-primary-100/95">
+            <div className={`mt-6 flex flex-wrap items-center gap-x-2 gap-y-2 text-sm ${isDark ? "text-primary-100/95" : "text-primary-800/90"}`}>
               <a
                 href={`https://wa.me/${CONTACT_PHONE_WHATSAPP}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-4 py-2 font-semibold text-white transition-colors hover:bg-white/10"
+                className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 font-semibold transition-colors ${
+                  isDark
+                    ? "border-white/20 bg-white/5 text-white hover:bg-white/10"
+                    : "border-primary-200/90 bg-white/70 text-primary-900 hover:bg-white/90"
+                }`}
               >
-                <MessageCircle className="h-4 w-4 shrink-0 text-accent-300" aria-hidden />
+                <MessageCircle className={`h-4 w-4 shrink-0 ${isDark ? "text-accent-300" : "text-accent-600"}`} aria-hidden />
                 WhatsApp us
               </a>
-              <span className="hidden text-primary-300/80 sm:inline">·</span>
-              <span className="text-sm text-primary-200/90">Typical response under 1 business day</span>
+              <span className={`hidden sm:inline ${isDark ? "text-primary-300/80" : "text-primary-500/80"}`}>·</span>
+              <span className={`text-sm ${isDark ? "text-primary-200/90" : "text-primary-700/90"}`}>Typical response under 1 business day</span>
             </div>
 
-            <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-primary-200">
+            <div className={`mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm ${isDark ? "text-primary-200" : "text-primary-800/90"}`}>
               {["No-obligation quotes", "256-bit TLS encryption", "Dedicated claims guidance"].map((t) => (
                 <span key={t} className="flex items-center gap-1.5">
-                  <CheckCircle className="h-4 w-4 shrink-0 text-accent-400" aria-hidden />
+                  <CheckCircle className={`h-4 w-4 shrink-0 ${isDark ? "text-accent-400" : "text-accent-600"}`} aria-hidden />
                   {t}
                 </span>
               ))}
@@ -167,7 +183,7 @@ export function HomePage() {
           </div>
         </div>
 
-        <WaveDivider topColor="#082F49" bottomColor={waveLightFill} height={80} />
+        <WaveDivider topColor={heroWaveTop} bottomColor={waveLightFill} height={80} />
       </section>
 
       <section className="home-insurer-band border-y border-primary-200/70 bg-gradient-to-r from-primary-50 via-sky-50 to-emerald-50 py-6 overflow-hidden dark:border-border dark:from-surface dark:via-background dark:to-surface">
@@ -405,13 +421,13 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="relative overflow-hidden border-t border-primary-700/40">
-        <HomeDarkBandBackground preset={heroBg} />
+      <section className={`relative overflow-hidden border-t ${isDark ? "border-primary-700/40" : "border-primary-200/80"}`}>
+        <HomeDarkBandBackground />
         <div className="relative z-10 mx-auto max-w-7xl px-5 py-20 sm:px-6 lg:py-28">
           <AnimatedSection className="text-center">
-            <Building2 className="mx-auto h-10 w-10 text-accent-400 mb-4" />
-            <h2 className="text-3xl font-extrabold text-white sm:text-4xl">Ready to Protect What Matters?</h2>
-            <p className="mx-auto mt-4 max-w-xl text-primary-200">
+            <Building2 className={`mx-auto h-10 w-10 mb-4 ${isDark ? "text-accent-400" : "text-accent-600"}`} />
+            <h2 className={`text-3xl font-extrabold sm:text-4xl ${isDark ? "text-white" : "text-primary-950"}`}>Ready to Protect What Matters?</h2>
+            <p className={`mx-auto mt-4 max-w-xl ${isDark ? "text-primary-200" : "text-primary-800/90"}`}>
               Families and businesses across Mauritius trust {COMPANY_NAME_SHORT} for clear advice and a straightforward online experience. Get your free, no-obligation quote today.
             </p>
             <div className="mt-10 flex flex-wrap justify-center gap-4">
@@ -424,14 +440,22 @@ export function HomePage() {
               </a>
               <a
                 href={`tel:${CONTACT_PHONE_TEL}`}
-                className="inline-flex min-h-[48px] items-center gap-2 rounded-xl glass border border-white/20 px-8 py-3.5 text-sm font-bold text-white hover:bg-white/15 cursor-pointer transition-all duration-200"
+                className={`inline-flex min-h-[48px] items-center gap-2 rounded-xl border px-8 py-3.5 text-sm font-bold cursor-pointer transition-all duration-200 ${
+                  isDark
+                    ? "glass border-white/20 text-white hover:bg-white/15"
+                    : "border-primary-300/80 bg-white/75 text-primary-900 hover:bg-white/90 backdrop-blur-sm"
+                }`}
               >
                 <Phone className="h-4 w-4 shrink-0" aria-hidden />
                 Call an advisor
               </a>
               <Link
                 to="/login"
-                className="inline-flex min-h-[48px] items-center gap-2 rounded-xl glass border border-white/20 px-8 py-3.5 text-sm font-semibold text-white hover:bg-white/15 cursor-pointer transition-all duration-200"
+                className={`inline-flex min-h-[48px] items-center gap-2 rounded-xl border px-8 py-3.5 text-sm font-semibold cursor-pointer transition-all duration-200 ${
+                  isDark
+                    ? "glass border-white/20 text-white hover:bg-white/15"
+                    : "border-primary-200/90 bg-primary-50/70 text-primary-900 hover:bg-primary-100/80 backdrop-blur-sm"
+                }`}
               >
                 Sign in
                 <ArrowRight className="h-4 w-4" aria-hidden />

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ShieldCheck, Menu, X } from "lucide-react";
 import { ThemeToggle } from "../../components/ThemeToggle";
 import { CurrencySwitcher } from "../../components/CurrencySwitcher";
+import { useTheme } from "../../context/ThemeContext";
 import { COMPANY_NAME_SHORT } from "../../lib/branding";
 
 const navLinks = [
@@ -50,26 +51,40 @@ export function HomeMarketingNav() {
   }, [mobileOpen]);
 
   const closeMobile = () => setMobileOpen(false);
+  const { resolved } = useTheme();
+  const isDark = resolved === "dark";
+  const heroTop = !scrolled;
 
   const bar = scrolled
     ? "border-b border-primary-200/90 bg-white/92 shadow-[0_8px_30px_-12px_rgba(3,105,161,0.2)] backdrop-blur-xl dark:border-border dark:bg-surface/96 dark:shadow-[0_12px_40px_-8px_rgba(0,0,0,0.45)]"
-    : "border-b border-white/10 bg-slate-950/35 shadow-none backdrop-blur-md dark:border-white/8 dark:bg-black/25";
+    : isDark
+      ? "border-b border-white/10 bg-slate-950/35 shadow-none backdrop-blur-md dark:border-white/8 dark:bg-black/25"
+      : "border-b border-primary-200/55 bg-white/55 shadow-none backdrop-blur-md";
 
   const linkBase =
     "relative py-1 transition-colors duration-200 after:absolute after:bottom-0 after:left-0 after:h-0.5 after:rounded-full after:bg-current after:transition-all after:duration-200 after:content-[''] ";
   const linkIdle = scrolled
     ? "text-primary-800 hover:text-primary-950 after:w-0 hover:after:w-full dark:text-primary-200 dark:hover:text-white"
-    : "text-primary-50 hover:text-white after:w-0 hover:after:w-full";
+    : isDark
+      ? "text-primary-50 hover:text-white after:w-0 hover:after:w-full"
+      : "text-primary-800 hover:text-primary-950 after:w-0 hover:after:w-full";
 
   const brand = scrolled
     ? "text-primary-900 dark:text-primary-50"
-    : "text-white drop-shadow-sm dark:text-primary-50";
+    : isDark
+      ? "text-white drop-shadow-sm dark:text-primary-50"
+      : "text-primary-950";
+
+  const heroCta =
+    heroTop && !isDark
+      ? "bg-white/75 text-primary-900 ring-1 ring-primary-300/60 hover:bg-white/90"
+      : "bg-white/15 text-white ring-1 ring-white/25 hover:bg-white/25 dark:bg-white/10 dark:ring-white/20 dark:hover:bg-white/15";
 
   return (
     <nav className={`fixed top-0 z-50 w-full transition-[background,box-shadow,border-color] duration-300 ${bar}`}>
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6">
         <div className="flex min-w-0 items-center gap-2.5">
-          <ShieldCheck className={`h-7 w-7 shrink-0 ${scrolled ? "text-accent-600" : "text-accent-400"}`} aria-hidden />
+          <ShieldCheck className={`h-7 w-7 shrink-0 ${scrolled || !isDark ? "text-accent-600" : "text-accent-400"}`} aria-hidden />
           <span className={`truncate text-lg font-bold tracking-tight transition-colors ${brand}`}>{COMPANY_NAME_SHORT}</span>
         </div>
 
@@ -85,21 +100,19 @@ export function HomeMarketingNav() {
           <a
             href="#quote"
             className={`hidden rounded-lg px-4 py-2 text-sm font-bold transition-colors duration-200 md:inline-flex ${
-              scrolled
-                ? "bg-accent-600 text-white hover:bg-accent-700"
-                : "bg-white/15 text-white ring-1 ring-white/25 hover:bg-white/25"
+              scrolled ? "bg-accent-600 text-white hover:bg-accent-700" : heroCta
             }`}
           >
             Get Quote
           </a>
           <CurrencySwitcher />
-          <ThemeToggle variant={scrolled ? "default" : "onDark"} />
+          <ThemeToggle variant={scrolled || !isDark ? "default" : "onDark"} />
           <Link
             to="/login"
             className={`rounded-lg px-3 py-2.5 text-sm font-semibold transition-colors duration-200 sm:px-4 ${
               scrolled
                 ? "bg-primary-600 text-white hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600"
-                : "bg-white/15 text-white ring-1 ring-white/25 hover:bg-white/25 dark:bg-white/10 dark:ring-white/20 dark:hover:bg-white/15"
+                : heroCta
             }`}
           >
             Sign in
@@ -109,7 +122,9 @@ export function HomeMarketingNav() {
             className={`inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg p-2 md:hidden ${
               scrolled
                 ? "text-primary-800 hover:bg-primary-100/80 dark:text-primary-200 dark:hover:bg-muted"
-                : "text-white hover:bg-white/10"
+                : isDark
+                  ? "text-white hover:bg-white/10"
+                  : "text-primary-900 hover:bg-primary-100/70"
             }`}
             aria-expanded={mobileOpen}
             aria-controls={panelId}
