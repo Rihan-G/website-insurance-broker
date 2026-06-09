@@ -39,17 +39,17 @@ export const services: Array<{ icon: LucideIcon; title: string; desc: string }> 
   {
     icon: Upload,
     title: "Secure document sharing",
-    desc: "Send policies and proof documents through an encrypted portal—simple uploads, clear status, and no email attachments to chase.",
+    desc: "Send policies and proof documents through an encrypted portal: simple uploads, clear status, and no email attachments to chase.",
   },
   {
     icon: FileText,
     title: "Clearer paperwork, faster answers",
-    desc: "We help structure what you send so your cover can be reviewed accurately—less back-and-forth, fewer missed details.",
+    desc: "We help structure what you send so your cover can be reviewed accurately, with less back-and-forth and fewer missed details.",
   },
   {
     icon: BarChart3,
     title: "Your cover in one place",
-    desc: "See renewals, messages, and what needs your attention in a single online hub—whether you have one policy or several.",
+    desc: "See renewals, messages, and what needs your attention in a single online hub, whether you have one policy or several.",
   },
   {
     icon: Users,
@@ -102,7 +102,7 @@ export const steps = [
   {
     step: "01",
     title: "Tell us what you need",
-    desc: "Use the quick estimate or reach out by phone or WhatsApp. We confirm details and next steps—no obligation.",
+    desc: "Use the quick estimate or reach out by phone or WhatsApp. We confirm details and next steps with no obligation.",
   },
   {
     step: "02",
@@ -139,7 +139,7 @@ export const whyChooseUs: Array<{ icon: LucideIcon; title: string; desc: string;
   {
     icon: Headphones,
     title: "Human when it counts",
-    desc: "Phone, email, and WhatsApp access to advisors—not a faceless call centre.",
+    desc: "Phone, email, and WhatsApp access to advisors, not a faceless call centre.",
     tone: "from-emerald-500 to-teal-800",
   },
   {

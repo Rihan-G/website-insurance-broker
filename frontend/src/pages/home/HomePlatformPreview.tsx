@@ -4,7 +4,7 @@ import { AnimatedSection } from "./HomeAnimatedPrimitives";
 /** Enterprise-style “SaaS” preview band — static content written for all visitors (clients & staff share this homepage). */
 export function HomePlatformPreview() {
   return (
-    <section id="platform" className="border-y border-border bg-gradient-to-b from-slate-50 to-white py-24 lg:py-32 dark:from-slate-950 dark:to-slate-900">
+    <section id="platform" className="border-y border-primary-100 bg-gradient-to-b from-primary-50/90 via-sky-50/50 to-white py-24 lg:py-32 dark:border-primary-900/40 dark:from-slate-950 dark:via-slate-950 dark:to-slate-900">
       <div className="mx-auto max-w-7xl px-5 sm:px-6">
         <AnimatedSection className="mx-auto max-w-3xl text-center">
           <span className="text-sm font-semibold uppercase tracking-wider text-primary-600 dark:text-primary-400">Platform</span>
@@ -12,17 +12,17 @@ export function HomePlatformPreview() {
             One calm place for policies, renewals, and claims
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            Whether you are insuring your family or your business, you get the same secure portal experience—clear updates, fewer surprises,
+            Whether you are insuring your family or your business, you get the same secure portal experience: clear updates, fewer surprises,
             and advisors when you need a human.
           </p>
         </AnimatedSection>
 
-        <div className="mt-14 grid gap-5 lg:grid-cols-3">
+        <div className="mt-14 grid gap-5 lg:grid-cols-12">
           {[
             {
               icon: LayoutDashboard,
               title: "Renewals & cover in view",
-              desc: "See what is active, what is coming due, and what needs a signature—without digging through email threads.",
+              desc: "See what is active, what is coming due, and what needs a signature, without digging through email threads.",
               tone: "from-primary-600/90 to-primary-800",
               features: [
                 "Single timeline for renewals and tasks",
@@ -44,7 +44,7 @@ export function HomePlatformPreview() {
             {
               icon: Users,
               title: "Advice when it matters",
-              desc: "Licensed brokers explain trade-offs in plain language—online tools speed things up, people close the loop.",
+              desc: "Licensed brokers explain trade-offs in plain language: online tools speed things up, people close the loop.",
               tone: "from-emerald-600/90 to-teal-900",
               features: [
                 "Plain-language comparisons before you bind",
@@ -53,8 +53,12 @@ export function HomePlatformPreview() {
               ],
             },
           ].map((card, i) => (
-            <AnimatedSection key={card.title} className={`stagger-${i + 1}`} animation="animate-scale-in">
-              <div className="group relative h-full overflow-hidden rounded-2xl border border-border bg-surface p-7 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:bg-slate-900/80">
+            <AnimatedSection
+              key={card.title}
+              className={`stagger-${i + 1} ${i === 0 ? "lg:col-span-7" : i === 1 ? "lg:col-span-5" : "lg:col-span-12"}`}
+              animation="animate-scale-in"
+            >
+              <div className="home-feature-card group relative h-full overflow-hidden rounded-2xl border border-primary-200/70 bg-white p-7 shadow-sm transition-[transform,box-shadow] duration-[240ms] ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-xl dark:border-border dark:bg-slate-900/80">
                 <div
                   className={`pointer-events-none absolute inset-0 bg-gradient-to-br opacity-0 transition-opacity duration-300 group-hover:opacity-15 ${card.tone}`}
                 />
@@ -86,7 +90,7 @@ export function HomePlatformPreview() {
                 <p className="text-xs font-bold uppercase tracking-widest text-primary-300/90">Built around you</p>
                 <p className="mt-2 text-xl font-bold text-white sm:text-2xl">Client features you actually use</p>
                 <p className="mt-3 text-sm leading-relaxed text-primary-200/90">
-                  No internal ledgers on this page—just the kinds of tools policyholders get once they are onboarded: clarity, reminders, and
+                  No internal ledgers on this page, just the kinds of tools policyholders get once they are onboarded: clarity, reminders, and
                   a safe place for paperwork.
                 </p>
                 <ul className="mt-5 space-y-2.5 text-sm text-primary-100/95">
@@ -109,9 +113,9 @@ export function HomePlatformPreview() {
                 </div>
                 <div className="mt-4 space-y-3">
                   {[
-                    { title: "Secure inbox", body: "Uploads land in your file—only you and your broker see them." },
+                    { title: "Secure inbox", body: "Uploads land in your file; only you and your broker see them." },
                     { title: "Clear statuses", body: "See what is waiting on you, the insurer, or your advisor." },
-                    { title: "Payment clarity", body: "Upcoming due dates and confirmations—without firm-wide totals." },
+                    { title: "Payment clarity", body: "Upcoming due dates and confirmations, without firm-wide totals." },
                     { title: "Human escalation", body: "One tap to message your advisor when something is unclear." },
                   ].map((r) => (
                     <div key={r.title} className="rounded-lg bg-slate-950/50 px-3 py-2.5 ring-1 ring-white/5">

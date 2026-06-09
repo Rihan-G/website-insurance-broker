@@ -3,7 +3,7 @@ import { COMPANY_NAME_SHORT } from "../../lib/branding";
 export const homeFaqItems: Array<{ q: string; a: string }> = [
   {
     q: "How quickly can I get a quote?",
-    a: "Use the on-page calculator for an indicative premium in seconds. A broker will follow up with a firm quote once we have your full risk details—often the same business day.",
+    a: "Use the on-page calculator for an indicative premium in seconds. A broker will follow up with a firm quote once we have your full risk details, often the same business day.",
   },
   {
     q: "Is my information secure?",

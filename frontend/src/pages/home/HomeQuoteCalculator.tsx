@@ -147,7 +147,7 @@ export function HomeQuoteCalculator() {
         toast.error((error as { message?: string }).message ?? "Could not save estimate.");
         return;
       }
-      toast.success("Thanks — your estimate is saved. A broker will follow up.");
+      toast.success("Thanks, your estimate is saved. A broker will follow up.");
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Could not save estimate.");
     } finally {
