@@ -17,6 +17,11 @@ export function HomeSectionBackground({ variant }: { variant: SectionVariant }) 
     <div className="pointer-events-none absolute inset-0" aria-hidden>
       <div className={`${baseClass} absolute inset-0`} />
 
+      {/* Diagonal aqua / champagne sheen — shifts across the section (hero screenshot bands) */}
+      <div className="home-bg-spectrum-shift absolute inset-0 overflow-hidden">
+        <div className="home-bg-spectrum-shift__gradient" aria-hidden />
+      </div>
+
       {/* Rich mesh gradient — shown when OS animation effects are off */}
       <div className={`${staticMeshClass} absolute inset-0`} />
       <div className="home-bg-static-sheen absolute inset-0" />

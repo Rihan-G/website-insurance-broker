@@ -1122,19 +1122,6 @@ button, a, input, select, textarea {
 .dark .home-cta-base {
   background: linear-gradient(160deg, #0f172a 0%, #1e293b 50%, #172033 100%);
 }
-.dark .home-bg-tide {
-  background: linear-gradient(
-    110deg,
-    #0f172a 0%,
-    #1e293b 20%,
-    #164e63 38%,
-    #22d3ee 50%,
-    #334155 58%,
-    #fde68a 64%,
-    #1e293b 80%,
-    #0f172a 100%
-  );
-}
 .dark .home-bg-mesh-slow.animated-mesh {
   background: linear-gradient(
     118deg,
@@ -1231,7 +1218,76 @@ button, a, input, select, textarea {
   0%, 100% { background-position: 0% 45%; }
   50% { background-position: 100% 55%; }
 }
+@keyframes home-spectrum-slide {
+  0%   { transform: translate3d(-12%, -2%, 0) rotate(-12deg) scale(1.15); }
+  100% { transform: translate3d(-38%, 3%, 0) rotate(-12deg) scale(1.15); }
+}
+/* Hero / claims / CTA — sliding diagonal colour bands (cyan + champagne) */
+.home-bg-spectrum-shift {
+  pointer-events: none;
+  mix-blend-mode: normal;
+}
+.home-bg-spectrum-shift__gradient {
+  position: absolute;
+  top: -35%;
+  left: -45%;
+  width: 190%;
+  height: 170%;
+  background: linear-gradient(
+    110deg,
+    #e2e8f0 0%,
+    #f8fafc 6%,
+    #67e8f9 16%,
+    #22d3ee 24%,
+    #0f172a 34%,
+    #1e293b 42%,
+    #fde68a 52%,
+    #fef3c7 58%,
+    #cbd5e1 68%,
+    #a5f3fc 78%,
+    #f1f5f9 88%,
+    #e2e8f0 100%
+  );
+  opacity: 0.72;
+  filter: blur(2px);
+  animation: home-spectrum-slide 22s linear infinite;
+  will-change: transform;
+}
+.dark .home-bg-spectrum-shift__gradient {
+  background: linear-gradient(
+    110deg,
+    #0f172a 0%,
+    #1e293b 8%,
+    #22d3ee 20%,
+    #06b6d4 28%,
+    #020617 38%,
+    #1e293b 46%,
+    #fde68a 56%,
+    #d4a574 63%,
+    #334155 72%,
+    #94a3b8 82%,
+    #1e293b 92%,
+    #0f172a 100%
+  );
+  opacity: 0.88;
+  filter: blur(0);
+}
 .home-bg-tide {
+  overflow: hidden;
+  opacity: 0.55;
+  mix-blend-mode: soft-light;
+}
+.dark .home-bg-tide {
+  opacity: 0.65;
+  mix-blend-mode: screen;
+}
+.home-bg-tide::before {
+  content: "";
+  position: absolute;
+  top: -40%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
   background: linear-gradient(
     110deg,
     #f8fafc 0%,
@@ -1245,8 +1301,21 @@ button, a, input, select, textarea {
     #f1f5f9 90%,
     #ffffff 100%
   );
-  background-size: 220% 220%;
-  animation: home-tide-flow 30s ease-in-out infinite;
+  animation: home-spectrum-slide 28s linear infinite reverse;
+  will-change: transform;
+}
+.dark .home-bg-tide::before {
+  background: linear-gradient(
+    110deg,
+    #0f172a 0%,
+    #1e293b 20%,
+    #164e63 38%,
+    #22d3ee 50%,
+    #334155 58%,
+    #fde68a 64%,
+    #1e293b 80%,
+    #0f172a 100%
+  );
 }
 .home-bg-mesh-slow.animated-mesh {
   background: linear-gradient(
@@ -1779,6 +1848,10 @@ html:not(.dark) .home-marketing nav:not([class*="bg-white"]) .brand-logo {
   }
   .home-bg-static-sheen {
     animation: home-tide-flow 40s ease-in-out infinite;
+  }
+  .home-bg-spectrum-shift__gradient,
+  .home-bg-tide::before {
+    animation-duration: 40s;
   }
   .home-bg-motion {
     display: none !important;
