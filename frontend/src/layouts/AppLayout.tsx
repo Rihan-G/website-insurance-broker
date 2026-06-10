@@ -14,6 +14,8 @@ import { useTranslation } from "react-i18next";
 import { ThemeToggle } from "../components/ThemeToggle";
 import { CommandPalette } from "../components/CommandPalette";
 import { DashboardAccessSentinel } from "../components/DashboardAccessSentinel";
+import { OnboardingTour } from "../components/OnboardingTour";
+import { OfflineBanner } from "../components/OfflineBanner";
 import { CurrencySwitcher } from "../components/CurrencySwitcher";
 import { BrandLogo } from "../components/BrandLogo";
 import { COMPANY_NAME_SHORT, PORTAL_HEADING } from "../lib/branding";
@@ -637,6 +639,7 @@ export function AppLayout() {
               : "p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))]"
           }`}
         >
+          <OfflineBanner />
           <DashboardAccessSentinel>
             <Outlet />
           </DashboardAccessSentinel>
@@ -644,6 +647,7 @@ export function AppLayout() {
       </div>
     </div>
     {mobileNavOverlay}
+    <OnboardingTour />
     </>
   );
 }

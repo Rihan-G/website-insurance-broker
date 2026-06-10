@@ -1,4 +1,6 @@
-import { Download, FileText } from "lucide-react";
+import { useState } from "react";
+import { Download, FileText, Eye } from "lucide-react";
+import { TemplatePreviewModal } from "./TemplatePreviewModal";
 import {
   insuranceTemplateCategoryLabel,
   insuranceTemplateDownloadUrl,
@@ -14,6 +16,8 @@ const categoryOrder: InsuranceTemplateCategory[] = [
 ];
 
 export function BrokerTemplateDownloads() {
+  const [preview, setPreview] = useState<(typeof insuranceTemplates)[number] | null>(null);
+
   return (
     <section
       className="mb-8 rounded-2xl border border-border bg-surface p-5 shadow-sm"
@@ -43,26 +47,29 @@ export function BrokerTemplateDownloads() {
               </h3>
               <ul className="mt-2 space-y-2">
                 {items.map((template) => (
-                  <TemplateRow key={template.id} template={template} />
+                  <TemplateRow key={template.id} template={template} onPreview={() => setPreview(template)} />
                 ))}
               </ul>
             </div>
           );
         })}
       </div>
+      {preview && <TemplatePreviewModal template={preview} onClose={() => setPreview(null)} />}
     </section>
   );
 }
 
-function TemplateRow({ template }: { template: (typeof insuranceTemplates)[number] }) {
+function TemplateRow({
+  template,
+  onPreview,
+}: {
+  template: (typeof insuranceTemplates)[number];
+  onPreview: () => void;
+}) {
   const href = insuranceTemplateDownloadUrl(template.fileName);
   return (
     <li>
-      <a
-        href={href}
-        download={template.fileName}
-        className="group flex items-start gap-3 rounded-xl border border-border bg-background/60 px-3 py-2.5 transition-colors hover:border-primary-300 hover:bg-primary-50/50 dark:hover:border-primary-700 dark:hover:bg-primary-950/30"
-      >
+      <div className="group flex items-start gap-3 rounded-xl border border-border bg-background/60 px-3 py-2.5 transition-colors hover:border-primary-300 hover:bg-primary-50/50 dark:hover:border-primary-700 dark:hover:bg-primary-950/30">
         <FileText className="mt-0.5 h-4 w-4 shrink-0 text-primary-600 dark:text-primary-400" aria-hidden />
         <span className="min-w-0 flex-1">
           <span className="block text-sm font-semibold text-surface-foreground group-hover:text-primary-800 dark:group-hover:text-primary-100">
@@ -73,8 +80,15 @@ function TemplateRow({ template }: { template: (typeof insuranceTemplates)[numbe
           </span>
           <span className="mt-0.5 block text-xs text-muted-foreground">{template.description}</span>
         </span>
-        <Download className="h-4 w-4 shrink-0 text-muted-foreground group-hover:text-primary-600" aria-hidden />
-      </a>
+        <div className="flex shrink-0 flex-col gap-1">
+          <button type="button" onClick={onPreview} className="rounded p-1 text-muted-foreground hover:text-primary-600" title="Preview">
+            <Eye className="h-4 w-4" aria-hidden />
+          </button>
+          <a href={href} download={template.fileName} className="rounded p-1 text-muted-foreground hover:text-primary-600" title="Download">
+            <Download className="h-4 w-4" aria-hidden />
+          </a>
+        </div>
+      </div>
     </li>
   );
 }

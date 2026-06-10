@@ -31,4 +31,5 @@ export const db = {
   secureMessages: () => sb.from("secure_messages"),
   portalNotifications: () => sb.from("portal_notifications"),
   brokerTasks: () => sb.from("broker_tasks"),
+  newsletterSubscribers: () => sb.from("newsletter_subscribers"),
 };

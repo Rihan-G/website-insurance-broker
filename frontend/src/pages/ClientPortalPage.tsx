@@ -7,6 +7,7 @@ import { useAuth } from "../context/AuthContext";
 import { generatePolicyCertificate } from "../lib/pdfService";
 import { differenceInDays, format } from "date-fns";
 import toast from "react-hot-toast";
+import { ClaimsTimeline } from "../components/ClaimsTimeline";
 
 interface Policy {
   id: string;
@@ -208,16 +209,22 @@ export function ClientPortalPage() {
               </Link>
             </div>
           ) : (
-            <ul className="divide-y divide-border">
-              {claimIntakes.map((c) => (
-                <li key={c.id} className="px-4 py-3">
-                  <p className="text-sm font-medium text-surface-foreground capitalize">{c.status.replace(/_/g, " ")}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    {c.policy_number || "No policy #"} · {format(new Date(c.created_at), "dd MMM yyyy")}
+            <div className="divide-y divide-border">
+              {claimIntakes.map((c, i) => (
+                <div key={c.id} className="px-4 py-4">
+                  <p className="text-sm font-medium text-surface-foreground">
+                    {c.policy_number || "Claim"} · {format(new Date(c.created_at), "dd MMM yyyy")}
                   </p>
-                </li>
+                  {i === 0 ? (
+                    <div className="mt-3">
+                      <ClaimsTimeline status={c.status} createdAt={c.created_at} />
+                    </div>
+                  ) : (
+                    <p className="mt-1 text-xs capitalize text-muted-foreground">{c.status.replace(/_/g, " ")}</p>
+                  )}
+                </div>
               ))}
-            </ul>
+            </div>
           )}
         </div>
 

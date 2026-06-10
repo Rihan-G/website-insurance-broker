@@ -68,13 +68,13 @@ export const services: Array<{ icon: LucideIcon; title: string; desc: string }> 
   },
 ];
 
-export const policyTypes: Array<{ icon: LucideIcon; name: string; desc: string }> = [
-  { icon: Car, name: "Motor Insurance", desc: "Vehicle coverage, third-party, comprehensive" },
-  { icon: Home, name: "Home Insurance", desc: "Property, contents, natural disasters" },
-  { icon: Heart, name: "Life Insurance", desc: "Term life, whole life, endowment" },
-  { icon: HeartHandshake, name: "Health Insurance", desc: "Medical, dental, critical illness" },
-  { icon: Plane, name: "Travel Insurance", desc: "Trip cancellation, medical abroad" },
-  { icon: Briefcase, name: "Business Insurance", desc: "Commercial, liability, professional" },
+export const policyTypes: Array<{ icon: LucideIcon; name: string; slug: string; desc: string }> = [
+  { icon: Car, name: "Motor Insurance", slug: "motor", desc: "Vehicle coverage, third-party, comprehensive" },
+  { icon: Home, name: "Home Insurance", slug: "home", desc: "Property, contents, natural disasters" },
+  { icon: Heart, name: "Life Insurance", slug: "life", desc: "Term life, whole life, endowment" },
+  { icon: HeartHandshake, name: "Health Insurance", slug: "health", desc: "Medical, dental, critical illness" },
+  { icon: Plane, name: "Travel Insurance", slug: "travel", desc: "Trip cancellation, medical abroad" },
+  { icon: Briefcase, name: "Business Insurance", slug: "business", desc: "Commercial, liability, professional" },
 ];
 
 export const testimonials = [

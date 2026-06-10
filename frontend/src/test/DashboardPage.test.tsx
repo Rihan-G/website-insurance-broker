@@ -50,7 +50,7 @@ function renderDashboard() {
 describe("DashboardPage", () => {
   it("renders dashboard heading", () => {
     renderDashboard();
-    expect(screen.getByText("Dashboard")).toBeInTheDocument();
+    expect(screen.getByText(/Broker workspace/i)).toBeInTheDocument();
   });
 
   it("displays stat cards", () => {

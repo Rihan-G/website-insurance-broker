@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { format } from "date-fns";
-import { Download, RefreshCw, UserSearch } from "lucide-react";
+import { Calculator, Download, RefreshCw } from "lucide-react";
+import { EmptyState } from "../components/EmptyState";
+import { QuoteComparePanel } from "../components/QuoteComparePanel";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -55,6 +57,7 @@ export function QuoteLeadsPage() {
   const [rows, setRows] = useState<QuoteLeadRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [compareIds, setCompareIds] = useState<string[]>([]);
 
   const load = useCallback(async () => {
     if (demoAuthActive) {
@@ -163,22 +166,31 @@ export function QuoteLeadsPage() {
         </div>
       </div>
 
+      {compareIds.length >= 2 && (
+        <QuoteComparePanel quotes={rows.filter((r) => compareIds.includes(r.id))} />
+      )}
+
       <div className="rounded-2xl border border-border bg-surface shadow-sm dark:shadow-none">
         {loading ? (
           <div className="flex h-48 items-center justify-center">
             <div className="h-9 w-9 animate-spin rounded-full border-4 border-primary-600 border-t-transparent dark:border-primary-400" />
           </div>
         ) : rows.length === 0 ? (
-          <div className="flex flex-col items-center justify-center gap-2 px-6 py-16 text-center text-muted-foreground">
-            <UserSearch className="h-10 w-10 opacity-40" aria-hidden />
-            <p className="text-sm font-medium text-surface-foreground">No quotes yet</p>
-            <p className="max-w-md text-sm">Leads appear when visitors submit the home estimate or staff save from the calculator.</p>
+          <div className="p-6">
+            <EmptyState
+              icon={Calculator}
+              title="No quote leads yet"
+              description="Leads appear when visitors submit the home estimate or staff save from the calculator."
+              actionLabel="Open calculator"
+              actionTo="/dashboard/quotes"
+            />
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full min-w-[720px] text-left text-sm">
               <thead className="border-b border-border bg-muted/30 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 <tr>
+                  <th className="px-4 py-3">Compare</th>
                   <th className="px-4 py-3">When</th>
                   <th className="px-4 py-3">Source</th>
                   <th className="px-4 py-3">Product</th>
@@ -190,6 +202,22 @@ export function QuoteLeadsPage() {
               <tbody className="divide-y divide-border">
                 {rows.map((r) => (
                   <tr key={r.id} className="hover:bg-muted/20">
+                    <td className="px-4 py-3">
+                      <input
+                        type="checkbox"
+                        aria-label={`Compare quote ${r.id}`}
+                        checked={compareIds.includes(r.id)}
+                        onChange={(e) => {
+                          setCompareIds((prev) =>
+                            e.target.checked
+                              ? prev.length >= 3
+                                ? [...prev.slice(1), r.id]
+                                : [...prev, r.id]
+                              : prev.filter((id) => id !== r.id),
+                          );
+                        }}
+                      />
+                    </td>
                     <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">
                       {format(new Date(r.created_at), "dd MMM yyyy HH:mm")}
                     </td>

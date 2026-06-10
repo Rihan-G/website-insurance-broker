@@ -10,3 +10,7 @@ export const CONTACT_PHONE_WHATSAPP = "2301234567";
 export const CONTACT_PHONE_TEL = "+2301234567";
 export const WEBSITE_DOMAIN = "sindicombrokers.mu";
 export const PAYMENTS_BASE_URL = "https://pay.sindicombrokers.mu";
+export const OFFICE_ADDRESS = "Port Louis, Mauritius";
+export const LINKEDIN_URL = "https://www.linkedin.com/company/sindicom-brokers";
+export const FACEBOOK_URL = "https://www.facebook.com/sindicombrokers";
+export const SITE_URL = "https://sindicombrokers.mu";

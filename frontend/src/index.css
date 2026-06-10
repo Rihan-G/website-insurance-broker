@@ -1960,3 +1960,22 @@ html:not(.dark) .home-marketing nav:not([class*="bg-white"]) .brand-logo {
     transform: none;
   }
 }
+
+/* Print-friendly portal & marketing pages */
+@media print {
+  .home-marketing nav,
+  .home-color-shift-bar,
+  .fixed,
+  [aria-label="Cookie consent"],
+  [aria-label="FAQ assistant"],
+  [aria-label="Portal onboarding"] {
+    display: none !important;
+  }
+  body {
+    background: white !important;
+    color: #0f172a !important;
+  }
+  a[href]::after {
+    content: none;
+  }
+}

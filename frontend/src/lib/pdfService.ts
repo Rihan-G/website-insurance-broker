@@ -223,3 +223,50 @@ export async function generatePolicyCertificate(data: PolicyData): Promise<void>
 
   doc.save(`policy_certificate_${data.policyNumber}.pdf`);
 }
+
+export interface QuoteEstimatePdfData {
+  policyType: string;
+  coverageAmount: number;
+  currency: string;
+  monthlyPremium: number;
+  clientEmail?: string;
+  clientPhone?: string;
+}
+
+export async function generateQuoteEstimatePdf(data: QuoteEstimatePdfData): Promise<void> {
+  const doc = new jsPDF();
+  const logo = await loadBrandLogoDataUrl();
+  addHeader(doc, "INDICATIVE QUOTE", logo);
+
+  doc.setFontSize(10);
+  doc.text(`Generated: ${new Date().toLocaleString("en-MU")}`, 14, 40);
+  doc.setDrawColor(220, 220, 220);
+  doc.line(14, 44, 196, 44);
+
+  autoTable(doc, {
+    startY: 52,
+    body: [
+      ["Product", data.policyType],
+      ["Coverage sum", `${data.currency} ${data.coverageAmount.toLocaleString()}`],
+      ["Estimated monthly premium", `${data.currency} ${data.monthlyPremium.toLocaleString()}`],
+      ...(data.clientEmail ? [["Contact email", data.clientEmail]] : []),
+      ...(data.clientPhone ? [["Contact phone", data.clientPhone]] : []),
+    ],
+    columnStyles: { 0: { fontStyle: "bold", cellWidth: 55 } },
+    styles: { fontSize: 10 },
+    alternateRowStyles: { fillColor: [245, 247, 255] },
+  });
+
+  const y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 12;
+  doc.setFontSize(9);
+  doc.setTextColor(80, 80, 80);
+  doc.text(
+    "This is an indicative estimate only. Final premium depends on underwriting, claims history, and insurer acceptance.",
+    14,
+    y,
+    { maxWidth: 180 },
+  );
+
+  addFooter(doc);
+  doc.save(`quote_estimate_${data.policyType}_${Date.now()}.pdf`);
+}

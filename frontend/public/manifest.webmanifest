@@ -1,0 +1,17 @@
+{
+  "name": "Sindicom Brokers Portal",
+  "short_name": "Sindicom",
+  "description": "Insurance broker and client portal — Mauritius",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0369A1",
+  "icons": [
+    {
+      "src": "/brand/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

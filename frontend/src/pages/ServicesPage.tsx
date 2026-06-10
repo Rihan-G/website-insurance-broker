@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { ExplainCoverTool } from "../components/ExplainCoverTool";
 import {
   Car, Home, Heart, HeartPulse, Plane, Briefcase,
   CheckCircle, Phone, MessageCircle, Mail, MapPin,
@@ -127,6 +128,10 @@ export function ServicesPage() {
             </a>
           </div>
         </div>
+      </div>
+
+      <div className="mx-auto max-w-6xl px-6 py-10">
+        <ExplainCoverTool />
       </div>
 
       {/* Products grid */}

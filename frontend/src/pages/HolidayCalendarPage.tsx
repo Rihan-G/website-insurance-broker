@@ -40,6 +40,8 @@ import {
   type PortalCalendarEvent,
   type PortalCalendarEventKind,
 } from "../lib/portalCalendarEvents";
+import { downloadIcsCalendar } from "../lib/icsExport";
+import toast from "react-hot-toast";
 
 type Holiday = MauritiusHoliday;
 
@@ -273,6 +275,20 @@ export function HolidayCalendarPage() {
               {l === "en" ? "EN" : l === "fr" ? "FR" : "Kreol"}
             </button>
           ))}
+          <button
+            type="button"
+            onClick={() => {
+              if (portalEvents.length === 0) {
+                toast.error("No calendar entries to export.");
+                return;
+              }
+              downloadIcsCalendar(portalEvents);
+              toast.success("Calendar exported as .ics");
+            }}
+            className="rounded-lg border border-border bg-surface px-3 py-1.5 text-sm font-medium hover:bg-muted"
+          >
+            Export .ics
+          </button>
         </div>
       </div>
 

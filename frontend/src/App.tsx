@@ -21,6 +21,16 @@ import { PaymentsPage } from "./pages/PaymentsPage";
 import { QuoteCalculatorPage } from "./pages/QuoteCalculatorPage";
 // Phase 5
 import { NotFoundPage } from "./pages/NotFoundPage";
+import { AboutPage } from "./pages/marketing/AboutPage";
+import { LegalPage } from "./pages/marketing/LegalPage";
+import { ProductsIndexPage } from "./pages/marketing/ProductsIndexPage";
+import { ProductDetailPage } from "./pages/marketing/ProductDetailPage";
+import { ClaimsGuidePage } from "./pages/marketing/ClaimsGuidePage";
+import { ComparePage } from "./pages/marketing/ComparePage";
+import { ChecklistsPage } from "./pages/marketing/ChecklistsPage";
+import { BlogIndexPage } from "./pages/marketing/BlogIndexPage";
+import { BlogPostPage } from "./pages/marketing/BlogPostPage";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 import { CrossPortalNavigate } from "./components/CrossPortalNavigate";
 import { getPortalFlavor, staffPortalBaseUrl } from "./lib/portalFlavor";
 
@@ -71,8 +81,20 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   return (
+    <ErrorBoundary label="Application">
     <Routes>
       <Route path="/" element={<HomePage />} />
+      <Route path="/about" element={<AboutPage />} />
+      <Route path="/privacy" element={<LegalPage kind="privacy" />} />
+      <Route path="/terms" element={<LegalPage kind="terms" />} />
+      <Route path="/products" element={<ProductsIndexPage />} />
+      <Route path="/products/:slug" element={<ProductDetailPage />} />
+      <Route path="/claims-guide" element={<ClaimsGuidePage />} />
+      <Route path="/compare" element={<ComparePage />} />
+      <Route path="/checklists" element={<ChecklistsPage />} />
+      <Route path="/checklists/:id" element={<ChecklistsPage />} />
+      <Route path="/blog" element={<BlogIndexPage />} />
+      <Route path="/blog/:slug" element={<BlogPostPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/admin" element={<AdminPortalEntry />} />
       <Route path="/admin/login" element={<Navigate to="/admin" replace />} />
@@ -285,5 +307,6 @@ export default function App() {
       </Route>
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
+    </ErrorBoundary>
   );
 }

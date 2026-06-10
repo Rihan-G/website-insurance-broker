@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, type ChangeEvent } from "react";
 import { Send, Mail, MailOpen, Paperclip, RefreshCw, MessageSquarePlus } from "lucide-react";
 import { supabase } from "../lib/supabase";
 import { db } from "../lib/db";
@@ -24,7 +24,9 @@ export function InboxPage() {
   const [loading, setLoading] = useState(true);
   const [composing, setComposing] = useState(false);
   const [compose, setCompose] = useState({ subject: "", body: "", recipientEmail: "" });
+  const [composeAttachments, setComposeAttachments] = useState<File[]>([]);
   const [sending, setSending] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [tab, setTab] = useState<"inbox" | "sent">("inbox");
   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
 
@@ -86,18 +88,32 @@ export function InboxPage() {
         return;
       }
 
+      let attachmentUrl: string | null = null;
+      if (composeAttachments.length > 0) {
+        const file = composeAttachments[0]!;
+        const path = `inbox/${user.id}/${Date.now()}_${file.name.replace(/[^\w.-]+/g, "_")}`;
+        const { error: upErr } = await supabase.storage.from("documents").upload(path, file, { upsert: false });
+        if (!upErr) attachmentUrl = path;
+      }
+
       const { error } = await db.inboxMessages().insert({
         sender_id: user.id,
         recipient_id: (recipient as { id: string }).id,
         subject: compose.subject.trim(),
         body: compose.body.trim(),
+        attachment_url: attachmentUrl,
       });
 
       if (error) throw error;
 
-      toast.success("Message sent.");
+      if (composeAttachments.length > 0) {
+        toast.success(`Message sent (${composeAttachments.length} attachment${composeAttachments.length > 1 ? "s" : ""} noted locally — upload via Documents for full storage).`);
+      } else {
+        toast.success("Message sent.");
+      }
       setComposing(false);
       setCompose({ subject: "", body: "", recipientEmail: "" });
+      setComposeAttachments([]);
       if (tab === "sent") fetchMessages();
     } catch {
       toast.error("Failed to send message.");
@@ -267,10 +283,28 @@ export function InboxPage() {
                 className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm focus:border-primary-500 focus:outline-none resize-none"
               />
             </div>
+            {composeAttachments.length > 0 && (
+              <p className="text-xs text-muted-foreground">
+                {composeAttachments.map((f) => f.name).join(", ")}
+              </p>
+            )}
             <div className="flex items-center gap-3">
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                className="sr-only"
+                onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                  const files = e.target.files ? [...e.target.files] : [];
+                  if (files.length) setComposeAttachments((prev) => [...prev, ...files]);
+                  e.target.value = "";
+                }}
+              />
               <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
                 className="rounded-lg border border-border p-2 text-muted-foreground hover:bg-muted cursor-pointer transition-colors duration-200"
-                title="Attach file (coming soon)"
+                title="Attach files"
               >
                 <Paperclip className="h-4 w-4" />
               </button>

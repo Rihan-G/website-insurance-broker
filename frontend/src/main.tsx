@@ -6,6 +6,7 @@ import { AuthProvider } from "./context/AuthContext";
 import { ThemeProvider } from "./context/ThemeContext";
 import { CurrencyProvider } from "./context/CurrencyContext";
 import App from "./App";
+import { CookieConsent } from "./components/CookieConsent";
 import "./lib/i18n";
 import "./index.css";
 
@@ -16,6 +17,13 @@ function routerBasename(): string | undefined {
   return b.endsWith("/") ? b.slice(0, -1) : b;
 }
 
+if ("serviceWorker" in navigator && import.meta.env.PROD) {
+  window.addEventListener("load", () => {
+    const base = import.meta.env.BASE_URL ?? "/";
+    void navigator.serviceWorker.register(`${base}sw.js`).catch(() => {});
+  });
+}
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <div className="flex min-h-0 w-full flex-1 flex-col min-h-screen-dynamic">
@@ -24,6 +32,7 @@ createRoot(document.getElementById("root")!).render(
         <CurrencyProvider>
           <AuthProvider>
             <App />
+            <CookieConsent />
             <Toaster
               position="top-right"
               toastOptions={{

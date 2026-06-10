@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Calculator, ChevronDown, ArrowRight, Send } from "lucide-react";
+import { Calculator, ChevronDown, ArrowRight, Send, FileDown } from "lucide-react";
+import { generateQuoteEstimatePdf } from "../../lib/pdfService";
 import toast from "react-hot-toast";
 import {
   type QuoteCurrency,
@@ -285,6 +286,24 @@ export function HomeQuoteCalculator() {
               : "Demo mode stores submissions in this browser only."}
           </p>
         </div>
+
+        <button
+          type="button"
+          onClick={() =>
+            void generateQuoteEstimatePdf({
+              policyType,
+              coverageAmount: Math.round(convertFromMur(coverageInMur, currency)),
+              currency,
+              monthlyPremium: Math.round(convertFromMur(monthlyMur, currency)),
+              clientEmail: leadEmail.trim() || undefined,
+              clientPhone: leadPhone.trim() || undefined,
+            })
+          }
+          className="flex w-full items-center justify-center gap-2 rounded-lg border border-border bg-surface px-4 py-3 text-sm font-semibold text-surface-foreground hover:bg-muted"
+        >
+          <FileDown className="h-4 w-4" aria-hidden />
+          Download estimate PDF
+        </button>
 
         <Link
           to="/login"

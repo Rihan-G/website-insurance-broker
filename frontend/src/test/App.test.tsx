@@ -73,6 +73,16 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: /Sign in as administrator/ })).toBeInTheDocument();
   });
 
+  it("renders about page at /about", () => {
+    renderApp("/about");
+    expect(screen.getByRole("heading", { name: /trusted insurance advice/i })).toBeInTheDocument();
+  });
+
+  it("renders products index at /products", () => {
+    renderApp("/products");
+    expect(screen.getByRole("heading", { name: /insurance products/i })).toBeInTheDocument();
+  });
+
   it("renders a helpful 404 for unknown public URLs", () => {
     renderApp("/this-route-does-not-exist");
     expect(screen.getByRole("heading", { name: /could not find that page/i })).toBeInTheDocument();

@@ -20,6 +20,9 @@ import { WaveDivider } from "../components/WaveDivider";
 import { useTheme } from "../context/ThemeContext";
 import { ScrollProgress } from "../components/ScrollProgress";
 import { BackToTop } from "../components/BackToTop";
+import { FaqAssistant } from "../components/FaqAssistant";
+import toast from "react-hot-toast";
+import { subscribeNewsletter } from "../lib/newsletterService";
 import {
   COMPANY_NAME,
   CONTACT_EMAIL,
@@ -28,6 +31,8 @@ import {
   CONTACT_PHONE_WHATSAPP,
   WEBSITE_DOMAIN,
   COMPANY_NAME_SHORT,
+  LINKEDIN_URL,
+  FACEBOOK_URL,
 } from "../lib/branding";
 import { AnimatedSection, StatCounter } from "./home/HomeAnimatedPrimitives";
 import { HomeWhyChooseUs } from "./home/HomeWhyChooseUs";
@@ -69,6 +74,7 @@ export function HomePage() {
       <HomeMarketingNav />
       <HomeAssistantTeaser />
       <HomeStickyCta />
+      <FaqAssistant />
 
       <section className="relative overflow-hidden pt-20 sm:pt-24 md:pt-28">
         <HomeHeroBackground />
@@ -251,14 +257,14 @@ export function HomePage() {
           <AnimatedSection className="mt-10" animation="animate-fade-in">
             <div className="flex flex-wrap justify-center gap-2">
               {policyTypes.map((p) => (
-                <a
+                <Link
                   key={p.name}
-                  href="#quote"
+                  to={`/products/${p.slug}`}
                   className="home-coverage-pill inline-flex items-center gap-2 rounded-full border border-primary-200 bg-surface px-4 py-2 text-sm font-semibold text-primary-800 shadow-sm transition-[transform,box-shadow] duration-[200ms] ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:shadow-md dark:border-primary-700/60 dark:bg-primary-800/50 dark:text-primary-200"
                 >
                   <p.icon className="h-4 w-4 text-primary-600 dark:text-primary-300" aria-hidden />
                   {p.name}
-                </a>
+                </Link>
               ))}
             </div>
           </AnimatedSection>
@@ -266,7 +272,7 @@ export function HomePage() {
           <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {policyTypes.map((p, i) => (
               <AnimatedSection key={p.name} className={`stagger-${i + 1}`} animation="animate-fade-in">
-                <a href="#quote" className="home-feature-card card-hover group flex items-start gap-4 rounded-2xl border border-primary-200/70 bg-surface p-6 cursor-pointer dark:border-border dark:bg-surface">
+                <Link to={`/products/${p.slug}`} className="home-feature-card card-hover group flex items-start gap-4 rounded-2xl border border-primary-200/70 bg-surface p-6 cursor-pointer dark:border-border dark:bg-surface">
                   <div className="rounded-xl bg-gradient-to-br from-primary-50 to-primary-100 p-3 group-hover:from-primary-100 group-hover:to-primary-200 transition-all duration-300 shrink-0 shadow-sm">
                     <p.icon className="h-6 w-6 text-primary-600" />
                   </div>
@@ -274,10 +280,10 @@ export function HomePage() {
                     <h3 className="font-bold text-surface-foreground">{p.name}</h3>
                     <p className="mt-1 text-sm text-muted-foreground leading-relaxed">{p.desc}</p>
                     <span className="mt-3 inline-flex items-center gap-1.5 text-xs font-bold text-primary-600 group-hover:gap-2.5 transition-all duration-200">
-                      Get Quote <ArrowRight className="h-3 w-3" />
+                      Learn more <ArrowRight className="h-3 w-3" />
                     </span>
                   </div>
-                </a>
+                </Link>
               </AnimatedSection>
             ))}
           </div>
@@ -496,7 +502,10 @@ export function HomePage() {
                     const fd = new FormData(e.currentTarget);
                     const email = String(fd.get("email") ?? "").trim();
                     if (!email) return;
-                    window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent("Newsletter signup")}&body=${encodeURIComponent(`Please add me to your newsletter.\n\nEmail: ${email}`)}`;
+                    void subscribeNewsletter(email, "home_footer").then((r) => {
+                      if (r.ok) toast.success(r.message);
+                      else toast.error(r.message);
+                    });
                   }}
                 >
                   <label htmlFor="footer-newsletter-email" className="sr-only">
@@ -522,20 +531,20 @@ export function HomePage() {
                   <span className="text-xs font-semibold uppercase tracking-wider text-primary-400">Follow</span>
                   <div className="flex gap-2">
                     <a
-                      href="https://www.linkedin.com"
+                      href={LINKEDIN_URL}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-primary-700/80 bg-primary-900/30 text-primary-100 hover:border-accent-500/60 hover:text-white"
-                      aria-label="LinkedIn (placeholder link)"
+                      aria-label="LinkedIn"
                     >
                       <Linkedin className="h-5 w-5" aria-hidden />
                     </a>
                     <a
-                      href="https://www.facebook.com"
+                      href={FACEBOOK_URL}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-primary-700/80 bg-primary-900/30 text-primary-100 hover:border-accent-500/60 hover:text-white"
-                      aria-label="Facebook (placeholder link)"
+                      aria-label="Facebook"
                     >
                       <Facebook className="h-5 w-5" aria-hidden />
                     </a>
@@ -565,6 +574,27 @@ export function HomePage() {
                 <a href="#faq" className="block hover:text-white cursor-pointer transition-colors duration-200">
                   FAQ
                 </a>
+                <Link to="/about" className="block hover:text-white cursor-pointer transition-colors duration-200">
+                  About
+                </Link>
+                <Link to="/products" className="block hover:text-white cursor-pointer transition-colors duration-200">
+                  Products
+                </Link>
+                <Link to="/claims-guide" className="block hover:text-white cursor-pointer transition-colors duration-200">
+                  Claims guide
+                </Link>
+                <Link to="/compare" className="block hover:text-white cursor-pointer transition-colors duration-200">
+                  Compare cover
+                </Link>
+                <Link to="/checklists" className="block hover:text-white cursor-pointer transition-colors duration-200">
+                  Checklists
+                </Link>
+                <Link to="/blog" className="block hover:text-white cursor-pointer transition-colors duration-200">
+                  Insights
+                </Link>
+                <Link to="/privacy" className="block hover:text-white cursor-pointer transition-colors duration-200">
+                  Privacy
+                </Link>
                 <Link to="/login" className="block hover:text-white cursor-pointer transition-colors duration-200">
                   Sign in
                 </Link>

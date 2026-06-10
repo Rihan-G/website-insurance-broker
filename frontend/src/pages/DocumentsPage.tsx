@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo, useCallback } from "react";
 import { Search, Filter, Download, Eye, FileText, ChevronDown } from "lucide-react";
 import toast from "react-hot-toast";
 import { BrokerTemplateDownloads } from "../components/BrokerTemplateDownloads";
+import { EmptyState } from "../components/EmptyState";
 import { useAuth } from "../context/AuthContext";
 import {
   DOCUMENT_STATUS_BADGE_CLASS,
@@ -81,6 +82,7 @@ export function DocumentsPage() {
   const { user, demoAuthActive, profile } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [vaultFolder, setVaultFolder] = useState<string>("all");
   const [liveRows, setLiveRows] = useState<DocumentRow[]>([]);
   const [loading, setLoading] = useState(false);
   const [storageActionId, setStorageActionId] = useState<string | null>(null);
@@ -175,10 +177,17 @@ export function DocumentsPage() {
           doc.fileName.toLowerCase().includes(searchTerm.toLowerCase()) ||
           doc.client.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesStatus = statusFilter === "all" || doc.status === statusFilter;
-        return matchesSearch && matchesStatus;
+        const matchesVault =
+          vaultFolder === "all" ||
+          doc.type.toLowerCase().includes(vaultFolder.toLowerCase()) ||
+          (vaultFolder === "other" &&
+            !["motor", "home", "life", "health", "travel"].some((k) => doc.type.toLowerCase().includes(k)));
+        return matchesSearch && matchesStatus && matchesVault;
       }),
-    [rows, searchTerm, statusFilter],
+    [rows, searchTerm, statusFilter, vaultFolder],
   );
+
+  const vaultFolders = ["all", "motor", "home", "life", "health", "travel", "other"] as const;
 
   const handleExportCsv = useCallback(() => {
     if (filtered.length === 0) {
@@ -260,6 +269,21 @@ export function DocumentsPage() {
           <Download className="h-4 w-4 shrink-0" />
           Export CSV
         </button>
+      </div>
+
+      <div className="flex flex-wrap gap-2">
+        {vaultFolders.map((f) => (
+          <button
+            key={f}
+            type="button"
+            onClick={() => setVaultFolder(f)}
+            className={`rounded-full px-3 py-1.5 text-xs font-semibold capitalize ${
+              vaultFolder === f ? "bg-primary-600 text-white" : "border border-border bg-surface text-muted-foreground"
+            }`}
+          >
+            {f === "all" ? "All vault" : f}
+          </button>
+        ))}
       </div>
 
       <div className="flex flex-col gap-3 sm:flex-row">
@@ -378,8 +402,14 @@ export function DocumentsPage() {
           </table>
         </div>
         {filtered.length === 0 && !loading && (
-          <div className="py-12 text-center text-muted-foreground">
-            No documents found matching your criteria.
+          <div className="p-6">
+            <EmptyState
+              icon={FileText}
+              title="No documents in this vault"
+              description="Upload client files or adjust your search and folder filters."
+              actionLabel="Upload document"
+              actionTo="/dashboard/upload"
+            />
           </div>
         )}
       </div>
