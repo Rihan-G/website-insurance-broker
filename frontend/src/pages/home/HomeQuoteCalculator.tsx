@@ -288,7 +288,7 @@ export function HomeQuoteCalculator() {
 
         <Link
           to="/login"
-          className="flex w-full items-center justify-center gap-2 rounded-lg bg-accent-500 px-4 py-3 text-sm font-semibold text-white hover:bg-accent-600 cursor-pointer transition-colors duration-200 active:scale-[0.99]"
+          className="btn-marketing flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-semibold text-white cursor-pointer transition-transform duration-200 active:scale-[0.99]"
         >
           Get detailed quote
           <ArrowRight className="h-4 w-4" />

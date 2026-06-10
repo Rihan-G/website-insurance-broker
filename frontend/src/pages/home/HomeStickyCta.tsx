@@ -13,7 +13,7 @@ export function HomeStickyCta() {
         <div className="mx-auto flex max-w-lg gap-3">
           <a
             href="#quote"
-            className="inline-flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-accent-500 to-accent-600 px-4 text-sm font-bold text-white shadow-md shadow-accent-500/25 active:scale-[0.98] cursor-pointer transition-transform"
+            className="btn-marketing inline-flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-xl px-4 text-sm font-bold text-white active:scale-[0.98] cursor-pointer transition-transform"
           >
             <Calculator className="h-4 w-4 shrink-0" aria-hidden />
             Free quote

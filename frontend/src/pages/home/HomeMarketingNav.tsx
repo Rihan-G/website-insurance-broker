@@ -84,7 +84,7 @@ export function HomeMarketingNav() {
     <nav className={`fixed top-0 z-50 w-full transition-[background,box-shadow,border-color] duration-300 ${bar}`}>
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6">
         <div className="flex min-w-0 items-center gap-2.5">
-          <ShieldCheck className={`h-7 w-7 shrink-0 ${scrolled || !isDark ? "text-accent-600" : "text-accent-400"}`} aria-hidden />
+          <ShieldCheck className="h-7 w-7 shrink-0 text-marketing-icon" aria-hidden />
           <span className={`truncate text-lg font-bold tracking-tight transition-colors ${brand}`}>{COMPANY_NAME_SHORT}</span>
         </div>
 
@@ -100,7 +100,7 @@ export function HomeMarketingNav() {
           <a
             href="#quote"
             className={`hidden rounded-lg px-4 py-2 text-sm font-bold transition-colors duration-200 md:inline-flex ${
-              scrolled ? "bg-accent-600 text-white hover:bg-accent-700" : heroCta
+              scrolled ? "btn-marketing text-white" : heroCta
             }`}
           >
             Get Quote
@@ -155,7 +155,7 @@ export function HomeMarketingNav() {
             <a
               href="#quote"
               onClick={closeMobile}
-              className="flex min-h-[48px] items-center justify-center rounded-lg bg-accent-600 px-3 text-center text-sm font-bold text-white hover:bg-accent-700"
+              className="btn-marketing flex min-h-[48px] items-center justify-center rounded-lg px-3 text-center text-sm font-bold text-white"
             >
               Get Quote
             </a>

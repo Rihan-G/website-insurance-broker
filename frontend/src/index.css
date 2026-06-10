@@ -1065,6 +1065,7 @@ button, a, input, select, textarea {
       rgba(165, 243, 252, 0.1) 56%,
       transparent 70%
     );
+  background-size: 220% 220%;
   mix-blend-mode: soft-light;
 }
 .dark .home-bg-static-sheen {
@@ -1548,25 +1549,55 @@ html:not(.dark) .home-stat-panel {
 }
 .border-gradient:hover::before { opacity: 1; }
 
-/* Marketing site — aqua accent for CTAs/badges (portal keeps green @theme accent) */
-.home-marketing {
+/* Marketing site — full aqua accent scale on every descendant (portal keeps green @theme) */
+.home-marketing,
+.home-marketing * {
   --color-accent: #06b6d4;
   --color-accent-50: #ecfeff;
   --color-accent-100: #cffafe;
   --color-accent-200: #a5f3fc;
+  --color-accent-300: #67e8f9;
   --color-accent-400: #22d3ee;
   --color-accent-500: #06b6d4;
   --color-accent-600: #0891b2;
   --color-accent-700: #0e7490;
+  --color-accent-800: #155e75;
 }
-.dark .home-marketing {
+.dark .home-marketing,
+.dark .home-marketing * {
   --color-accent-50: #083344;
   --color-accent-100: #a5f3fc;
   --color-accent-200: #67e8f9;
+  --color-accent-300: #67e8f9;
   --color-accent-400: #22d3ee;
   --color-accent-500: #22d3ee;
   --color-accent-600: #06b6d4;
   --color-accent-700: #67e8f9;
+  --color-accent-800: #ecfeff;
+}
+
+/* Primary marketing CTAs — hardcoded aqua (never falls back to green accent) */
+.btn-marketing {
+  background-image: linear-gradient(90deg, #0891b2 0%, #06b6d4 50%, #22d3ee 100%);
+  background-size: 200% 100%;
+  animation: marketing-color-sweep 15s linear infinite;
+  color: #fff;
+  box-shadow: 0 10px 25px -8px rgba(6, 182, 212, 0.45);
+}
+.btn-marketing:hover {
+  background-image: linear-gradient(90deg, #0e7490 0%, #0891b2 50%, #06b6d4 100%);
+}
+.text-marketing-aqua {
+  color: #0891b2;
+}
+.dark .text-marketing-aqua {
+  color: #67e8f9;
+}
+.text-marketing-icon {
+  color: #06b6d4;
+}
+.dark .text-marketing-icon {
+  color: #22d3ee;
 }
 .home-marketing .text-gradient {
   background: linear-gradient(135deg, #06b6d4 0%, #c9a227 55%, #94a3b8 100%);
@@ -1577,7 +1608,8 @@ html:not(.dark) .home-stat-panel {
   background: linear-gradient(90deg, #22d3ee 0%, #fde68a 50%, #22d3ee 100%);
 }
 
-/* Scroll progress — looping aqua / champagne / silver sweep (synced with orb cycle) */
+/* Scroll progress — always-visible rail + brighter fill (aqua / champagne / silver) */
+.scroll-progress-rail,
 .scroll-progress-fill {
   background: linear-gradient(
     90deg,
@@ -1593,6 +1625,10 @@ html:not(.dark) .home-stat-panel {
   background-size: 200% 100%;
   animation: marketing-color-sweep 15s linear infinite;
 }
+.scroll-progress-rail {
+  opacity: 0.5;
+}
+.dark .scroll-progress-rail,
 .dark .scroll-progress-fill {
   background: linear-gradient(
     90deg,
@@ -1606,6 +1642,9 @@ html:not(.dark) .home-stat-panel {
     #67e8f9 100%
   );
   background-size: 200% 100%;
+}
+.dark .scroll-progress-rail {
+  opacity: 0.55;
 }
 
 /* ──────────────────────────────────────────────────────
@@ -1690,6 +1729,9 @@ html:not(.dark) .home-stat-panel {
   .home-bg-static-sheen {
     display: block;
   }
+  .home-bg-static-sheen {
+    animation: home-tide-flow 40s ease-in-out infinite;
+  }
   .home-bg-motion {
     display: none !important;
   }
@@ -1730,10 +1772,10 @@ html:not(.dark) .home-stat-panel {
   .animate-float-delayed-2,
   .home-icon-bob,
   .word-animate,
-  .scroll-progress-fill {
+  .scroll-progress-rail,
+  .scroll-progress-fill,
+  .btn-marketing {
     animation: none !important;
-  }
-  .scroll-progress-fill {
     background-position: 50% 50%;
   }
   .home-feature-card::after {

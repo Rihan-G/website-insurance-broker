@@ -16,15 +16,16 @@ export function ScrollProgress() {
 
   return (
     <div
-      className="scroll-progress-root fixed top-16 left-0 z-50 h-1 w-full overflow-hidden"
+      className="scroll-progress-root fixed top-16 left-0 z-50 h-1 w-full"
       role="progressbar"
       aria-label="Page scroll progress"
       aria-valuemin={0}
       aria-valuemax={100}
       aria-valuenow={Math.round(progress)}
     >
+      <div className="scroll-progress-rail absolute inset-0" aria-hidden />
       <div
-        className="h-full overflow-hidden transition-[width] duration-150"
+        className="absolute inset-y-0 left-0 overflow-hidden transition-[width] duration-150"
         style={{ width: `${progress}%` }}
       >
         <div className="scroll-progress-fill h-full w-[100vw]" />

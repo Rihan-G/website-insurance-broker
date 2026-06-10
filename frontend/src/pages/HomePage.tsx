@@ -104,7 +104,7 @@ export function HomePage() {
               <a
                 href="#quote"
                 aria-label="Jump to free quote form"
-                className="btn-glow inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-accent-500 to-accent-600 px-8 py-3.5 text-sm font-bold text-white shadow-lg shadow-accent-500/30 transition-[background,transform] duration-[240ms] ease-[cubic-bezier(0.16,1,0.3,1)] hover:from-accent-600 hover:to-accent-700 hover:-translate-y-0.5 cursor-pointer sm:inline-flex"
+                className="btn-glow btn-marketing inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl px-8 py-3.5 text-sm font-bold text-white transition-transform duration-[240ms] ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 cursor-pointer sm:inline-flex"
               >
                 <Calculator className="h-4 w-4 shrink-0" aria-hidden />
                 Get a Free Quote
@@ -171,7 +171,7 @@ export function HomePage() {
             <div className={`mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm ${isDark ? "text-primary-200" : "text-primary-800/90"}`}>
               {["No-obligation quotes", "256-bit TLS encryption", "Dedicated claims guidance"].map((t) => (
                 <span key={t} className="flex items-center gap-1.5">
-                  <CheckCircle className={`h-4 w-4 shrink-0 ${isDark ? "text-accent-400" : "text-accent-600"}`} aria-hidden />
+                  <CheckCircle className="h-4 w-4 shrink-0 text-marketing-icon" aria-hidden />
                   {t}
                 </span>
               ))}
@@ -433,7 +433,7 @@ export function HomePage() {
             <div className="mt-10 flex flex-wrap justify-center gap-4">
               <a
                 href="#quote"
-                className="btn-glow inline-flex min-h-[48px] items-center gap-2 rounded-xl bg-gradient-to-r from-accent-500 to-accent-600 px-8 py-3.5 text-sm font-bold text-white hover:from-accent-600 hover:to-accent-700 cursor-pointer shadow-lg shadow-accent-500/30 transition-all duration-200"
+                className="btn-glow btn-marketing inline-flex min-h-[48px] items-center gap-2 rounded-xl px-8 py-3.5 text-sm font-bold text-white cursor-pointer transition-all duration-200"
               >
                 <Calculator className="h-4 w-4" aria-hidden />
                 Get Your Quote
