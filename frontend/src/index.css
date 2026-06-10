@@ -899,34 +899,34 @@ button, a, input, select, textarea {
 
 /* Marketing sections — unified coastal background (shift + aurora + grain) */
 .home-hero-base {
-  background: #dbeafe;
+  background: linear-gradient(165deg, #f0f9ff 0%, #e0f2fe 46%, #ecfdf5 100%);
 }
 .home-hero-vignette {
-  background: radial-gradient(ellipse 90% 80% at 50% 40%, transparent 50%, rgba(186, 230, 253, 0.22) 100%);
+  background: radial-gradient(ellipse 90% 80% at 50% 40%, transparent 40%, rgba(186, 230, 253, 0.3) 100%);
 }
 .home-claims-base {
-  background: #e0f2fe;
+  background: linear-gradient(155deg, #e8f4fc 0%, #f0f9ff 48%, #ecfdf5 100%);
 }
 .home-claims-vignette {
-  background: radial-gradient(ellipse 88% 75% at 50% 45%, transparent 52%, rgba(186, 230, 253, 0.18) 100%);
+  background: radial-gradient(ellipse 88% 75% at 50% 45%, transparent 45%, rgba(186, 230, 253, 0.22) 100%);
 }
 .home-cta-base {
-  background: #dbeafe;
+  background: linear-gradient(160deg, #dbeafe 0%, #e0f2fe 52%, #d1fae5 100%);
 }
 .dark .home-hero-base {
-  background: #030c14;
+  background: linear-gradient(165deg, #030c14 0%, #061a2a 46%, #082638 100%);
 }
 .dark .home-hero-vignette {
-  background: radial-gradient(ellipse 92% 85% at 50% 38%, transparent 35%, rgba(2, 8, 16, 0.55) 100%);
+  background: radial-gradient(ellipse 92% 85% at 50% 38%, transparent 30%, rgba(2, 8, 16, 0.65) 100%);
 }
 .dark .home-claims-base {
-  background: #030c14;
+  background: linear-gradient(155deg, #030c14 0%, #061a2a 48%, #082638 100%);
 }
 .dark .home-claims-vignette {
-  background: radial-gradient(ellipse 88% 75% at 50% 45%, transparent 42%, rgba(2, 8, 16, 0.52) 100%);
+  background: radial-gradient(ellipse 88% 75% at 50% 45%, transparent 38%, rgba(2, 8, 16, 0.6) 100%);
 }
 .dark .home-cta-base {
-  background: #030c14;
+  background: linear-gradient(160deg, #030c14 0%, #061a2a 50%, #082638 100%);
 }
 .dark .home-bg-tide {
   background: linear-gradient(
@@ -1194,45 +1194,45 @@ html:not(.dark) .home-bg-aurora-glow {
 .home-bg-current-band--a { left: -8%; animation-delay: 0s; }
 .home-bg-current-band--b { right: -8%; animation-delay: -19s; animation-direction: reverse; }
 .aurora-calm .aurora-orb-1 {
-  animation: aurora-blob-calm-1 24s ease-in-out infinite;
-  opacity: 0.72;
-  filter: blur(48px);
+  animation: aurora-blob-1 20s ease-in-out infinite;
+  opacity: 0.58;
+  filter: blur(42px);
 }
 .aurora-calm .aurora-orb-2 {
-  animation: aurora-blob-calm-2 28s ease-in-out infinite;
-  opacity: 0.68;
-  filter: blur(52px);
+  animation: aurora-blob-2 24s ease-in-out infinite;
+  opacity: 0.54;
+  filter: blur(46px);
 }
 .aurora-calm .aurora-orb-3 {
-  animation: aurora-blob-calm-3 26s ease-in-out infinite;
-  opacity: 0.64;
-  filter: blur(44px);
+  animation: aurora-blob-3 22s ease-in-out infinite;
+  opacity: 0.5;
+  filter: blur(38px);
 }
 .aurora-calm .aurora-orb-4 {
-  animation: aurora-blob-calm-2 30s ease-in-out infinite reverse;
-  opacity: 0.58;
-  filter: blur(50px);
+  animation: aurora-blob-4 26s ease-in-out infinite;
+  opacity: 0.46;
+  filter: blur(44px);
 }
-.dark .aurora-calm .aurora-orb-1 { opacity: 0.68; filter: blur(44px); }
-.dark .aurora-calm .aurora-orb-2 { opacity: 0.64; filter: blur(48px); }
-.dark .aurora-calm .aurora-orb-3 { opacity: 0.6; filter: blur(40px); }
-.dark .aurora-calm .aurora-orb-4 { opacity: 0.55; }
+.dark .aurora-calm .aurora-orb-1 { opacity: 0.55; filter: blur(40px); }
+.dark .aurora-calm .aurora-orb-2 { opacity: 0.52; filter: blur(44px); }
+.dark .aurora-calm .aurora-orb-3 { opacity: 0.48; filter: blur(36px); }
+.dark .aurora-calm .aurora-orb-4 { opacity: 0.44; }
 .home-claims-aurora .aurora-orb-2,
 .home-claims-aurora .aurora-orb-3 {
-  opacity: 0.55;
-  filter: blur(52px);
+  opacity: 0.44;
+  filter: blur(48px);
 }
 .dark .home-claims-aurora .aurora-orb-2,
 .dark .home-claims-aurora .aurora-orb-3 {
-  opacity: 0.58;
+  opacity: 0.48;
 }
-html:not(.dark) .aurora-home-hero-1 { background: rgba(14, 165, 233, 0.58); }
-html:not(.dark) .aurora-home-hero-2 { background: rgba(34, 197, 94, 0.52); }
-html:not(.dark) .aurora-home-hero-3 { background: rgba(56, 189, 248, 0.48); }
-html:not(.dark) .aurora-home-cta-1 { background: rgba(14, 165, 233, 0.52); }
-html:not(.dark) .aurora-home-cta-2 { background: rgba(34, 197, 94, 0.46); }
-html:not(.dark) .aurora-home-claims-1 { background: rgba(14, 165, 233, 0.48); }
-html:not(.dark) .aurora-home-claims-2 { background: rgba(34, 197, 94, 0.42); }
+html:not(.dark) .aurora-home-hero-1 { background: rgba(14, 165, 233, 0.5); }
+html:not(.dark) .aurora-home-hero-2 { background: rgba(34, 197, 94, 0.44); }
+html:not(.dark) .aurora-home-hero-3 { background: rgba(56, 189, 248, 0.4); }
+html:not(.dark) .aurora-home-cta-1 { background: rgba(14, 165, 233, 0.46); }
+html:not(.dark) .aurora-home-cta-2 { background: rgba(34, 197, 94, 0.4); }
+html:not(.dark) .aurora-home-claims-1 { background: rgba(14, 165, 233, 0.42); }
+html:not(.dark) .aurora-home-claims-2 { background: rgba(34, 197, 94, 0.38); }
 html:not(.dark) .home-stat-panel {
   border-color: rgba(3, 105, 161, 0.14);
   background: rgba(255, 255, 255, 0.72);
@@ -1452,18 +1452,8 @@ html:not(.dark) .home-stat-panel {
     opacity: 1;
     transform: none;
   }
-  .aurora-orb-1,
-  .aurora-orb-2,
-  .aurora-orb-3,
-  .aurora-orb-4,
   .scan-line,
-  .particle,
-  .particle-rise,
-  .particle-drift,
   .animated-mesh,
-  .home-bg-coastal-shift,
-  .home-bg-coastal-sheen,
-  .home-bg-aurora-glow,
   .home-bg-mesh-slow,
   .home-bg-dawn,
   .home-bg-current,
