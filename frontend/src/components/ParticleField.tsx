@@ -26,9 +26,16 @@ interface ParticleFieldProps {
   count?: number;
   variant?: "rise" | "drift";
   className?: string;
+  /** Shorter duration range for gentler but visible motion */
+  pace?: "default" | "brisk";
 }
 
-export function ParticleField({ count = 28, variant = "rise", className = "" }: ParticleFieldProps) {
+export function ParticleField({
+  count = 28,
+  variant = "rise",
+  className = "",
+  pace = "default",
+}: ParticleFieldProps) {
   const rawId = useId();
   const scopeId = `pf-${rawId.replace(/:/g, "")}`;
 
@@ -38,8 +45,11 @@ export function ParticleField({ count = 28, variant = "rise", className = "" }: 
       const size = seededValue(i * 3 + 1, 3, 10);
       const left = seededValue(i * 3 + 2, 2, 98);
       const bottom = seededValue(i * 3 + 3, -5, 15);
-      const dur = seededValue(i * 3 + 4, 7, 18);
-      const delay = seededValue(i * 3 + 5, 0, 12);
+      const dur =
+        pace === "brisk"
+          ? seededValue(i * 3 + 4, 5, 11)
+          : seededValue(i * 3 + 4, 7, 18);
+      const delay = seededValue(i * 3 + 5, 0, pace === "brisk" ? 8 : 12);
       const color = PALETTE[i % PALETTE.length];
       const isSquare = i % 5 === 0;
       const isDiamond = i % 7 === 0;
@@ -65,7 +75,7 @@ export function ParticleField({ count = 28, variant = "rise", className = "" }: 
         }`);
     }
     return rules.join("\n");
-  }, [count, variant, scopeId]);
+  }, [count, variant, scopeId, pace]);
 
   return (
     <>

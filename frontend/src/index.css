@@ -230,19 +230,19 @@ button, a, input, select, textarea {
 /* Marketing orbs — visible drift without feeling frantic */
 @keyframes aurora-blob-calm-1 {
   0%, 100% { transform: translate(0, 0) scale(1); }
-  25%      { transform: translate(14vw, -9vh) scale(1.14); }
-  50%      { transform: translate(6vw, 10vh) scale(0.9); }
-  75%      { transform: translate(-12vw, 5vh) scale(1.08); }
+  25%      { transform: translate(9vw, -6vh) scale(1.1); }
+  50%      { transform: translate(4vw, 7vh) scale(0.94); }
+  75%      { transform: translate(-8vw, 4vh) scale(1.06); }
 }
 @keyframes aurora-blob-calm-2 {
   0%, 100% { transform: translate(0, 0) scale(1); }
-  30%      { transform: translate(-15vw, 8vh) scale(1.12); }
-  60%      { transform: translate(10vw, -10vh) scale(0.88); }
+  30%      { transform: translate(-10vw, 6vh) scale(1.08); }
+  60%      { transform: translate(7vw, -7vh) scale(0.92); }
 }
 @keyframes aurora-blob-calm-3 {
   0%, 100% { transform: translate(0, 0) scale(1); }
-  35%      { transform: translate(11vw, 9vh) scale(1.1); }
-  70%      { transform: translate(-9vw, -8vh) scale(0.92); }
+  35%      { transform: translate(8vw, 7vh) scale(1.06); }
+  70%      { transform: translate(-7vw, -6vh) scale(0.94); }
 }
 
 .aurora-bg {
@@ -1132,7 +1132,7 @@ button, a, input, select, textarea {
     #ffffff 100%
   );
   background-size: 220% 220%;
-  animation: home-tide-flow 52s ease-in-out infinite;
+  animation: home-tide-flow 30s ease-in-out infinite;
 }
 .home-bg-mesh-slow.animated-mesh {
   background: linear-gradient(
@@ -1278,24 +1278,30 @@ html:not(.dark) .home-bg-aurora-glow {
 .home-bg-current-band--a { left: -8%; animation-delay: 0s; }
 .home-bg-current-band--b { right: -8%; animation-delay: -19s; animation-direction: reverse; }
 .aurora-calm .aurora-orb-1 {
-  animation: aurora-blob-1 20s ease-in-out infinite;
+  animation: aurora-blob-calm-1 15s ease-in-out infinite;
   opacity: 0.58;
   filter: blur(42px);
 }
 .aurora-calm .aurora-orb-2 {
-  animation: aurora-blob-2 24s ease-in-out infinite;
+  animation: aurora-blob-calm-2 17s ease-in-out infinite;
   opacity: 0.54;
   filter: blur(46px);
 }
 .aurora-calm .aurora-orb-3 {
-  animation: aurora-blob-3 22s ease-in-out infinite;
+  animation: aurora-blob-calm-3 16s ease-in-out infinite;
   opacity: 0.5;
   filter: blur(38px);
 }
 .aurora-calm .aurora-orb-4 {
-  animation: aurora-blob-4 26s ease-in-out infinite;
+  animation: aurora-blob-calm-2 18s ease-in-out infinite reverse;
   opacity: 0.46;
   filter: blur(44px);
+}
+.home-claims-aurora .aurora-orb-2 {
+  animation-duration: 20s;
+}
+.home-claims-aurora .aurora-orb-3 {
+  animation-duration: 22s;
 }
 .dark .aurora-calm .aurora-orb-1 { opacity: 0.55; filter: blur(40px); }
 .dark .aurora-calm .aurora-orb-2 { opacity: 0.52; filter: blur(44px); }

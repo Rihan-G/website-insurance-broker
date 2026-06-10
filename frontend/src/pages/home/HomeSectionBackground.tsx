@@ -45,7 +45,9 @@ export function HomeSectionBackground({ variant }: { variant: SectionVariant }) 
             </>
           )}
         </div>
-        {variant === "hero" && <ParticleField count={10} variant="rise" className="opacity-50" />}
+        {variant === "hero" && (
+          <ParticleField count={10} variant="rise" pace="brisk" className="opacity-45" />
+        )}
       </div>
 
       <div className={`absolute inset-0 dot-grid ${variant === "hero" ? "opacity-[0.1]" : "opacity-[0.06]"}`} />
