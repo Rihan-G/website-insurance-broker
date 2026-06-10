@@ -45,7 +45,7 @@ export function HomePlatformPreview() {
               icon: Users,
               title: "Advice when it matters",
               desc: "Licensed brokers explain trade-offs in plain language: online tools speed things up, people close the loop.",
-              tone: "from-emerald-600/90 to-teal-900",
+              tone: "from-cyan-600/90 to-primary-900",
               features: [
                 "Plain-language comparisons before you bind",
                 "Phone, email, or WhatsApp (where you opt in)",
@@ -63,7 +63,7 @@ export function HomePlatformPreview() {
                   className={`pointer-events-none absolute inset-0 bg-gradient-to-br opacity-0 transition-opacity duration-300 group-hover:opacity-15 ${card.tone}`}
                 />
                 <div className="relative flex h-full flex-col">
-                  <div className="inline-flex w-fit rounded-xl bg-muted/80 p-3 ring-1 ring-border dark:bg-slate-800/80">
+                  <div className="inline-flex w-fit rounded-xl bg-muted/80 p-3 ring-1 ring-border dark:bg-primary-900/50">
                     <card.icon className="h-6 w-6 text-primary-600 dark:text-primary-300" aria-hidden />
                   </div>
                   <h3 className="mt-5 text-lg font-bold text-surface-foreground">{card.title}</h3>

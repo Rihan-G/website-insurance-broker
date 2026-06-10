@@ -87,10 +87,10 @@ export function HomeAssistantTeaser() {
       role="region"
       aria-label="Insurance assistant"
     >
-      <div className="rounded-2xl border border-slate-200 bg-white px-3 py-2.5 shadow-[0_8px_32px_rgba(0,0,0,0.14)] dark:border-slate-600 dark:bg-slate-900 dark:shadow-[0_12px_40px_rgba(0,0,0,0.5)]">
+      <div className="rounded-2xl border border-border bg-surface px-3 py-2.5 shadow-[0_8px_32px_rgba(0,0,0,0.14)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.5)]">
         <div className="flex items-start gap-2.5">
           <div
-            className="relative mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 shadow-md ring-2 ring-violet-400/30"
+            className="relative mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary-600 to-primary-800 shadow-md ring-2 ring-primary-400/30"
             aria-hidden
           >
             <Bot className="h-5 w-5 text-white" strokeWidth={2} />
@@ -111,7 +111,7 @@ export function HomeAssistantTeaser() {
                 onChange={(e) => setPrompt(e.target.value)}
                 placeholder="Ask about cover, renewals, or claims..."
                 title={aiReady ? "Ask a quick question" : "Add AI API key to enable replies"}
-                className="h-10 min-w-0 flex-1 rounded-xl border border-slate-300 bg-white px-3 text-sm font-medium text-slate-900 caret-primary-600 placeholder:text-slate-500 shadow-inner outline-none ring-primary-500/30 focus-visible:ring-2 disabled:opacity-70 dark:border-slate-500 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-400 dark:caret-primary-300"
+                className="h-10 min-w-0 flex-1 rounded-xl border border-border bg-background px-3 text-sm font-medium text-surface-foreground caret-primary-600 placeholder:text-muted-foreground shadow-inner outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 disabled:opacity-70 dark:caret-primary-300"
                 disabled={loading}
               />
               <button
@@ -124,7 +124,7 @@ export function HomeAssistantTeaser() {
               </button>
             </div>
 
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">{statusText}</p>
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">{statusText}</p>
 
             {error && (
               <p
@@ -136,7 +136,7 @@ export function HomeAssistantTeaser() {
             )}
 
             {reply && !error && (
-              <p className="rounded-lg border border-primary-200 bg-primary-50 px-2.5 py-2 text-sm leading-snug text-slate-900 dark:border-primary-800 dark:bg-slate-800 dark:text-slate-50">
+              <p className="rounded-lg border border-primary-200 bg-primary-50 px-2.5 py-2 text-sm leading-snug text-surface-foreground dark:border-primary-800 dark:bg-primary-900/40">
                 {reply}
               </p>
             )}

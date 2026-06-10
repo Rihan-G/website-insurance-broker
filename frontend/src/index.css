@@ -228,21 +228,26 @@ button, a, input, select, textarea {
   100% { transform: translate(0px,   0px)    scale(1);    }
 }
 /* Marketing orbs — pulse & glow, cycling aqua / champagne / silver by placement */
+/* Shared left → right → left colour sweep (orbs + scroll progress) */
+@keyframes marketing-color-sweep {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
 @keyframes orb-glow-aqua {
   0%, 100% {
-    transform: scale(1);
+    transform: translateX(-5vw) scale(1);
     background: rgba(103, 232, 249, 0.52);
     box-shadow: 0 0 88px 44px rgba(103, 232, 249, 0.3);
     filter: blur(44px);
   }
   33% {
-    transform: scale(1.07);
+    transform: translateX(0) scale(1.07);
     background: rgba(253, 230, 138, 0.46);
     box-shadow: 0 0 104px 52px rgba(253, 230, 138, 0.24);
     filter: blur(48px);
   }
   66% {
-    transform: scale(1.04);
+    transform: translateX(5vw) scale(1.04);
     background: rgba(241, 245, 249, 0.5);
     box-shadow: 0 0 96px 48px rgba(226, 232, 240, 0.22);
     filter: blur(46px);
@@ -250,19 +255,19 @@ button, a, input, select, textarea {
 }
 @keyframes orb-glow-champagne {
   0%, 100% {
-    transform: scale(1);
+    transform: translateX(5vw) scale(1);
     background: rgba(253, 230, 138, 0.48);
     box-shadow: 0 0 84px 42px rgba(253, 230, 138, 0.28);
     filter: blur(46px);
   }
   33% {
-    transform: scale(1.06);
+    transform: translateX(0) scale(1.06);
     background: rgba(241, 245, 249, 0.5);
     box-shadow: 0 0 100px 50px rgba(226, 232, 240, 0.2);
     filter: blur(50px);
   }
   66% {
-    transform: scale(1.05);
+    transform: translateX(-5vw) scale(1.05);
     background: rgba(103, 232, 249, 0.44);
     box-shadow: 0 0 92px 46px rgba(103, 232, 249, 0.26);
     filter: blur(44px);
@@ -270,19 +275,19 @@ button, a, input, select, textarea {
 }
 @keyframes orb-glow-silver {
   0%, 100% {
-    transform: scale(1);
+    transform: translateX(-4vw) scale(1);
     background: rgba(241, 245, 249, 0.5);
     box-shadow: 0 0 80px 40px rgba(226, 232, 240, 0.24);
     filter: blur(42px);
   }
   33% {
-    transform: scale(1.05);
+    transform: translateX(3vw) scale(1.05);
     background: rgba(103, 232, 249, 0.46);
     box-shadow: 0 0 96px 48px rgba(103, 232, 249, 0.26);
     filter: blur(46px);
   }
   66% {
-    transform: scale(1.06);
+    transform: translateX(5vw) scale(1.06);
     background: rgba(254, 243, 199, 0.44);
     box-shadow: 0 0 88px 44px rgba(253, 230, 138, 0.22);
     filter: blur(44px);
@@ -290,19 +295,19 @@ button, a, input, select, textarea {
 }
 @keyframes orb-glow-aqua-dark {
   0%, 100% {
-    transform: scale(1);
+    transform: translateX(-5vw) scale(1);
     background: rgba(103, 232, 249, 0.42);
     box-shadow: 0 0 88px 44px rgba(34, 211, 238, 0.22);
     filter: blur(40px);
   }
   33% {
-    transform: scale(1.06);
+    transform: translateX(0) scale(1.06);
     background: rgba(253, 230, 138, 0.32);
     box-shadow: 0 0 100px 50px rgba(253, 230, 138, 0.16);
     filter: blur(44px);
   }
   66% {
-    transform: scale(1.03);
+    transform: translateX(5vw) scale(1.03);
     background: rgba(203, 213, 225, 0.36);
     box-shadow: 0 0 92px 46px rgba(148, 163, 184, 0.14);
     filter: blur(42px);
@@ -310,19 +315,19 @@ button, a, input, select, textarea {
 }
 @keyframes orb-glow-champagne-dark {
   0%, 100% {
-    transform: scale(1);
+    transform: translateX(5vw) scale(1);
     background: rgba(253, 230, 138, 0.36);
     box-shadow: 0 0 84px 42px rgba(253, 230, 138, 0.18);
     filter: blur(42px);
   }
   33% {
-    transform: scale(1.05);
+    transform: translateX(0) scale(1.05);
     background: rgba(203, 213, 225, 0.34);
     box-shadow: 0 0 96px 48px rgba(148, 163, 184, 0.14);
     filter: blur(46px);
   }
   66% {
-    transform: scale(1.04);
+    transform: translateX(-5vw) scale(1.04);
     background: rgba(103, 232, 249, 0.36);
     box-shadow: 0 0 90px 45px rgba(34, 211, 238, 0.18);
     filter: blur(40px);
@@ -330,19 +335,19 @@ button, a, input, select, textarea {
 }
 @keyframes orb-glow-silver-dark {
   0%, 100% {
-    transform: scale(1);
+    transform: translateX(-4vw) scale(1);
     background: rgba(203, 213, 225, 0.38);
     box-shadow: 0 0 76px 38px rgba(148, 163, 184, 0.16);
     filter: blur(38px);
   }
   33% {
-    transform: scale(1.04);
+    transform: translateX(3vw) scale(1.04);
     background: rgba(103, 232, 249, 0.36);
     box-shadow: 0 0 90px 45px rgba(34, 211, 238, 0.18);
     filter: blur(42px);
   }
   66% {
-    transform: scale(1.05);
+    transform: translateX(5vw) scale(1.05);
     background: rgba(253, 230, 138, 0.3);
     box-shadow: 0 0 84px 42px rgba(253, 230, 138, 0.14);
     filter: blur(40px);
@@ -395,7 +400,7 @@ button, a, input, select, textarea {
   animation-delay: 2s; animation-duration: 7s;
 }
 .aurora-home-stats-1 { width: 260px; height: 260px; top: -30%; left: 15%; background: rgba(14, 165, 233, 0.6); }
-.aurora-home-stats-2 { width: 220px; height: 220px; bottom: -30%; right: 20%; background: rgba(22, 163, 74, 0.55); }
+.aurora-home-stats-2 { width: 220px; height: 220px; bottom: -30%; right: 20%; background: rgba(103, 232, 249, 0.45); }
 .aurora-home-cta-1 { width: 480px; height: 480px; top: -20%; right: 5%; }
 .aurora-home-cta-2 { width: 400px; height: 400px; bottom: -20%; left: 8%; }
 .aurora-home-cta-3 { width: 260px; height: 260px; top: 40%; left: 40%; background: rgba(248, 250, 252, 0.5); }
@@ -1385,7 +1390,7 @@ html:not(.dark) .home-bg-aurora-glow {
 .aurora-calm .aurora-orb-2,
 .aurora-calm .aurora-orb-3 {
   opacity: 1;
-  will-change: transform, filter, box-shadow, background-color;
+  will-change: transform, filter, box-shadow, background;
 }
 .aurora-calm .home-orb--aqua {
   animation: orb-glow-aqua 14s ease-in-out infinite;
@@ -1543,6 +1548,66 @@ html:not(.dark) .home-stat-panel {
 }
 .border-gradient:hover::before { opacity: 1; }
 
+/* Marketing site — aqua accent for CTAs/badges (portal keeps green @theme accent) */
+.home-marketing {
+  --color-accent: #06b6d4;
+  --color-accent-50: #ecfeff;
+  --color-accent-100: #cffafe;
+  --color-accent-200: #a5f3fc;
+  --color-accent-400: #22d3ee;
+  --color-accent-500: #06b6d4;
+  --color-accent-600: #0891b2;
+  --color-accent-700: #0e7490;
+}
+.dark .home-marketing {
+  --color-accent-50: #083344;
+  --color-accent-100: #a5f3fc;
+  --color-accent-200: #67e8f9;
+  --color-accent-400: #22d3ee;
+  --color-accent-500: #22d3ee;
+  --color-accent-600: #06b6d4;
+  --color-accent-700: #67e8f9;
+}
+.home-marketing .text-gradient {
+  background: linear-gradient(135deg, #06b6d4 0%, #c9a227 55%, #94a3b8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+.home-marketing .home-testimonial-hover {
+  background: linear-gradient(90deg, #22d3ee 0%, #fde68a 50%, #22d3ee 100%);
+}
+
+/* Scroll progress — looping aqua / champagne / silver sweep (synced with orb cycle) */
+.scroll-progress-fill {
+  background: linear-gradient(
+    90deg,
+    #06b6d4 0%,
+    #22d3ee 14%,
+    #fde68a 32%,
+    #d4a574 44%,
+    #cbd5e1 58%,
+    #94a3b8 72%,
+    #67e8f9 86%,
+    #06b6d4 100%
+  );
+  background-size: 200% 100%;
+  animation: marketing-color-sweep 15s linear infinite;
+}
+.dark .scroll-progress-fill {
+  background: linear-gradient(
+    90deg,
+    #22d3ee 0%,
+    #67e8f9 14%,
+    #fde68a 32%,
+    #e8d9a8 46%,
+    #cbd5e1 60%,
+    #94a3b8 74%,
+    #22d3ee 88%,
+    #67e8f9 100%
+  );
+  background-size: 200% 100%;
+}
+
 /* ──────────────────────────────────────────────────────
    PROGRESS BAR ANIMATION
    ────────────────────────────────────────────────────── */
@@ -1664,8 +1729,12 @@ html:not(.dark) .home-stat-panel {
   .animate-float-delayed,
   .animate-float-delayed-2,
   .home-icon-bob,
-  .word-animate {
+  .word-animate,
+  .scroll-progress-fill {
     animation: none !important;
+  }
+  .scroll-progress-fill {
+    background-position: 50% 50%;
   }
   .home-feature-card::after {
     display: none;

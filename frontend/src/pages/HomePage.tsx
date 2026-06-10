@@ -57,7 +57,7 @@ export function HomePage() {
   const heroWaveTop = isDark ? "#1e293b" : "#a5f3fc";
 
   return (
-    <div className="min-h-screen bg-background max-lg:pb-[calc(9.25rem+env(safe-area-inset-bottom))] lg:pb-0">
+    <div className="home-marketing min-h-screen bg-background max-lg:pb-[calc(9.25rem+env(safe-area-inset-bottom))] lg:pb-0">
       <a
         href="#quote"
         className="absolute left-4 top-2 z-[100] -translate-y-12 rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white shadow transition-transform focus:translate-y-0 focus:outline-none focus:ring-2 focus:ring-primary-300"
@@ -186,7 +186,7 @@ export function HomePage() {
         <WaveDivider topColor={heroWaveTop} bottomColor={waveLightFill} height={80} />
       </section>
 
-      <section className="home-insurer-band border-y border-primary-200/70 bg-gradient-to-r from-primary-50 via-sky-50 to-emerald-50 py-6 overflow-hidden dark:border-border dark:from-surface dark:via-background dark:to-surface">
+      <section className="home-insurer-band border-y border-primary-200/70 bg-gradient-to-r from-primary-50 via-primary-100/60 to-primary-50 py-6 overflow-hidden dark:border-border dark:from-surface dark:via-background dark:to-surface">
         <p className="text-center text-xs font-bold text-muted-foreground uppercase tracking-widest mb-5">Partnered with leading insurers</p>
         <div className="marquee-container">
           <div className="flex animate-marquee gap-0">
@@ -254,7 +254,7 @@ export function HomePage() {
                 <a
                   key={p.name}
                   href="#quote"
-                  className="home-coverage-pill inline-flex items-center gap-2 rounded-full border border-primary-200 bg-surface px-4 py-2 text-sm font-semibold text-primary-800 shadow-sm transition-[transform,box-shadow] duration-[200ms] ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:shadow-md dark:border-border dark:bg-primary-50 dark:text-primary-100"
+                  className="home-coverage-pill inline-flex items-center gap-2 rounded-full border border-primary-200 bg-surface px-4 py-2 text-sm font-semibold text-primary-800 shadow-sm transition-[transform,box-shadow] duration-[200ms] ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:shadow-md dark:border-primary-700/60 dark:bg-primary-800/50 dark:text-primary-200"
                 >
                   <p.icon className="h-4 w-4 text-primary-600 dark:text-primary-300" aria-hidden />
                   {p.name}
@@ -365,7 +365,7 @@ export function HomePage() {
             {testimonials.map((t, i) => (
               <AnimatedSection key={t.name} className={`stagger-${i + 1}`} animation="animate-on-scroll">
                 <div className="card-hover group rounded-2xl border border-border bg-surface p-8 relative overflow-hidden">
-                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary-400 via-accent-400 to-primary-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="home-testimonial-hover absolute top-0 left-0 h-1 w-full opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                   <div className="flex gap-1">
                     {Array.from({ length: t.rating }).map((_, j) => (
                       <Star key={j} className="h-4 w-4 fill-warning-500 text-warning-500" />
@@ -408,7 +408,7 @@ export function HomePage() {
                 key={item.q}
                 className="group rounded-2xl border border-border bg-surface p-1 shadow-sm transition-shadow hover:shadow-md open:shadow-md dark:bg-surface"
               >
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-xl px-4 py-4 text-left text-base font-semibold text-surface-foreground outline-none ring-primary-500/30 focus-visible:ring-2 [&::-webkit-details-marker]:hidden">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-xl px-4 py-4 text-left text-base font-semibold text-surface-foreground outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 [&::-webkit-details-marker]:hidden">
                   {item.q}
                   <span className="shrink-0 rounded-full border border-border bg-muted/40 px-2 py-0.5 text-xs font-bold text-muted-foreground transition-transform group-open:rotate-45">
                     +

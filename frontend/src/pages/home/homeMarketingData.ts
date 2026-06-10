@@ -134,13 +134,13 @@ export const whyChooseUs: Array<{ icon: LucideIcon; title: string; desc: string;
     icon: Clock,
     title: "Faster turnaround",
     desc: "Structured uploads and digital workflows reduce back-and-forth so cover can move quicker.",
-    tone: "from-sky-500 to-primary-700",
+    tone: "from-primary-400 to-primary-700",
   },
   {
     icon: Headphones,
     title: "Human when it counts",
     desc: "Phone, email, and WhatsApp access to advisors, not a faceless call centre.",
-    tone: "from-emerald-500 to-teal-800",
+    tone: "from-cyan-500 to-primary-700",
   },
   {
     icon: Sparkles,
