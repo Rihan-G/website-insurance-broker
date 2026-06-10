@@ -54,7 +54,7 @@ export function HomePage() {
   const { resolved } = useTheme();
   const isDark = resolved === "dark";
   const waveLightFill = isDark ? "#111c2f" : "#ffffff";
-  const heroWaveTop = isDark ? "#0f2847" : "#7dd3fc";
+  const heroWaveTop = isDark ? "#1e293b" : "#a5f3fc";
 
   return (
     <div className="min-h-screen bg-background max-lg:pb-[calc(9.25rem+env(safe-area-inset-bottom))] lg:pb-0">

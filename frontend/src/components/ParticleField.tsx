@@ -8,13 +8,13 @@
 import { useId, useMemo } from "react";
 
 const PALETTE = [
-  "rgba(56,189,248,0.9)", // sky-blue
-  "rgba(74,222,128,0.85)", // green
-  "rgba(14,165,233,0.9)", // primary blue
-  "rgba(245,158,11,0.8)", // amber
-  "rgba(167,243,208,0.8)", // soft mint
-  "rgba(255,255,255,0.7)", // white
-  "rgba(56,189,248,0.6)", // light sky
+  "rgba(103,232,249,0.9)", // aqua
+  "rgba(253,230,138,0.85)", // champagne
+  "rgba(34,211,238,0.9)", // cyan
+  "rgba(226,232,240,0.85)", // silver
+  "rgba(255,255,255,0.75)", // white
+  "rgba(165,243,252,0.8)", // soft aqua
+  "rgba(254,243,199,0.8)", // pale gold
 ];
 
 function seededValue(seed: number, min: number, max: number): number {
