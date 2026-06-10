@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { ShieldCheck, Eye, EyeOff, Lock, CheckCircle, Sparkles, AlertTriangle } from "lucide-react";
+import { Eye, EyeOff, Lock, CheckCircle, Sparkles, AlertTriangle } from "lucide-react";
+import { BrandLogo } from "../components/BrandLogo";
 import { useAuth } from "../context/AuthContext";
 import { DEMO_ACCOUNTS, getDemoCredentialsByRole } from "../lib/demoAuth";
 import { COMPANY_NAME_SHORT } from "../lib/branding";
@@ -96,7 +97,7 @@ export function LoginPage() {
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-12">
             <div className="rounded-xl bg-white/10 border border-white/20 p-2.5 backdrop-blur-sm">
-              <ShieldCheck className="h-8 w-8 text-accent-400" />
+              <BrandLogo className="h-8 w-8" imageClassName="h-8 w-8 w-auto object-contain" />
             </div>
             <div>
               <span className="text-2xl font-bold text-white tracking-tight">{COMPANY_NAME_SHORT}</span>
@@ -159,7 +160,7 @@ export function LoginPage() {
           {/* Mobile logo */}
           <div className="mb-8 text-center lg:hidden">
             <div className="inline-flex rounded-2xl bg-primary-100 dark:bg-primary-900/35 p-4 mb-4">
-              <ShieldCheck className="h-12 w-12 text-primary-600 dark:text-primary-400" />
+              <BrandLogo className="h-12 w-12" imageClassName="h-12 w-12 w-auto object-contain" />
             </div>
             <h1 className="ui-title text-2xl font-bold text-primary-900 dark:text-primary-50">{COMPANY_NAME_SHORT}</h1>
             <p className="ui-caption mt-1 text-muted-foreground">Insurance Portal</p>

@@ -1549,6 +1549,18 @@ html:not(.dark) .home-stat-panel {
 }
 .border-gradient:hover::before { opacity: 1; }
 
+/* Sindicom logo — transparent PNG; legible on light and dark surfaces */
+.brand-logo {
+  object-fit: contain;
+}
+.dark .brand-logo,
+.home-marketing .brand-logo {
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.45));
+}
+html:not(.dark) .home-marketing nav:not([class*="bg-white"]) .brand-logo {
+  filter: drop-shadow(0 1px 3px rgba(15, 23, 42, 0.35));
+}
+
 /* Marketing site — full aqua accent scale on every descendant (portal keeps green @theme) */
 .home-marketing,
 .home-marketing * {

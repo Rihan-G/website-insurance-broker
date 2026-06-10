@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ShieldCheck, Eye, EyeOff, Lock, Calendar, Sparkles, CheckCircle, Home, ArrowRight, BarChart3 } from "lucide-react";
+import { Eye, EyeOff, Lock, Calendar, Sparkles, CheckCircle, Home, ArrowRight, BarChart3 } from "lucide-react";
+import { BrandLogo } from "../components/BrandLogo";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import { ThemeToggle } from "../components/ThemeToggle";
@@ -107,7 +108,7 @@ export function AdminLoginPage() {
         <div className="relative z-10 max-w-lg">
           <div className="mb-8 flex items-center gap-3">
             <div className="rounded-xl border border-white/15 bg-white/10 p-2.5 backdrop-blur-sm">
-              <ShieldCheck className="h-8 w-8 text-accent-400" />
+              <BrandLogo className="h-8 w-8" imageClassName="h-8 w-8 w-auto object-contain" />
             </div>
             <div>
               <p className="text-lg font-bold tracking-tight text-white">{COMPANY_NAME_SHORT}</p>
@@ -199,7 +200,7 @@ export function AdminLoginPage() {
         <div className="relative z-[1] w-full max-w-md">
           <div className="mb-8 flex flex-col items-center text-center lg:items-start lg:text-left">
             <div className="mb-4 inline-flex rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-sm lg:hidden">
-              <ShieldCheck className="h-12 w-12 text-accent-400" />
+              <BrandLogo className="h-12 w-12" imageClassName="h-12 w-12 w-auto object-contain" />
             </div>
             <h1 className="ui-title text-2xl font-bold tracking-tight text-white lg:text-surface-foreground dark:lg:text-white">
               Administrator access

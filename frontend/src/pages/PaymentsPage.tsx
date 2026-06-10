@@ -145,7 +145,7 @@ export function PaymentsPage() {
   };
 
   const downloadReceipt = (p: Payment) => {
-    generateReceipt({
+    void generateReceipt({
       receiptNumber: `REC-${p.id.slice(0, 8).toUpperCase()}`,
       clientName: p.client?.full_name ?? "Client",
       clientEmail: p.client?.email ?? "",
@@ -158,8 +158,9 @@ export function PaymentsPage() {
       paidAt: p.paid_at ?? p.created_at,
       brokerName: COMPANY_NAME,
       brokerPhone: "+230 XXXX XXXX",
-    });
-    toast.success("Receipt downloaded.");
+    })
+      .then(() => toast.success("Receipt downloaded."))
+      .catch(() => toast.error("Could not generate receipt."));
   };
 
   return (

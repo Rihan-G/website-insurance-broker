@@ -15,6 +15,7 @@ import { ThemeToggle } from "../components/ThemeToggle";
 import { CommandPalette } from "../components/CommandPalette";
 import { DashboardAccessSentinel } from "../components/DashboardAccessSentinel";
 import { CurrencySwitcher } from "../components/CurrencySwitcher";
+import { BrandLogo } from "../components/BrandLogo";
 import { COMPANY_NAME_SHORT, PORTAL_HEADING } from "../lib/branding";
 import { getPortalFlavor } from "../lib/portalFlavor";
 import { supabase } from "../lib/supabase";
@@ -248,7 +249,7 @@ function DashboardSidebarPanel({
 
       <div className="relative flex h-16 shrink-0 items-center gap-3 border-b border-white/8 px-5">
         <div className="rounded-lg border border-white/15 bg-white/10 p-1.5 shrink-0">
-          <ShieldCheck className="h-5 w-5 text-accent-400" />
+          <BrandLogo className="h-5 w-5" imageClassName="h-5 w-5 w-auto object-contain" />
         </div>
         <div className="min-w-0">
           <span className="text-sm font-bold tracking-tight text-white">{COMPANY_NAME_SHORT}</span>
@@ -567,7 +568,7 @@ export function AppLayout() {
             <span className="sr-only">{sidebarOpen ? "Close navigation" : "Open navigation"}</span>
           </button>
           <div className="flex min-w-0 flex-1 items-center gap-2">
-            <ShieldCheck className="h-5 w-5 shrink-0 text-primary-500 hidden sm:block" />
+            <BrandLogo className="h-5 w-5 shrink-0 hidden sm:block" imageClassName="h-5 w-5 w-auto object-contain" />
             <div className="min-w-0">
               <h1 className="truncate text-base font-bold text-surface-foreground">{PORTAL_HEADING}</h1>
               <p className="hidden truncate text-[11px] text-muted-foreground md:block">{currentPageLabel}</p>

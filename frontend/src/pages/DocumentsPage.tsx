@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { Search, Filter, Download, Eye, FileText, ChevronDown } from "lucide-react";
 import toast from "react-hot-toast";
+import { BrokerTemplateDownloads } from "../components/BrokerTemplateDownloads";
 import { useAuth } from "../context/AuthContext";
 import {
   DOCUMENT_STATUS_BADGE_CLASS,
@@ -236,8 +237,12 @@ export function DocumentsPage() {
     [demoAuthActive],
   );
 
+  const showBrokerTemplates = profile?.role === "admin" || profile?.role === "broker";
+
   return (
     <div className="space-y-6">
+      {showBrokerTemplates && <BrokerTemplateDownloads />}
+
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="text-2xl font-bold text-surface-foreground">Documents</h2>

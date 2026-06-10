@@ -1,6 +1,31 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { COMPANY_NAME, CONTACT_EMAIL } from "./branding";
+import { BRAND_LOGO_PNG, BRAND_LOGO_SVG } from "./brandAssets";
+
+let cachedLogoDataUrl: string | null | undefined;
+
+async function loadBrandLogoDataUrl(): Promise<string | null> {
+  if (cachedLogoDataUrl !== undefined) return cachedLogoDataUrl;
+  for (const url of [BRAND_LOGO_PNG, BRAND_LOGO_SVG]) {
+    try {
+      const res = await fetch(url);
+      if (!res.ok) continue;
+      const blob = await res.blob();
+      cachedLogoDataUrl = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(typeof reader.result === "string" ? reader.result : null);
+        reader.onerror = () => reject(reader.error);
+        reader.readAsDataURL(blob);
+      });
+      if (cachedLogoDataUrl) return cachedLogoDataUrl;
+    } catch {
+      /* try next format */
+    }
+  }
+  cachedLogoDataUrl = null;
+  return null;
+}
 
 interface ReceiptData {
   receiptNumber: string;
@@ -30,16 +55,25 @@ interface PolicyData {
   coverageDetails: string[];
 }
 
-function addHeader(doc: jsPDF, title: string) {
+function addHeader(doc: jsPDF, title: string, logoDataUrl?: string | null) {
   doc.setFillColor(15, 52, 96);
   doc.rect(0, 0, 210, 28, "F");
   doc.setTextColor(255, 255, 255);
+  const textX = logoDataUrl ? 32 : 14;
+  if (logoDataUrl) {
+    try {
+      const format = logoDataUrl.includes("image/svg") ? "SVG" : "PNG";
+      doc.addImage(logoDataUrl, format, 10, 5, 16, 16);
+    } catch {
+      /* text-only header */
+    }
+  }
   doc.setFontSize(16);
   doc.setFont("helvetica", "bold");
-  doc.text(COMPANY_NAME, 14, 12);
+  doc.text(COMPANY_NAME, textX, 12);
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
-  doc.text("Licensed Insurance Broker · Mauritius", 14, 20);
+  doc.text("Licensed Insurance Broker · Mauritius", textX, 20);
   doc.setFontSize(14);
   doc.setFont("helvetica", "bold");
   doc.text(title, 196, 16, { align: "right" });
@@ -62,10 +96,11 @@ function addFooter(doc: jsPDF) {
   }
 }
 
-export function generateReceipt(data: ReceiptData): void {
+export async function generateReceipt(data: ReceiptData): Promise<void> {
   const doc = new jsPDF();
+  const logo = await loadBrandLogoDataUrl();
 
-  addHeader(doc, "PAYMENT RECEIPT");
+  addHeader(doc, "PAYMENT RECEIPT", logo);
 
   doc.setFontSize(10);
   doc.setFont("helvetica", "bold");
@@ -130,10 +165,11 @@ export function generateReceipt(data: ReceiptData): void {
   doc.save(`receipt_${data.receiptNumber}.pdf`);
 }
 
-export function generatePolicyCertificate(data: PolicyData): void {
+export async function generatePolicyCertificate(data: PolicyData): Promise<void> {
   const doc = new jsPDF();
+  const logo = await loadBrandLogoDataUrl();
 
-  addHeader(doc, "POLICY CERTIFICATE");
+  addHeader(doc, "POLICY CERTIFICATE", logo);
 
   doc.setFontSize(11);
   doc.setFont("helvetica", "bold");

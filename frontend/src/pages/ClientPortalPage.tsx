@@ -107,7 +107,7 @@ export function ClientPortalPage() {
   }, [user]);
 
   const downloadCertificate = (p: Policy) => {
-    generatePolicyCertificate({
+    void generatePolicyCertificate({
       policyNumber: p.policy_number,
       clientName: profile?.full_name ?? "Client",
       clientEmail: profile?.email ?? "",
@@ -118,8 +118,9 @@ export function ClientPortalPage() {
       startDate: p.start_date,
       endDate: p.end_date,
       coverageDetails: ["Third-party liability", "Comprehensive cover", "Roadside assistance"],
-    });
-    toast.success("Certificate downloaded.");
+    })
+      .then(() => toast.success("Certificate downloaded."))
+      .catch(() => toast.error("Could not generate certificate."));
   };
 
   const now = new Date();

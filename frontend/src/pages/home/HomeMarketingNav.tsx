@@ -1,6 +1,7 @@
 import { useEffect, useId, useState } from "react";
 import { Link } from "react-router-dom";
-import { ShieldCheck, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
+import { BrandLogo } from "../../components/BrandLogo";
 import { ThemeToggle } from "../../components/ThemeToggle";
 import { CurrencySwitcher } from "../../components/CurrencySwitcher";
 import { useTheme } from "../../context/ThemeContext";
@@ -84,7 +85,11 @@ export function HomeMarketingNav() {
     <nav className={`fixed top-0 z-50 w-full transition-[background,box-shadow,border-color] duration-300 ${bar}`}>
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6">
         <div className="flex min-w-0 items-center gap-2.5">
-          <ShieldCheck className="h-7 w-7 shrink-0 text-marketing-icon" aria-hidden />
+          <BrandLogo
+            className="h-9 shrink-0"
+            imageClassName="h-9 w-auto max-w-[9.5rem] shrink-0 object-contain"
+            label="Sindicom Brokers"
+          />
           <span className={`truncate text-lg font-bold tracking-tight transition-colors ${brand}`}>{COMPANY_NAME_SHORT}</span>
         </div>
 
