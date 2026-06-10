@@ -1708,19 +1708,34 @@ html:not(.dark) .home-marketing nav:not([class*="bg-white"]) .brand-logo {
   background: linear-gradient(90deg, #22d3ee 0%, #fde68a 50%, #22d3ee 100%);
 }
 
-/* Homepage colour rail — sliding cyan / champagne / silver sheen (under nav) */
+/* Homepage colour rail — sliding track + scroll progress fill (under nav) */
 .home-color-shift-bar {
   pointer-events: none;
   background: #1e293b;
 }
-.home-color-shift-bar__track {
+.home-color-shift-bar__track,
+.home-color-shift-bar__fill {
   position: absolute;
   inset: 0;
   overflow: hidden;
 }
+.home-color-shift-bar__fill {
+  z-index: 1;
+  width: var(--scroll-progress, 0%);
+  transition: width 150ms ease-out;
+  box-shadow: 1px 0 8px rgba(34, 211, 238, 0.35);
+}
+.dark .home-color-shift-bar__fill {
+  box-shadow: 1px 0 10px rgba(34, 211, 238, 0.45);
+}
 .home-color-shift-bar__gradient {
   width: 200%;
   height: 100%;
+  animation: home-color-shift-slide 14s linear infinite;
+  will-change: transform;
+}
+.home-color-shift-bar__gradient--track {
+  opacity: 0.38;
   background: linear-gradient(
     110deg,
     #475569 0%,
@@ -1739,13 +1754,30 @@ html:not(.dark) .home-marketing nav:not([class*="bg-white"]) .brand-logo {
     #475569 94%,
     #1e293b 100%
   );
-  animation: home-color-shift-slide 14s linear infinite;
-  will-change: transform;
+}
+.home-color-shift-bar__gradient--fill {
+  width: 100vw;
+  min-width: 100vw;
+  background: linear-gradient(
+    110deg,
+    #06b6d4 0%,
+    #22d3ee 12%,
+    #67e8f9 22%,
+    #fde68a 34%,
+    #fef3c7 42%,
+    #22d3ee 52%,
+    #94a3b8 62%,
+    #67e8f9 72%,
+    #fde68a 82%,
+    #22d3ee 92%,
+    #06b6d4 100%
+  );
 }
 .dark .home-color-shift-bar {
   background: #0f172a;
 }
-.dark .home-color-shift-bar__gradient {
+.dark .home-color-shift-bar__gradient--track {
+  opacity: 0.45;
   background: linear-gradient(
     110deg,
     #1e293b 0%,
@@ -1764,19 +1796,20 @@ html:not(.dark) .home-marketing nav:not([class*="bg-white"]) .brand-logo {
     #0f172a 100%
   );
 }
-.home-color-shift-bar__scroll-glow {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: var(--scroll-progress, 0%);
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.35), transparent);
-  transition: width 150ms ease-out;
-  mix-blend-mode: soft-light;
-}
-.dark .home-color-shift-bar__scroll-glow {
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.2), transparent);
-  mix-blend-mode: screen;
+.dark .home-color-shift-bar__gradient--fill {
+  background: linear-gradient(
+    110deg,
+    #22d3ee 0%,
+    #67e8f9 14%,
+    #fde68a 28%,
+    #e8d9a8 38%,
+    #22d3ee 50%,
+    #94a3b8 60%,
+    #67e8f9 70%,
+    #fde68a 80%,
+    #22d3ee 90%,
+    #06b6d4 100%
+  );
 }
 
 /* ──────────────────────────────────────────────────────

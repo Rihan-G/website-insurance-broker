@@ -1,8 +1,8 @@
 import { useState, useEffect, type CSSProperties } from "react";
 
 /**
- * Homepage colour rail under the nav — cyan / champagne / silver sheen slides continuously.
- * Scroll depth adds a brighter highlight on the left portion.
+ * Homepage colour rail under the nav — sliding cyan / champagne / silver track,
+ * with a fill that grows left-to-right as you scroll the page.
  */
 export function ScrollProgress() {
   const [progress, setProgress] = useState(0);
@@ -21,7 +21,7 @@ export function ScrollProgress() {
 
   return (
     <div
-      className="home-color-shift-bar fixed top-16 left-0 z-50 h-2 w-full overflow-hidden"
+      className="home-color-shift-bar fixed top-16 left-0 z-[51] h-2 w-full overflow-hidden"
       role="progressbar"
       aria-label="Page scroll progress"
       aria-valuemin={0}
@@ -30,9 +30,11 @@ export function ScrollProgress() {
       style={{ "--scroll-progress": `${progress}%` } as CSSProperties}
     >
       <div className="home-color-shift-bar__track" aria-hidden>
-        <div className="home-color-shift-bar__gradient" />
+        <div className="home-color-shift-bar__gradient home-color-shift-bar__gradient--track" />
       </div>
-      <div className="home-color-shift-bar__scroll-glow" aria-hidden />
+      <div className="home-color-shift-bar__fill" aria-hidden>
+        <div className="home-color-shift-bar__gradient home-color-shift-bar__gradient--fill" />
+      </div>
     </div>
   );
 }
