@@ -16,7 +16,7 @@ export function ScrollProgress() {
 
   return (
     <div
-      className="scroll-progress-root fixed top-16 left-0 z-50 h-1 w-full"
+      className="scroll-progress-root fixed top-16 left-0 z-50 h-1.5 w-full"
       role="progressbar"
       aria-label="Page scroll progress"
       aria-valuemin={0}

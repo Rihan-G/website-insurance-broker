@@ -233,6 +233,10 @@ button, a, input, select, textarea {
   0%   { background-position: 0% 50%; }
   100% { background-position: 200% 50%; }
 }
+@keyframes scroll-progress-sweep {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
 @keyframes orb-glow-aqua {
   0%, 100% {
     transform: translateX(-5vw) scale(1);
@@ -1620,43 +1624,55 @@ html:not(.dark) .home-marketing nav:not([class*="bg-white"]) .brand-logo {
   background: linear-gradient(90deg, #22d3ee 0%, #fde68a 50%, #22d3ee 100%);
 }
 
-/* Scroll progress — always-visible rail + brighter fill (aqua / champagne / silver) */
+/* Scroll progress — diagonal sheen; cyan + champagne bands shift left → right */
 .scroll-progress-rail,
 .scroll-progress-fill {
   background: linear-gradient(
-    90deg,
-    #06b6d4 0%,
-    #22d3ee 14%,
-    #fde68a 32%,
-    #d4a574 44%,
-    #cbd5e1 58%,
-    #94a3b8 72%,
-    #67e8f9 86%,
-    #06b6d4 100%
+    110deg,
+    #475569 0%,
+    #1e293b 10%,
+    #06b6d4 22%,
+    #22d3ee 32%,
+    #0f172a 42%,
+    #fde68a 52%,
+    #d4a574 58%,
+    #334155 68%,
+    #94a3b8 80%,
+    #67e8f9 90%,
+    #475569 100%
   );
-  background-size: 200% 100%;
-  animation: marketing-color-sweep 15s linear infinite;
+  background-size: 300% 100%;
+  animation: scroll-progress-sweep 10s linear infinite;
+  will-change: background-position;
 }
 .scroll-progress-rail {
-  opacity: 0.5;
+  opacity: 0.45;
+  animation-duration: 14s;
+  animation-direction: reverse;
+}
+.scroll-progress-fill {
+  animation-duration: 9s;
 }
 .dark .scroll-progress-rail,
 .dark .scroll-progress-fill {
   background: linear-gradient(
-    90deg,
-    #22d3ee 0%,
-    #67e8f9 14%,
-    #fde68a 32%,
-    #e8d9a8 46%,
-    #cbd5e1 60%,
-    #94a3b8 74%,
-    #22d3ee 88%,
-    #67e8f9 100%
+    110deg,
+    #1e293b 0%,
+    #0f172a 10%,
+    #22d3ee 22%,
+    #67e8f9 32%,
+    #020617 42%,
+    #fde68a 52%,
+    #e8d9a8 58%,
+    #1e293b 68%,
+    #94a3b8 80%,
+    #22d3ee 90%,
+    #1e293b 100%
   );
-  background-size: 200% 100%;
+  background-size: 300% 100%;
 }
 .dark .scroll-progress-rail {
-  opacity: 0.55;
+  opacity: 0.5;
 }
 
 /* ──────────────────────────────────────────────────────
