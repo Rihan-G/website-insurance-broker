@@ -1,5 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, type CSSProperties } from "react";
 
+/**
+ * Homepage colour rail under the nav — cyan / champagne / silver sheen slides continuously.
+ * Scroll depth adds a brighter highlight on the left portion.
+ */
 export function ScrollProgress() {
   const [progress, setProgress] = useState(0);
 
@@ -10,26 +14,25 @@ export function ScrollProgress() {
       setProgress(docHeight > 0 ? (scrollTop / docHeight) * 100 : 0);
     };
 
+    handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
     <div
-      className="scroll-progress-root fixed top-16 left-0 z-50 h-1.5 w-full"
+      className="home-color-shift-bar fixed top-16 left-0 z-50 h-2 w-full overflow-hidden"
       role="progressbar"
       aria-label="Page scroll progress"
       aria-valuemin={0}
       aria-valuemax={100}
       aria-valuenow={Math.round(progress)}
+      style={{ "--scroll-progress": `${progress}%` } as CSSProperties}
     >
-      <div className="scroll-progress-rail absolute inset-0" aria-hidden />
-      <div
-        className="absolute inset-y-0 left-0 overflow-hidden transition-[width] duration-150"
-        style={{ width: `${progress}%` }}
-      >
-        <div className="scroll-progress-fill h-full w-[100vw]" />
+      <div className="home-color-shift-bar__track" aria-hidden>
+        <div className="home-color-shift-bar__gradient" />
       </div>
+      <div className="home-color-shift-bar__scroll-glow" aria-hidden />
     </div>
   );
 }
