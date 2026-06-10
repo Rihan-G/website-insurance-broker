@@ -1093,34 +1093,141 @@ button, a, input, select, textarea {
   mix-blend-mode: overlay;
 }
 .home-hero-base {
-  background: linear-gradient(165deg, #f8fafc 0%, #ffffff 42%, #ecfeff 72%, #f1f5f9 100%);
+  background: #f1f5f9;
+}
+.home-section-bg-shift {
+  overflow: hidden;
+}
+.home-section-bg-shift::before {
+  content: "";
+  position: absolute;
+  top: -40%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  animation: home-spectrum-slide 26s linear infinite;
+  will-change: transform;
+}
+.home-hero-base.home-section-bg-shift::before {
+  background: linear-gradient(
+    110deg,
+    #f8fafc 0%,
+    #e2e8f0 8%,
+    #67e8f9 18%,
+    #22d3ee 28%,
+    #cbd5e1 38%,
+    #f1f5f9 46%,
+    #fde68a 56%,
+    #fef3c7 64%,
+    #a5f3fc 74%,
+    #ffffff 84%,
+    #ecfeff 92%,
+    #f1f5f9 100%
+  );
+}
+.dark .home-hero-base.home-section-bg-shift {
+  background: #0f172a;
+}
+.dark .home-hero-base.home-section-bg-shift::before {
+  background: linear-gradient(
+    110deg,
+    #020617 0%,
+    #0f172a 10%,
+    #22d3ee 22%,
+    #06b6d4 30%,
+    #0f172a 40%,
+    #1e293b 48%,
+    #fde68a 58%,
+    #d4a574 66%,
+    #1e293b 76%,
+    #164e63 86%,
+    #0f172a 94%,
+    #020617 100%
+  );
 }
 .home-hero-vignette {
   background: radial-gradient(ellipse 90% 80% at 50% 40%, transparent 42%, rgba(148, 163, 184, 0.2) 100%);
 }
 .home-claims-base {
-  background: linear-gradient(155deg, #f1f5f9 0%, #ffffff 50%, #ecfeff 100%);
+  background: #f1f5f9;
+}
+.home-claims-base.home-section-bg-shift::before {
+  background: linear-gradient(
+    110deg,
+    #f1f5f9 0%,
+    #e2e8f0 12%,
+    #a5f3fc 24%,
+    #67e8f9 34%,
+    #f8fafc 44%,
+    #cbd5e1 54%,
+    #e2e8f0 64%,
+    #cffafe 76%,
+    #f1f5f9 88%,
+    #ffffff 100%
+  );
+  animation-duration: 30s;
+  animation-direction: reverse;
+}
+.dark .home-claims-base.home-section-bg-shift {
+  background: #0f172a;
+}
+.dark .home-claims-base.home-section-bg-shift::before {
+  background: linear-gradient(
+    110deg,
+    #0f172a 0%,
+    #164e63 16%,
+    #22d3ee 28%,
+    #1e293b 40%,
+    #334155 52%,
+    #94a3b8 64%,
+    #1e293b 76%,
+    #0f172a 88%,
+    #020617 100%
+  );
 }
 .home-claims-vignette {
   background: radial-gradient(ellipse 88% 75% at 50% 45%, transparent 48%, rgba(148, 163, 184, 0.16) 100%);
 }
 .home-cta-base {
-  background: linear-gradient(160deg, #fef9c3 0%, #ffffff 48%, #ecfeff 100%);
+  background: #fef9c3;
 }
-.dark .home-hero-base {
-  background: linear-gradient(165deg, #0f172a 0%, #1e293b 46%, #0f172a 100%);
+.home-cta-base.home-section-bg-shift::before {
+  background: linear-gradient(
+    110deg,
+    #fef9c3 0%,
+    #fde68a 14%,
+    #ffffff 28%,
+    #fef3c7 40%,
+    #a5f3fc 52%,
+    #67e8f9 64%,
+    #fef9c3 76%,
+    #ecfeff 88%,
+    #ffffff 100%
+  );
+  animation-duration: 24s;
+}
+.dark .home-cta-base.home-section-bg-shift {
+  background: #0f172a;
+}
+.dark .home-cta-base.home-section-bg-shift::before {
+  background: linear-gradient(
+    110deg,
+    #0f172a 0%,
+    #1e293b 12%,
+    #fde68a 26%,
+    #d4a574 36%,
+    #22d3ee 48%,
+    #06b6d4 58%,
+    #1e293b 70%,
+    #334155 82%,
+    #0f172a 100%
+  );
 }
 .dark .home-hero-vignette {
   background: radial-gradient(ellipse 92% 85% at 50% 38%, transparent 32%, rgba(15, 23, 42, 0.6) 100%);
 }
-.dark .home-claims-base {
-  background: linear-gradient(155deg, #0f172a 0%, #1e293b 48%, #0f172a 100%);
-}
 .dark .home-claims-vignette {
   background: radial-gradient(ellipse 88% 75% at 50% 45%, transparent 40%, rgba(15, 23, 42, 0.55) 100%);
-}
-.dark .home-cta-base {
-  background: linear-gradient(160deg, #0f172a 0%, #1e293b 50%, #172033 100%);
 }
 .dark .home-bg-mesh-slow.animated-mesh {
   background: linear-gradient(
@@ -1219,103 +1326,11 @@ button, a, input, select, textarea {
   50% { background-position: 100% 55%; }
 }
 @keyframes home-spectrum-slide {
-  0%   { transform: translate3d(-12%, -2%, 0) rotate(-12deg) scale(1.15); }
-  100% { transform: translate3d(-38%, 3%, 0) rotate(-12deg) scale(1.15); }
-}
-/* Hero / claims / CTA — sliding diagonal colour bands (cyan + champagne) */
-.home-bg-spectrum-shift {
-  pointer-events: none;
-  mix-blend-mode: normal;
-}
-.home-bg-spectrum-shift__gradient {
-  position: absolute;
-  top: -35%;
-  left: -45%;
-  width: 190%;
-  height: 170%;
-  background: linear-gradient(
-    110deg,
-    #e2e8f0 0%,
-    #f8fafc 6%,
-    #67e8f9 16%,
-    #22d3ee 24%,
-    #0f172a 34%,
-    #1e293b 42%,
-    #fde68a 52%,
-    #fef3c7 58%,
-    #cbd5e1 68%,
-    #a5f3fc 78%,
-    #f1f5f9 88%,
-    #e2e8f0 100%
-  );
-  opacity: 0.72;
-  filter: blur(2px);
-  animation: home-spectrum-slide 22s linear infinite;
-  will-change: transform;
-}
-.dark .home-bg-spectrum-shift__gradient {
-  background: linear-gradient(
-    110deg,
-    #0f172a 0%,
-    #1e293b 8%,
-    #22d3ee 20%,
-    #06b6d4 28%,
-    #020617 38%,
-    #1e293b 46%,
-    #fde68a 56%,
-    #d4a574 63%,
-    #334155 72%,
-    #94a3b8 82%,
-    #1e293b 92%,
-    #0f172a 100%
-  );
-  opacity: 0.88;
-  filter: blur(0);
+  0%   { transform: translate3d(-5%, 0, 0) rotate(-14deg) scale(1.25); }
+  100% { transform: translate3d(-50%, 0, 0) rotate(-14deg) scale(1.25); }
 }
 .home-bg-tide {
-  overflow: hidden;
-  opacity: 0.55;
-  mix-blend-mode: soft-light;
-}
-.dark .home-bg-tide {
-  opacity: 0.65;
-  mix-blend-mode: screen;
-}
-.home-bg-tide::before {
-  content: "";
-  position: absolute;
-  top: -40%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(
-    110deg,
-    #f8fafc 0%,
-    #e2e8f0 12%,
-    #a5f3fc 26%,
-    #67e8f9 38%,
-    #ffffff 48%,
-    #fef9c3 58%,
-    #fde68a 66%,
-    #cffafe 78%,
-    #f1f5f9 90%,
-    #ffffff 100%
-  );
-  animation: home-spectrum-slide 28s linear infinite reverse;
-  will-change: transform;
-}
-.dark .home-bg-tide::before {
-  background: linear-gradient(
-    110deg,
-    #0f172a 0%,
-    #1e293b 20%,
-    #164e63 38%,
-    #22d3ee 50%,
-    #334155 58%,
-    #fde68a 64%,
-    #1e293b 80%,
-    #0f172a 100%
-  );
+  display: none;
 }
 .home-bg-mesh-slow.animated-mesh {
   background: linear-gradient(
@@ -1849,9 +1864,8 @@ html:not(.dark) .home-marketing nav:not([class*="bg-white"]) .brand-logo {
   .home-bg-static-sheen {
     animation: home-tide-flow 40s ease-in-out infinite;
   }
-  .home-bg-spectrum-shift__gradient,
-  .home-bg-tide::before {
-    animation-duration: 40s;
+  .home-section-bg-shift::before {
+    animation-duration: 42s;
   }
   .home-bg-motion {
     display: none !important;

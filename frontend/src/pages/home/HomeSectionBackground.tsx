@@ -15,12 +15,8 @@ export function HomeSectionBackground({ variant }: { variant: SectionVariant }) 
 
   return (
     <div className="pointer-events-none absolute inset-0" aria-hidden>
-      <div className={`${baseClass} absolute inset-0`} />
-
-      {/* Diagonal aqua / champagne sheen — shifts across the section (hero screenshot bands) */}
-      <div className="home-bg-spectrum-shift absolute inset-0 overflow-hidden">
-        <div className="home-bg-spectrum-shift__gradient" aria-hidden />
-      </div>
+      {/* Base fill — the gradient itself slides (not a static colour + overlay) */}
+      <div className={`${baseClass} home-section-bg-shift absolute inset-0`} />
 
       {/* Rich mesh gradient — shown when OS animation effects are off */}
       <div className={`${staticMeshClass} absolute inset-0`} />
@@ -28,9 +24,6 @@ export function HomeSectionBackground({ variant }: { variant: SectionVariant }) 
 
       {/* Tide + orbs + particles — hidden when prefers-reduced-motion */}
       <div className="home-bg-motion absolute inset-0">
-        <div
-          className={`home-bg-tide absolute inset-0 ${variant === "cta" ? "opacity-90" : variant === "claims" ? "opacity-85" : ""}`}
-        />
         <div className={`aurora-bg aurora-calm absolute inset-0 ${variant === "claims" ? "home-claims-aurora" : ""}`}>
           {variant === "claims" ? (
             <>
