@@ -227,22 +227,126 @@ button, a, input, select, textarea {
   60%  { transform: translate(185px, 95px)  scale(0.82); }
   100% { transform: translate(0px,   0px)    scale(1);    }
 }
-/* Marketing orbs — visible drift without feeling frantic */
-@keyframes aurora-blob-calm-1 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  25%      { transform: translate(9vw, -6vh) scale(1.1); }
-  50%      { transform: translate(4vw, 7vh) scale(0.94); }
-  75%      { transform: translate(-8vw, 4vh) scale(1.06); }
+/* Marketing orbs — pulse & glow, cycling aqua / champagne / silver by placement */
+@keyframes orb-glow-aqua {
+  0%, 100% {
+    transform: scale(1);
+    background: rgba(103, 232, 249, 0.52);
+    box-shadow: 0 0 88px 44px rgba(103, 232, 249, 0.3);
+    filter: blur(44px);
+  }
+  33% {
+    transform: scale(1.07);
+    background: rgba(253, 230, 138, 0.46);
+    box-shadow: 0 0 104px 52px rgba(253, 230, 138, 0.24);
+    filter: blur(48px);
+  }
+  66% {
+    transform: scale(1.04);
+    background: rgba(241, 245, 249, 0.5);
+    box-shadow: 0 0 96px 48px rgba(226, 232, 240, 0.22);
+    filter: blur(46px);
+  }
 }
-@keyframes aurora-blob-calm-2 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  30%      { transform: translate(-10vw, 6vh) scale(1.08); }
-  60%      { transform: translate(7vw, -7vh) scale(0.92); }
+@keyframes orb-glow-champagne {
+  0%, 100% {
+    transform: scale(1);
+    background: rgba(253, 230, 138, 0.48);
+    box-shadow: 0 0 84px 42px rgba(253, 230, 138, 0.28);
+    filter: blur(46px);
+  }
+  33% {
+    transform: scale(1.06);
+    background: rgba(241, 245, 249, 0.5);
+    box-shadow: 0 0 100px 50px rgba(226, 232, 240, 0.2);
+    filter: blur(50px);
+  }
+  66% {
+    transform: scale(1.05);
+    background: rgba(103, 232, 249, 0.44);
+    box-shadow: 0 0 92px 46px rgba(103, 232, 249, 0.26);
+    filter: blur(44px);
+  }
 }
-@keyframes aurora-blob-calm-3 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  35%      { transform: translate(8vw, 7vh) scale(1.06); }
-  70%      { transform: translate(-7vw, -6vh) scale(0.94); }
+@keyframes orb-glow-silver {
+  0%, 100% {
+    transform: scale(1);
+    background: rgba(241, 245, 249, 0.5);
+    box-shadow: 0 0 80px 40px rgba(226, 232, 240, 0.24);
+    filter: blur(42px);
+  }
+  33% {
+    transform: scale(1.05);
+    background: rgba(103, 232, 249, 0.46);
+    box-shadow: 0 0 96px 48px rgba(103, 232, 249, 0.26);
+    filter: blur(46px);
+  }
+  66% {
+    transform: scale(1.06);
+    background: rgba(254, 243, 199, 0.44);
+    box-shadow: 0 0 88px 44px rgba(253, 230, 138, 0.22);
+    filter: blur(44px);
+  }
+}
+@keyframes orb-glow-aqua-dark {
+  0%, 100% {
+    transform: scale(1);
+    background: rgba(103, 232, 249, 0.42);
+    box-shadow: 0 0 88px 44px rgba(34, 211, 238, 0.22);
+    filter: blur(40px);
+  }
+  33% {
+    transform: scale(1.06);
+    background: rgba(253, 230, 138, 0.32);
+    box-shadow: 0 0 100px 50px rgba(253, 230, 138, 0.16);
+    filter: blur(44px);
+  }
+  66% {
+    transform: scale(1.03);
+    background: rgba(203, 213, 225, 0.36);
+    box-shadow: 0 0 92px 46px rgba(148, 163, 184, 0.14);
+    filter: blur(42px);
+  }
+}
+@keyframes orb-glow-champagne-dark {
+  0%, 100% {
+    transform: scale(1);
+    background: rgba(253, 230, 138, 0.36);
+    box-shadow: 0 0 84px 42px rgba(253, 230, 138, 0.18);
+    filter: blur(42px);
+  }
+  33% {
+    transform: scale(1.05);
+    background: rgba(203, 213, 225, 0.34);
+    box-shadow: 0 0 96px 48px rgba(148, 163, 184, 0.14);
+    filter: blur(46px);
+  }
+  66% {
+    transform: scale(1.04);
+    background: rgba(103, 232, 249, 0.36);
+    box-shadow: 0 0 90px 45px rgba(34, 211, 238, 0.18);
+    filter: blur(40px);
+  }
+}
+@keyframes orb-glow-silver-dark {
+  0%, 100% {
+    transform: scale(1);
+    background: rgba(203, 213, 225, 0.38);
+    box-shadow: 0 0 76px 38px rgba(148, 163, 184, 0.16);
+    filter: blur(38px);
+  }
+  33% {
+    transform: scale(1.04);
+    background: rgba(103, 232, 249, 0.36);
+    box-shadow: 0 0 90px 45px rgba(34, 211, 238, 0.18);
+    filter: blur(42px);
+  }
+  66% {
+    transform: scale(1.05);
+    background: rgba(253, 230, 138, 0.3);
+    box-shadow: 0 0 84px 42px rgba(253, 230, 138, 0.14);
+    filter: blur(40px);
+  }
 }
 
 .aurora-bg {
@@ -282,9 +386,9 @@ button, a, input, select, textarea {
 }
 
 /* Placed aurora orbs — avoids inline styles (Edge Tools / a11y linters) */
-.aurora-home-hero-1 { width: 520px; height: 520px; top: -5%; left: -3%; background: rgba(103, 232, 249, 0.75); }
-.aurora-home-hero-2 { width: 440px; height: 440px; bottom: -5%; right: 0%; background: rgba(253, 230, 138, 0.68); }
-.aurora-home-hero-3 { width: 320px; height: 320px; top: 25%; right: 18%; background: rgba(226, 232, 240, 0.72); }
+.aurora-home-hero-1 { width: 520px; height: 520px; top: -5%; left: -3%; }
+.aurora-home-hero-2 { width: 440px; height: 440px; bottom: -5%; right: 0%; }
+.aurora-home-hero-3 { width: 320px; height: 320px; top: 25%; right: 18%; }
 .aurora-home-hero-4 { width: 240px; height: 240px; bottom: 15%; left: 22%; background: rgba(245, 158, 11, 0.62); animation-delay: 5s; }
 .aurora-home-hero-5 {
   width: 160px; height: 160px; top: 10%; right: 8%; background: rgba(255, 255, 255, 0.25);
@@ -292,11 +396,11 @@ button, a, input, select, textarea {
 }
 .aurora-home-stats-1 { width: 260px; height: 260px; top: -30%; left: 15%; background: rgba(14, 165, 233, 0.6); }
 .aurora-home-stats-2 { width: 220px; height: 220px; bottom: -30%; right: 20%; background: rgba(22, 163, 74, 0.55); }
-.aurora-home-cta-1 { width: 480px; height: 480px; top: -20%; right: 5%; background: rgba(253, 230, 138, 0.62); }
-.aurora-home-cta-2 { width: 400px; height: 400px; bottom: -20%; left: 8%; background: rgba(103, 232, 249, 0.58); }
+.aurora-home-cta-1 { width: 480px; height: 480px; top: -20%; right: 5%; }
+.aurora-home-cta-2 { width: 400px; height: 400px; bottom: -20%; left: 8%; }
 .aurora-home-cta-3 { width: 260px; height: 260px; top: 40%; left: 40%; background: rgba(248, 250, 252, 0.5); }
-.aurora-home-claims-1 { width: 360px; height: 360px; top: -15%; right: 5%; background: rgba(103, 232, 249, 0.48); }
-.aurora-home-claims-2 { width: 300px; height: 300px; bottom: -20%; left: 10%; background: rgba(203, 213, 225, 0.55); animation-delay: 2s; }
+.aurora-home-claims-1 { width: 360px; height: 360px; top: -15%; right: 5%; }
+.aurora-home-claims-2 { width: 300px; height: 300px; bottom: -20%; left: 10%; }
 .aurora-login-1 { width: 460px; height: 460px; top: -10%; left: -5%; background: rgba(14, 165, 233, 0.78); }
 .aurora-login-2 { width: 380px; height: 380px; bottom: -5%; right: -8%; background: rgba(22, 163, 74, 0.72); }
 .aurora-login-3 { width: 280px; height: 280px; top: 40%; right: 18%; background: rgba(56, 189, 248, 0.62); }
@@ -1277,52 +1381,39 @@ html:not(.dark) .home-bg-aurora-glow {
 }
 .home-bg-current-band--a { left: -8%; animation-delay: 0s; }
 .home-bg-current-band--b { right: -8%; animation-delay: -19s; animation-direction: reverse; }
-.aurora-calm .aurora-orb-1 {
-  animation: aurora-blob-calm-1 15s ease-in-out infinite;
-  opacity: 0.58;
-  filter: blur(42px);
-}
-.aurora-calm .aurora-orb-2 {
-  animation: aurora-blob-calm-2 17s ease-in-out infinite;
-  opacity: 0.54;
-  filter: blur(46px);
-}
+.aurora-calm .aurora-orb-1,
+.aurora-calm .aurora-orb-2,
 .aurora-calm .aurora-orb-3 {
-  animation: aurora-blob-calm-3 16s ease-in-out infinite;
-  opacity: 0.5;
-  filter: blur(38px);
+  opacity: 1;
+  will-change: transform, filter, box-shadow, background-color;
 }
-.aurora-calm .aurora-orb-4 {
-  animation: aurora-blob-calm-2 18s ease-in-out infinite reverse;
-  opacity: 0.46;
-  filter: blur(44px);
+.aurora-calm .home-orb--aqua {
+  animation: orb-glow-aqua 14s ease-in-out infinite;
 }
-.home-claims-aurora .aurora-orb-2 {
+.aurora-calm .home-orb--champagne {
+  animation: orb-glow-champagne 16s ease-in-out infinite;
+  animation-delay: -4s;
+}
+.aurora-calm .home-orb--silver {
+  animation: orb-glow-silver 15s ease-in-out infinite;
+  animation-delay: -7s;
+}
+.dark .aurora-calm .home-orb--aqua {
+  animation-name: orb-glow-aqua-dark;
+}
+.dark .aurora-calm .home-orb--champagne {
+  animation-name: orb-glow-champagne-dark;
+}
+.dark .aurora-calm .home-orb--silver {
+  animation-name: orb-glow-silver-dark;
+}
+.home-claims-aurora .home-orb--aqua {
+  animation-duration: 18s;
+}
+.home-claims-aurora .home-orb--silver {
   animation-duration: 20s;
+  animation-delay: -6s;
 }
-.home-claims-aurora .aurora-orb-3 {
-  animation-duration: 22s;
-}
-.dark .aurora-calm .aurora-orb-1 { opacity: 0.55; filter: blur(40px); }
-.dark .aurora-calm .aurora-orb-2 { opacity: 0.52; filter: blur(44px); }
-.dark .aurora-calm .aurora-orb-3 { opacity: 0.48; filter: blur(36px); }
-.dark .aurora-calm .aurora-orb-4 { opacity: 0.44; }
-.home-claims-aurora .aurora-orb-2,
-.home-claims-aurora .aurora-orb-3 {
-  opacity: 0.44;
-  filter: blur(48px);
-}
-.dark .home-claims-aurora .aurora-orb-2,
-.dark .home-claims-aurora .aurora-orb-3 {
-  opacity: 0.48;
-}
-html:not(.dark) .aurora-home-hero-1 { background: rgba(103, 232, 249, 0.52); }
-html:not(.dark) .aurora-home-hero-2 { background: rgba(253, 230, 138, 0.48); }
-html:not(.dark) .aurora-home-hero-3 { background: rgba(241, 245, 249, 0.78); }
-html:not(.dark) .aurora-home-cta-1 { background: rgba(253, 230, 138, 0.46); }
-html:not(.dark) .aurora-home-cta-2 { background: rgba(103, 232, 249, 0.42); }
-html:not(.dark) .aurora-home-claims-1 { background: rgba(103, 232, 249, 0.4); }
-html:not(.dark) .aurora-home-claims-2 { background: rgba(203, 213, 225, 0.5); }
 html:not(.dark) .home-stat-panel {
   border-color: rgba(3, 105, 161, 0.14);
   background: rgba(255, 255, 255, 0.72);

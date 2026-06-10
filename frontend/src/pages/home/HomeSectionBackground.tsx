@@ -29,19 +29,19 @@ export function HomeSectionBackground({ variant }: { variant: SectionVariant }) 
         <div className={`aurora-bg aurora-calm absolute inset-0 ${variant === "claims" ? "home-claims-aurora" : ""}`}>
           {variant === "claims" ? (
             <>
-              <div className="aurora-orb-2 aurora-home-claims-1" />
-              <div className="aurora-orb-3 aurora-home-claims-2" />
+              <div className="aurora-orb-2 aurora-home-claims-1 home-orb--aqua" />
+              <div className="aurora-orb-3 aurora-home-claims-2 home-orb--silver" />
             </>
           ) : variant === "cta" ? (
             <>
-              <div className="aurora-orb-2 aurora-home-cta-1" />
-              <div className="aurora-orb-3 aurora-home-cta-2" />
+              <div className="aurora-orb-2 aurora-home-cta-1 home-orb--champagne" />
+              <div className="aurora-orb-3 aurora-home-cta-2 home-orb--aqua" />
             </>
           ) : (
             <>
-              <div className="aurora-orb-1 aurora-home-hero-1" />
-              <div className="aurora-orb-2 aurora-home-hero-2" />
-              <div className="aurora-orb-3 aurora-home-hero-3" />
+              <div className="aurora-orb-1 aurora-home-hero-1 home-orb--aqua" />
+              <div className="aurora-orb-2 aurora-home-hero-2 home-orb--champagne" />
+              <div className="aurora-orb-3 aurora-home-hero-3 home-orb--silver" />
             </>
           )}
         </div>
