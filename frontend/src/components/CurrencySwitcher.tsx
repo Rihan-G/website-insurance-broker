@@ -24,6 +24,9 @@ export function CurrencySwitcher({ variant = "light" }: { variant?: "light" | "d
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen(!open)}
+        aria-expanded={open}
+        aria-haspopup="listbox"
+        aria-controls="currency-switcher-listbox"
         className={`flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold cursor-pointer transition-colors duration-200 ${baseStyle}`}
       >
         {currency.symbol} {currency.code}
@@ -31,10 +34,16 @@ export function CurrencySwitcher({ variant = "light" }: { variant?: "light" | "d
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-1 w-48 rounded-lg border border-border bg-surface shadow-lg z-50 overflow-hidden">
+        <div
+          id="currency-switcher-listbox"
+          role="listbox"
+          className="absolute right-0 mt-1 w-48 rounded-lg border border-border bg-surface shadow-lg z-50 overflow-hidden"
+        >
           {allCurrencies.map((c) => (
             <button
               key={c.code}
+              role="option"
+              aria-selected={c.code === currency.code}
               onClick={() => { setCurrency(c.code as CurrencyCode); setOpen(false); }}
               className={`flex w-full items-center gap-3 px-4 py-2.5 text-sm cursor-pointer transition-colors duration-150 ${
                 c.code === currency.code

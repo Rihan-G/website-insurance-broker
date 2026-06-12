@@ -6,11 +6,10 @@ import {
 import { TrendingUp, Users, FileText, CreditCard, Download } from "lucide-react";
 import { supabase } from "../lib/supabase";
 import { exportToCsv } from "../lib/exportService";
+import { CHART_COLORS } from "../lib/chartColors";
 import toast from "react-hot-toast";
 
 const ANALYTICS_PREFS_LS = "sb_analytics_prefs_v1";
-
-const COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#06b6d4"];
 
 const monthlyRevenue = [
   { month: "Jan", revenue: 185000, clients: 28, policies: 42 },
@@ -112,7 +111,7 @@ export function AnalyticsPage() {
   const sliceMonths = period === "3m" ? 3 : period === "6m" ? 6 : 12;
   const chartData = monthlyRevenue.slice(-sliceMonths);
   const accentStroke =
-    accent === "emerald" ? "#10b981" : accent === "violet" ? "#8b5cf6" : "#3b82f6";
+    accent === "emerald" ? CHART_COLORS[1] : accent === "violet" ? CHART_COLORS[4] : CHART_COLORS[0];
 
   const handleExport = () => {
     exportToCsv(monthlyRevenue, "analytics_revenue");
@@ -177,7 +176,7 @@ export function AnalyticsPage() {
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <KPICard title="Total Clients" value={liveStats.clients > 0 ? liveStats.clients.toString() : "347"} change={8.2} icon={Users} color="bg-primary-100 text-primary-600" />
         <KPICard title="Policies Issued" value="512" change={12.5} icon={FileText} color="bg-accent-50 text-accent-600" />
-        <KPICard title="Payments Collected" value={liveStats.payments > 0 ? `${liveStats.payments}` : "284"} change={5.3} icon={CreditCard} color="bg-purple-50 text-purple-600" />
+        <KPICard title="Payments Collected" value={liveStats.payments > 0 ? `${liveStats.payments}` : "284"} change={5.3} icon={CreditCard} color="bg-primary-50 text-primary-700" />
         <KPICard title="Annual Revenue" value="MUR 3.1M" change={18.7} icon={TrendingUp} color="bg-warning-50 text-warning-600" />
       </div>
 
@@ -192,7 +191,7 @@ export function AnalyticsPage() {
                 <stop offset="95%" stopColor={accentStroke} stopOpacity={0} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
             <XAxis dataKey="month" tick={{ fontSize: 12 }} />
             <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}K`} />
             <Tooltip formatter={(v, n) => [n === "revenue" ? `MUR ${Number(v).toLocaleString()}` : v, n === "revenue" ? "Revenue" : "Clients"]} />
@@ -209,7 +208,7 @@ export function AnalyticsPage() {
           <ResponsiveContainer width="100%" height={220}>
             <PieChart>
               <Pie data={productMix} cx="50%" cy="50%" innerRadius={60} outerRadius={90} paddingAngle={3} dataKey="value">
-                {productMix.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+                {productMix.map((_, i) => <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />)}
               </Pie>
               <Tooltip formatter={(v) => [`${v}%`, "Share"]} />
               <Legend />
@@ -226,7 +225,7 @@ export function AnalyticsPage() {
               <XAxis type="number" tick={{ fontSize: 11 }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}K`} />
               <YAxis type="category" dataKey="name" tick={{ fontSize: 11 }} width={90} />
               <Tooltip formatter={(v) => [`MUR ${Number(v).toLocaleString()}`, "Commission"]} />
-              <Bar dataKey="commission" fill="#3b82f6" radius={[0, 4, 4, 0]} />
+              <Bar dataKey="commission" fill={CHART_COLORS[0]} radius={[0, 4, 4, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>

@@ -81,10 +81,10 @@ function TemplateRow({
           <span className="mt-0.5 block text-xs text-muted-foreground">{template.description}</span>
         </span>
         <div className="flex shrink-0 flex-col gap-1">
-          <button type="button" onClick={onPreview} className="rounded p-1 text-muted-foreground hover:text-primary-600" title="Preview">
+          <button type="button" onClick={onPreview} className="rounded p-1 text-muted-foreground hover:text-primary-600" title="Preview" aria-label={`Preview ${template.title} template`}>
             <Eye className="h-4 w-4" aria-hidden />
           </button>
-          <a href={href} download={template.fileName} className="rounded p-1 text-muted-foreground hover:text-primary-600" title="Download">
+          <a href={href} download={template.fileName} className="rounded p-1 text-muted-foreground hover:text-primary-600" title="Download" aria-label={`Download ${template.title} template`}>
             <Download className="h-4 w-4" aria-hidden />
           </a>
         </div>

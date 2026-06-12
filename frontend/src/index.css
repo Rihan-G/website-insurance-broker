@@ -397,7 +397,6 @@ button, a, input, select, textarea {
 /* Placed aurora orbs — avoids inline styles (Edge Tools / a11y linters) */
 .aurora-home-hero-1 { width: 520px; height: 520px; top: -5%; left: -3%; }
 .aurora-home-hero-2 { width: 440px; height: 440px; bottom: -5%; right: 0%; }
-.aurora-home-hero-3 { width: 320px; height: 320px; top: 25%; right: 18%; }
 .aurora-home-hero-4 { width: 240px; height: 240px; bottom: 15%; left: 22%; background: rgba(245, 158, 11, 0.62); animation-delay: 5s; }
 .aurora-home-hero-5 {
   width: 160px; height: 160px; top: 10%; right: 8%; background: rgba(255, 255, 255, 0.25);
@@ -455,13 +454,13 @@ button, a, input, select, textarea {
 .kinetic-heading .kinetic-word-wrap:nth-child(23) .word-animate { animation-delay: 1760ms; }
 .kinetic-heading .kinetic-word-wrap:nth-child(24) .word-animate { animation-delay: 1840ms; }
 
-/* Pie chart legend swatches (matches PIE_COLORS in CapacityPage) */
-.pie-dot-0 { background-color: #3b82f6; }
-.pie-dot-1 { background-color: #10b981; }
-.pie-dot-2 { background-color: #f59e0b; }
-.pie-dot-3 { background-color: #ef4444; }
-.pie-dot-4 { background-color: #8b5cf6; }
-.pie-dot-5 { background-color: #ec4899; }
+/* Pie chart legend swatches (matches CHART_COLORS in lib/chartColors.ts) */
+.pie-dot-0 { background-color: #0EA5E9; }
+.pie-dot-1 { background-color: #16A34A; }
+.pie-dot-2 { background-color: #F59E0B; }
+.pie-dot-3 { background-color: #DC2626; }
+.pie-dot-4 { background-color: #0C4A6E; }
+.pie-dot-5 { background-color: #15803D; }
 
 /* Native progress — thin track / fill (upload, confidence bars) */
 .thin-progress {

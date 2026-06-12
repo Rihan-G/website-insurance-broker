@@ -32,7 +32,7 @@ export function KineticHeading({
         const isHighlight = highlightWords.includes(word);
         return (
           <span key={i} className="inline-block mr-[0.25em] kinetic-word-wrap">
-            <span className={`word-animate ${isHighlight ? "text-gradient-warm" : ""}`}>{word}</span>
+            <span className={`word-animate ${isHighlight ? "text-accent-600 dark:text-accent-200" : ""}`}>{word}</span>
           </span>
         );
       })}

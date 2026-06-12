@@ -4,6 +4,7 @@ import { supabase } from "../lib/supabase";
 import { db } from "../lib/db";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import { format, subMonths, startOfMonth, endOfMonth } from "date-fns";
+import { CHART_COLORS, PIE_COLORS } from "../lib/chartColors";
 
 interface BrokerStat {
   id: string;
@@ -20,8 +21,6 @@ interface MonthlyData {
   quotes: number;
   payments: number;
 }
-
-const PIE_COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#ec4899"];
 
 export function CapacityPage() {
   const [brokers, setBrokers] = useState<BrokerStat[]>([]);
@@ -115,7 +114,7 @@ export function CapacityPage() {
         {[
           { label: "Total Clients", value: totals.clients, icon: Users, color: "text-primary-600 bg-primary-50" },
           { label: "Active Policies", value: totals.policies, icon: FileText, color: "text-accent-600 bg-accent-50" },
-          { label: "Total Quotes", value: totals.quotes, icon: TrendingUp, color: "text-purple-600 bg-purple-50" },
+          { label: "Total Quotes", value: totals.quotes, icon: TrendingUp, color: "text-primary-700 bg-primary-50" },
           { label: "Total Commissions", value: `MUR ${totals.commissions.toLocaleString()}`, icon: Award, color: "text-warning-600 bg-warning-50" },
         ].map((s) => (
           <div key={s.label} className="rounded-xl border border-border bg-surface p-5">
@@ -134,13 +133,13 @@ export function CapacityPage() {
           <h3 className="font-semibold text-surface-foreground mb-4">6-Month Activity</h3>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={monthlyData} barSize={14}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-border)" />
               <XAxis dataKey="month" tick={{ fontSize: 11 }} tickLine={false} axisLine={false} />
               <YAxis tick={{ fontSize: 11 }} tickLine={false} axisLine={false} />
-              <Tooltip contentStyle={{ borderRadius: "8px", border: "1px solid #e2e8f0", fontSize: "12px" }} />
-              <Bar dataKey="policies" name="Policies" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="quotes" name="Quotes" fill="#10b981" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="payments" name="Payments" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+              <Tooltip contentStyle={{ borderRadius: "8px", border: "1px solid var(--color-border)", fontSize: "12px" }} />
+              <Bar dataKey="policies" name="Policies" fill={CHART_COLORS[0]} radius={[4, 4, 0, 0]} />
+              <Bar dataKey="quotes" name="Quotes" fill={CHART_COLORS[1]} radius={[4, 4, 0, 0]} />
+              <Bar dataKey="payments" name="Payments" fill={CHART_COLORS[2]} radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -156,7 +155,7 @@ export function CapacityPage() {
                 <Pie data={productMix} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={70} innerRadius={35} paddingAngle={3}>
                   {productMix.map((_, i) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
                 </Pie>
-                <Tooltip contentStyle={{ borderRadius: "8px", border: "1px solid #e2e8f0", fontSize: "12px" }} />
+                <Tooltip contentStyle={{ borderRadius: "8px", border: "1px solid var(--color-border)", fontSize: "12px" }} />
               </PieChart>
             </ResponsiveContainer>
           )}

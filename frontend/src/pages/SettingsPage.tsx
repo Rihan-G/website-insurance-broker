@@ -133,7 +133,7 @@ export function SettingsPage() {
                     type="button"
                     onClick={() => setNotification(item.key, !prefs.notifications[item.key])}
                     className={`relative h-6 w-11 rounded-full cursor-pointer transition-colors ${
-                      prefs.notifications[item.key] ? "bg-accent-500" : "bg-gray-300 dark:bg-slate-600"
+                      prefs.notifications[item.key] ? "bg-accent-500" : "bg-muted-foreground/40"
                     }`}
                     aria-pressed={prefs.notifications[item.key]}
                   >

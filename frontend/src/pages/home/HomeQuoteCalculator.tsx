@@ -157,7 +157,7 @@ export function HomeQuoteCalculator() {
   };
 
   return (
-    <div className="neon-border rounded-2xl bg-surface p-8 shadow-xl dark:shadow-none">
+    <div className="rounded-2xl border border-primary-200/80 bg-surface p-8 shadow-xl dark:border-primary-800/60 dark:shadow-none">
       <div className="flex items-center gap-2 mb-6">
         <Calculator className="h-6 w-6 text-primary-600 dark:text-primary-400" />
         <h3 className="text-xl font-bold text-surface-foreground">Quick quote estimate</h3>

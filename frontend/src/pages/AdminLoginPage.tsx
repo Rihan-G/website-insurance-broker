@@ -118,13 +118,13 @@ export function AdminLoginPage() {
 
           <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-semibold text-accent-200">
             <Sparkles className="h-3.5 w-3.5" />
-            Dark mode, currencies & calendars — same as the main portal
+            Dark mode, currencies, and calendars, same as the main portal
           </div>
 
           <h1 className="ui-title mb-3 text-3xl font-bold text-white xl:text-4xl">
             Secure staff
             <br />
-            <span className="text-gradient-warm">control centre</span>
+            <span className="text-accent-200">control centre</span>
           </h1>
           <p className="ui-body max-w-md text-primary-200">
             After sign-in you get the full dashboard: team calendar (your schedule plus Mauritius holiday reference), expiry monitor, analytics, audit log, and
@@ -206,7 +206,7 @@ export function AdminLoginPage() {
               Administrator access
             </h1>
             <p className="ui-caption mt-2 text-primary-200 lg:text-muted-foreground dark:lg:text-primary-200">
-              {COMPANY_NAME_SHORT} — staff and operations
+              {COMPANY_NAME_SHORT}, staff and operations
             </p>
           </div>
 

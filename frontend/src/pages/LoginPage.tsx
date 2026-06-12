@@ -112,10 +112,10 @@ export function LoginPage() {
 
           <h1 className="ui-title mb-4 text-4xl font-bold text-white">
             Your Trusted<br />
-            <span className="text-gradient-warm">Insurance Portal</span>
+            <span className="text-accent-200">Insurance Portal</span>
           </h1>
           <p className="ui-body max-w-sm text-primary-200">
-            Sign in to your secure area for renewals, messages, and uploads—backed by licensed advisors when you need a person on the line.
+            Sign in to your secure area for renewals, messages, and uploads, backed by licensed advisors when you need a person on the line.
           </p>
 
           <div className="mt-8 space-y-3">
@@ -176,7 +176,7 @@ export function LoginPage() {
                 Try the portal (demo)
               </p>
               <p className="mt-1 text-center text-[11px] leading-snug text-muted-foreground">
-                One tap for client or broker — no Supabase account required in this mode. Administrator demo uses the separate staff sign-in below.
+                One tap for client or broker, no Supabase account required in this mode. Administrator demo uses the separate staff sign-in below.
               </p>
               <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
                 <button

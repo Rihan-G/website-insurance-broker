@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Search, CornerDownLeft, X } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { quickNavForRole, type AppRole, type QuickNavItem } from "../lib/quickNav";
+import { useFocusTrap } from "../hooks/useFocusTrap";
 
 interface CommandPaletteProps {
   open: boolean;
@@ -16,6 +17,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   const [active, setActive] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
 
   const role = profile?.role as AppRole | undefined;
   const recentKey = `sb_recent_nav_${role ?? "client"}`;
@@ -110,6 +112,8 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
     }
   }, [open]);
 
+  useFocusTrap(dialogRef, open);
+
   useEffect(() => {
     if (!open) return;
     const el = listRef.current?.querySelector<HTMLElement>(`[data-idx="${active}"]`);
@@ -142,6 +146,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
       }}
     >
       <div
+        ref={dialogRef}
         className="w-full max-w-lg overflow-hidden rounded-2xl border border-border bg-surface shadow-2xl ring-1 ring-black/5 dark:ring-white/10"
         onMouseDown={(e) => e.stopPropagation()}
       >

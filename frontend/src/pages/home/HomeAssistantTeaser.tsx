@@ -129,7 +129,7 @@ export function HomeAssistantTeaser() {
             {error && (
               <p
                 role="alert"
-                className="rounded-lg border border-red-200 bg-red-50 px-2.5 py-2 text-xs leading-snug text-red-900 dark:border-red-800 dark:bg-red-950/80 dark:text-red-100"
+                className="rounded-lg border border-danger-200 bg-danger-50 px-2.5 py-2 text-xs leading-snug text-danger-700 dark:border-danger-700 dark:bg-danger-950/35 dark:text-danger-300"
               >
                 {error}
               </p>
