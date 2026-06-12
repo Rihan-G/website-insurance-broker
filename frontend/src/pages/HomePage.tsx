@@ -140,23 +140,7 @@ export function HomePage() {
               </Link>
             </div>
 
-            <div className="mt-10 grid max-w-2xl grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
-              {[
-                { stat: "15+", label: "Years of local advisory experience" },
-                { stat: "12+", label: "Insurer partnerships" },
-                { stat: "1:1", label: "Human support when you need it" },
-              ].map((row) => (
-                <div
-                  key={row.label}
-                  className={`home-stat-panel rounded-xl px-4 py-3 text-center backdrop-blur-sm sm:text-left ${isDark ? "" : "shadow-sm"}`}
-                >
-                  <p className={`text-2xl font-extrabold sm:text-3xl ${isDark ? "text-white" : "text-primary-950"}`}>{row.stat}</p>
-                  <p className={`mt-1 text-xs font-medium leading-snug ${isDark ? "text-primary-200/90" : "text-primary-700/90"}`}>{row.label}</p>
-                </div>
-              ))}
-            </div>
-
-            <div className={`mt-6 flex flex-wrap items-center gap-x-2 gap-y-2 text-sm ${isDark ? "text-primary-100/95" : "text-primary-800/90"}`}>
+            <div className={`mt-10 flex flex-wrap items-center gap-x-2 gap-y-2 text-sm ${isDark ? "text-primary-100/95" : "text-primary-800/90"}`}>
               <a
                 href={`https://wa.me/${CONTACT_PHONE_WHATSAPP}`}
                 target="_blank"
@@ -622,7 +606,7 @@ export function HomePage() {
                 </div>
                 <div className="mt-5 overflow-hidden rounded-xl border border-primary-800/80 shadow-lg shadow-black/20">
                   <iframe
-                    title="Office location — Port Louis on OpenStreetMap"
+                    title="Office location, Port Louis on OpenStreetMap"
                     className="h-44 w-full border-0"
                     loading="lazy"
                     referrerPolicy="no-referrer-when-downgrade"
@@ -651,7 +635,7 @@ export function HomePage() {
 
           <div className="mt-12 border-t border-primary-800 pt-8 text-center text-xs text-primary-400">
             <p>
-              &copy; {new Date().getFullYear()} {COMPANY_NAME}. All rights reserved. Licensed Insurance Broker — Mauritius FSC.
+              &copy; {new Date().getFullYear()} {COMPANY_NAME}. All rights reserved. Licensed Insurance Broker, Mauritius FSC.
             </p>
           </div>
         </div>

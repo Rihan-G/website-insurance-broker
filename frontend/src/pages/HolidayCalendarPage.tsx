@@ -48,7 +48,7 @@ type Holiday = MauritiusHoliday;
 const typeStyles: Record<string, string> = {
   public: "bg-primary-100 text-primary-700 border-primary-200 dark:bg-primary-950/50 dark:text-primary-200 dark:border-primary-700/50",
   optional: "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/35 dark:text-amber-200 dark:border-amber-700/40",
-  religious: "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950/40 dark:text-purple-200 dark:border-purple-700/40",
+  religious: "bg-accent-50 text-accent-700 border-accent-200 dark:bg-accent-950/40 dark:text-accent-200 dark:border-accent-700/40",
 };
 
 const kindDotClass: Record<PortalCalendarEventKind, string> = {

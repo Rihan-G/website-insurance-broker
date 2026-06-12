@@ -39,7 +39,7 @@ export function FaqAssistant() {
         <div className="fixed bottom-36 right-4 z-[90] w-[min(100vw-2rem,22rem)] rounded-2xl border border-border bg-surface p-4 shadow-2xl lg:bottom-24">
           <h3 className="text-sm font-bold text-surface-foreground">FAQ assistant</h3>
           <p className="mt-1 text-xs text-muted-foreground">Answers from our FAQ only — for quotes, speak to a broker.</p>
-          <div className="mt-3 flex gap-2">
+          <form className="mt-3 flex gap-2" onSubmit={(e) => e.preventDefault()}>
             <input
               type="search"
               value={query}
@@ -47,10 +47,10 @@ export function FaqAssistant() {
               placeholder="e.g. licensed, secure, quote"
               className="min-w-0 flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm focus:border-primary-500 focus:outline-none"
             />
-            <button type="button" className="rounded-lg bg-primary-600 p-2 text-white" aria-label="Search FAQ">
+            <button type="submit" className="rounded-lg bg-primary-600 p-2 text-white" aria-label="Search FAQ">
               <Send className="h-4 w-4" />
             </button>
-          </div>
+          </form>
           {query.trim() && (
             <div className="mt-3 rounded-lg bg-muted/50 p-3 text-sm">
               {answer ? (

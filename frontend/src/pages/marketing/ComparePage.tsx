@@ -45,9 +45,9 @@ export function ComparePage() {
           <table className="w-full min-w-[32rem] text-left text-sm">
             <thead>
               <tr className="border-b border-border bg-muted/40">
-                <th className="p-4 font-semibold text-surface-foreground">Feature</th>
+                <th scope="col" className="p-4 font-semibold text-surface-foreground">Feature</th>
                 {set.plans.map((p) => (
-                  <th key={p.id} className="p-4 font-semibold text-surface-foreground">
+                  <th key={p.id} scope="col" className="p-4 font-semibold text-surface-foreground">
                     {p.name}
                     <p className="mt-1 text-xs font-normal text-muted-foreground">{p.bestFor}</p>
                   </th>

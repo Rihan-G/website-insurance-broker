@@ -323,7 +323,7 @@ export function ClientPortalPage() {
           { label: "Get a Quote", desc: "Motor, Home, Life & more", to: "/dashboard/quotes", icon: RefreshCw, color: "bg-primary-600 hover:bg-primary-700" },
           { label: "Claims", desc: "Intake & status", to: "/dashboard/claims", icon: FileWarning, color: "bg-orange-600 hover:bg-orange-700" },
           { label: "Inbox", desc: `${unreadMessages} unread`, to: "/dashboard/inbox", icon: MessageSquare, color: "bg-accent-600 hover:bg-accent-700" },
-          { label: "Payments", desc: "View & pay invoices", to: "/dashboard/payments", icon: CreditCard, color: "bg-purple-600 hover:bg-purple-700" },
+          { label: "Payments", desc: "View & pay invoices", to: "/dashboard/payments", icon: CreditCard, color: "bg-primary-700 hover:bg-primary-800" },
           { label: "Upload Document", desc: "Claims, renewals, ID", to: "/dashboard/upload", icon: FileText, color: "bg-warning-600 hover:bg-warning-700" },
         ].map((a) => (
           <Link

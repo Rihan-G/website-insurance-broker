@@ -1,66 +1,35 @@
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useState } from "react";
 import { Bot, Sparkles, Loader2, Send } from "lucide-react";
-import { hasAiApiKeys } from "../../lib/aiConfig";
-import { chatViaOpenRouter } from "../../lib/openRouterChat";
+import { FunctionsHttpError } from "@supabase/supabase-js";
+import { supabase } from "../../lib/supabase";
 
 /**
- * Lightweight homepage AI assistant (client-side for quick verification).
+ * Lightweight homepage AI assistant. Calls the `ai-assistant` Supabase Edge
+ * Function (backed by Claude) so the API key never reaches the browser.
  */
 export function HomeAssistantTeaser() {
-  const aiReady = hasAiApiKeys();
   const [prompt, setPrompt] = useState("");
   const [reply, setReply] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const statusText = useMemo(() => {
-    if (loading) return "Thinking...";
-    if (aiReady) return "AI assistant online";
-    return "Add VITE_OPENROUTER_API_KEY to enable replies";
-  }, [loading, aiReady]);
+  const statusText = loading ? "Thinking..." : "Ask the insurance assistant";
 
   async function askAssistant(message: string): Promise<string> {
-    const openRouterKey = import.meta.env.VITE_OPENROUTER_API_KEY?.trim();
-    const openAiKey = import.meta.env.VITE_OPENAI_API_KEY?.trim() || import.meta.env.VITE_AI_API_KEY?.trim();
+    const { data, error: invokeError } = await supabase.functions.invoke<{ reply?: string; error?: string }>(
+      "ai-assistant",
+      { body: { message } },
+    );
 
-    if (openRouterKey) {
-      return chatViaOpenRouter(openRouterKey, message);
-    }
-
-    if (openAiKey) {
-      const res = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${openAiKey}`,
-        },
-        body: JSON.stringify({
-          model: "gpt-4o-mini",
-          messages: [
-            {
-              role: "system",
-              content:
-                "You are SecureBroker's homepage assistant. Give concise insurance guidance for Mauritius users and suggest contacting a licensed broker for policy binding decisions.",
-            },
-            { role: "user", content: message },
-          ],
-          temperature: 0.4,
-          max_tokens: 220,
-        }),
-      });
-
-      if (!res.ok) {
-        const raw = await res.text();
-        throw new Error(`OpenAI request failed (${res.status}): ${raw.slice(0, 160)}`);
+    if (invokeError) {
+      if (invokeError instanceof FunctionsHttpError) {
+        const body = (await invokeError.context.json().catch(() => null)) as { error?: string } | null;
+        throw new Error(body?.error || invokeError.message);
       }
-
-      const data = (await res.json()) as {
-        choices?: Array<{ message?: { content?: string } }>;
-      };
-      return data.choices?.[0]?.message?.content?.trim() || "I could not generate a reply. Please try again.";
+      throw new Error(invokeError.message || "Assistant request failed.");
     }
-
-    throw new Error("No AI key configured. Add VITE_OPENROUTER_API_KEY or VITE_OPENAI_API_KEY.");
+    if (data?.error) throw new Error(data.error);
+    return data?.reply?.trim() || "I could not generate a reply. Please try again.";
   }
 
   const onSubmit = async (e: FormEvent) => {
@@ -110,7 +79,7 @@ export function HomeAssistantTeaser() {
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 placeholder="Ask about cover, renewals, or claims..."
-                title={aiReady ? "Ask a quick question" : "Add AI API key to enable replies"}
+                title="Ask a quick question"
                 className="h-10 min-w-0 flex-1 rounded-xl border border-border bg-background px-3 text-sm font-medium text-surface-foreground caret-primary-600 placeholder:text-muted-foreground shadow-inner outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 disabled:opacity-70 dark:caret-primary-300"
                 disabled={loading}
               />
@@ -129,7 +98,7 @@ export function HomeAssistantTeaser() {
             {error && (
               <p
                 role="alert"
-                className="rounded-lg border border-red-200 bg-red-50 px-2.5 py-2 text-xs leading-snug text-red-900 dark:border-red-800 dark:bg-red-950/80 dark:text-red-100"
+                className="rounded-lg border border-danger-200 bg-danger-50 px-2.5 py-2 text-xs leading-snug text-danger-700 dark:border-danger-700 dark:bg-danger-950/35 dark:text-danger-300"
               >
                 {error}
               </p>

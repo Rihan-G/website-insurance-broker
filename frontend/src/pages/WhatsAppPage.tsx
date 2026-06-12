@@ -194,8 +194,8 @@ export function WhatsAppPage() {
             <div className="rounded-2xl bg-[#e5ddd5] p-4 min-h-48">
               {preview ? (
                 <div className="max-w-64 ml-auto rounded-xl bg-white p-3 shadow-sm">
-                  <p className="text-sm text-gray-800 whitespace-pre-wrap">{preview}</p>
-                  <p className="mt-2 text-right text-xs text-gray-400">10:32 ✓✓</p>
+                  <p className="text-sm text-surface-foreground whitespace-pre-wrap">{preview}</p>
+                  <p className="mt-2 text-right text-xs text-muted-foreground">10:32 ✓✓</p>
                 </div>
               ) : (
                 <div className="flex h-32 items-center justify-center text-center text-muted-foreground">
@@ -285,7 +285,7 @@ export function WhatsAppPage() {
                   <p className="text-sm font-medium text-surface-foreground">{rule.label}</p>
                   <p className="text-xs text-muted-foreground">{rule.desc}</p>
                 </div>
-                <div className={`h-5 w-10 rounded-full flex items-center px-0.5 ${rule.enabled ? "bg-accent-500" : "bg-gray-300"}`}>
+                <div className={`h-5 w-10 rounded-full flex items-center px-0.5 ${rule.enabled ? "bg-accent-500" : "bg-muted-foreground/40"}`}>
                   <div className={`h-4 w-4 rounded-full bg-white shadow transition-transform duration-200 ${rule.enabled ? "translate-x-5" : ""}`} />
                 </div>
               </div>

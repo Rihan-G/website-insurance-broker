@@ -12,6 +12,10 @@ npx skills add leonxlnx/taste-skill -a cursor
 npx skills add hardikpandya/stop-slop -a cursor
 npx skills add remotion-dev/skills -a cursor
 npx skills add muratcankoylan/Agent-Skills-for-Context-Engineering -a cursor
+npx skills add juliusbrussee/caveman -a cursor --skill '*'
+npx skills add husnainpk/SymDex -a cursor --skill '*'
+npx skills add addyosmani/agent-skills -a cursor --skill '*'
+npx skills add yvgude/lean-ctx -a cursor --skill '*'
 ```
 
 After adding skills, **Developer: Reload Window** so Cursor picks them up.
@@ -58,5 +62,24 @@ Additional skills from the same collection: `bdi-mental-states`, `filesystem-con
 | Redesign | `redesign-existing-projects`, `high-end-visual-design`, `minimalist-ui` | Upgrade existing pages |
 | Image → code | `image-to-code`, `imagegen-frontend-web` | Reference-driven builds |
 | Output quality | `full-output-enforcement` | Avoid truncated codegen |
+
+## Caveman / code search / lean context
+
+| Skill | Folder | Use when |
+|-------|--------|----------|
+| Caveman | `caveman`, `cavecrew`, `caveman-commit`, `caveman-compress`, `caveman-help`, `caveman-review`, `caveman-stats` | Token-saving compressed workflows: commits, memory-file compression, PR review notes, session stats |
+| SymDex | `symdex-code-search` | Fast intent-based code search/tracing instead of broad Read/Grep/Glob |
+| Lean context | `lean-ctx` | Context runtime: compressed file reads, shell, code search, AST tools |
+
+## Agent skills collection (addyosmani/agent-skills)
+
+| Skill | Folder | Use when |
+|-------|--------|----------|
+| Discovery | `using-agent-skills` | Starting a session — routes to the right skill |
+| Specs & planning | `spec-driven-development`, `planning-and-task-breakdown`, `idea-refine`, `doubt-driven-development` | New features/projects, breaking work into tasks |
+| Implementation | `incremental-implementation`, `source-driven-development`, `frontend-ui-engineering`, `api-and-interface-design`, `code-simplification` | Building features grounded in docs, UI work, API design |
+| Quality & testing | `test-driven-development`, `code-review-and-quality`, `browser-testing-with-devtools`, `debugging-and-error-recovery` | Writing tests, reviewing diffs, browser-based UI testing, fixing bugs |
+| Security & performance | `security-and-hardening`, `performance-optimization` | Untrusted input/auth/storage, Core Web Vitals/perf regressions |
+| Ops & lifecycle | `ci-cd-and-automation`, `shipping-and-launch`, `observability-and-instrumentation`, `deprecation-and-migration`, `git-workflow-and-versioning`, `documentation-and-adrs`, `context-engineering`, `interview-me` | CI setup, launch checklists, logging/metrics, migrations, commit/branch hygiene, ADRs |
 
 Sources are tracked in [`skills-lock.json`](skills-lock.json).

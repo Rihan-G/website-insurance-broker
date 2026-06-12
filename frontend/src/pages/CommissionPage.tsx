@@ -6,6 +6,7 @@ import { useAuth } from "../context/AuthContext";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { format, subMonths, startOfMonth, endOfMonth } from "date-fns";
 import { exportToCsv } from "../lib/exportService";
+import { CHART_COLORS } from "../lib/chartColors";
 import { CommissionCalculatorTool } from "../components/CommissionCalculatorTool";
 import toast from "react-hot-toast";
 
@@ -184,12 +185,12 @@ export function CommissionPage() {
         <h3 className="font-semibold text-surface-foreground mb-4">6-Month Commission Trend</h3>
         <ResponsiveContainer width="100%" height={200}>
           <BarChart data={monthlyData} barSize={16}>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-border)" />
             <XAxis dataKey="month" tick={{ fontSize: 11 }} tickLine={false} axisLine={false} />
             <YAxis tick={{ fontSize: 11 }} tickLine={false} axisLine={false} />
-            <Tooltip formatter={(v) => `MUR ${Number(v).toLocaleString()}`} contentStyle={{ borderRadius: "8px", border: "1px solid #e2e8f0", fontSize: "12px" }} />
-            <Bar dataKey="earned" name="Earned" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-            <Bar dataKey="paid" name="Paid" fill="#10b981" radius={[4, 4, 0, 0]} />
+            <Tooltip formatter={(v) => `MUR ${Number(v).toLocaleString()}`} contentStyle={{ borderRadius: "8px", border: "1px solid var(--color-border)", fontSize: "12px" }} />
+            <Bar dataKey="earned" name="Earned" fill={CHART_COLORS[0]} radius={[4, 4, 0, 0]} />
+            <Bar dataKey="paid" name="Paid" fill={CHART_COLORS[1]} radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </div>

@@ -26,13 +26,13 @@ const DEMO_TASKS_KEY = "sb_portal_demo_tasks_v1";
 const TASK_COLORS = ["slate", "sky", "amber", "rose", "violet", "emerald"] as const;
 type TaskColor = (typeof TASK_COLORS)[number];
 
-const ACCENT_BORDER: Record<TaskColor, string> = {
-  slate: "border-l-slate-400",
-  sky: "border-l-sky-500",
-  amber: "border-l-amber-500",
-  rose: "border-l-rose-500",
-  violet: "border-l-violet-500",
-  emerald: "border-l-emerald-500",
+const ACCENT_DOT: Record<TaskColor, string> = {
+  slate: "bg-slate-400",
+  sky: "bg-sky-500",
+  amber: "bg-amber-500",
+  rose: "bg-rose-500",
+  violet: "bg-violet-500",
+  emerald: "bg-emerald-500",
 };
 
 const SLA_HOURS = 48;
@@ -436,10 +436,10 @@ export function TasksPage() {
           <ul className="divide-y divide-border/80">
             {visibleTasks.map((t) => {
               const color = (meta[t.id]?.color as TaskColor) ?? defaultColorForId(t.id);
-              const border = ACCENT_BORDER[color] ?? ACCENT_BORDER.slate;
+              const dot = ACCENT_DOT[color] ?? ACCENT_DOT.slate;
               const note = staleNote(t);
               return (
-                <li key={t.id} className={`border-l-4 ${border} flex flex-col gap-3 px-6 py-4 sm:flex-row sm:items-center sm:justify-between`}>
+                <li key={t.id} className="flex flex-col gap-3 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex min-w-0 flex-1 gap-3">
                     <button
                       type="button"
@@ -450,7 +450,10 @@ export function TasksPage() {
                       {t.status === "done" ? <CircleCheck className="h-6 w-6" /> : <Circle className="h-6 w-6" />}
                     </button>
                     <div className="min-w-0">
-                      <p className="font-semibold text-surface-foreground">{t.title}</p>
+                      <p className="flex items-center gap-2 font-semibold text-surface-foreground">
+                        <span className={`h-2 w-2 shrink-0 rounded-full ${dot}`} aria-hidden />
+                        {t.title}
+                      </p>
                       {note && (
                         <p className="mt-1 inline-flex items-center gap-1 rounded-md bg-warning-50 px-2 py-1 text-xs font-medium text-warning-800 dark:bg-warning-950/40 dark:text-warning-200">
                           <Bell className="h-3 w-3 shrink-0" aria-hidden />

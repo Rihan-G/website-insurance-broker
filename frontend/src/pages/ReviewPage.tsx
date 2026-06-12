@@ -24,7 +24,7 @@ interface ReviewDoc {
 const statusColors: Record<string, string> = {
   uploaded: "bg-primary-100 text-primary-700 dark:bg-primary-950/55 dark:text-primary-200",
   processing: "bg-warning-50 text-warning-600 dark:bg-warning-950/35 dark:text-warning-300",
-  reviewed: "bg-purple-100 text-purple-700 dark:bg-purple-950/45 dark:text-purple-200",
+  reviewed: "bg-primary-200 text-primary-800 dark:bg-primary-900/55 dark:text-primary-100",
   approved: "bg-accent-50 text-accent-600 dark:bg-accent-950/40 dark:text-accent-300",
   rejected: "bg-danger-50 text-danger-600 dark:bg-danger-950/35 dark:text-danger-300",
 };

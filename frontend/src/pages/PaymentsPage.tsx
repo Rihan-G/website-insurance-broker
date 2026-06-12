@@ -36,7 +36,7 @@ const statusStyles: Record<string, string> = {
   pending: "bg-warning-50 text-warning-600",
   failed: "bg-danger-50 text-danger-600",
   expired: "bg-muted text-muted-foreground",
-  refunded: "bg-purple-50 text-purple-600",
+  refunded: "bg-primary-50 text-primary-700",
 };
 
 const gatewayLabels: Record<string, string> = {

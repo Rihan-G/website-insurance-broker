@@ -1,5 +1,3 @@
-import { ParticleField } from "../../components/ParticleField";
-
 type SectionVariant = "hero" | "cta" | "claims";
 
 export function HomeSectionBackground({ variant }: { variant: SectionVariant }) {
@@ -39,13 +37,9 @@ export function HomeSectionBackground({ variant }: { variant: SectionVariant }) 
             <>
               <div className="aurora-orb-1 aurora-home-hero-1 home-orb--aqua" />
               <div className="aurora-orb-2 aurora-home-hero-2 home-orb--champagne" />
-              <div className="aurora-orb-3 aurora-home-hero-3 home-orb--silver" />
             </>
           )}
         </div>
-        {variant === "hero" && (
-          <ParticleField count={10} variant="rise" pace="brisk" className="opacity-45" />
-        )}
       </div>
 
       <div className={`absolute inset-0 dot-grid ${variant === "hero" ? "opacity-[0.1]" : "opacity-[0.06]"}`} />

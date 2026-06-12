@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { X } from "lucide-react";
 import { isOnboardingDone, markOnboardingDone } from "../lib/localPrefs";
+import { useFocusTrap } from "../hooks/useFocusTrap";
 
 const steps = [
   {
@@ -31,10 +32,30 @@ const steps = [
 export function OnboardingTour() {
   const [step, setStep] = useState(0);
   const [show, setShow] = useState(false);
+  const dialogRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setShow(!isOnboardingDone());
   }, []);
+
+  const dismiss = () => {
+    markOnboardingDone();
+    setShow(false);
+  };
+
+  useEffect(() => {
+    if (!show) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        dismiss();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [show]);
+
+  useFocusTrap(dialogRef, show);
 
   if (!show) return null;
 
@@ -44,13 +65,10 @@ export function OnboardingTour() {
   return (
     <div className="fixed inset-0 z-[200] flex items-end justify-center p-4 sm:items-center" role="dialog" aria-label="Portal onboarding">
       <div className="absolute inset-0 bg-black/40" aria-hidden />
-      <div className="relative w-full max-w-md rounded-2xl border border-border bg-surface p-6 shadow-2xl">
+      <div ref={dialogRef} className="relative w-full max-w-md rounded-2xl border border-border bg-surface p-6 shadow-2xl">
         <button
           type="button"
-          onClick={() => {
-            markOnboardingDone();
-            setShow(false);
-          }}
+          onClick={dismiss}
           className="absolute right-3 top-3 rounded-lg p-1 text-muted-foreground hover:bg-muted"
           aria-label="Skip tour"
         >

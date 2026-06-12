@@ -40,7 +40,7 @@ export function MarketingSubNav() {
           <Link to="/login" className="hidden rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-700 sm:inline-flex">
             Sign in
           </Link>
-          <button type="button" className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg p-2 text-primary-800 md:hidden dark:text-primary-200" onClick={() => setOpen((o) => !o)} aria-expanded={open}>
+          <button type="button" className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg p-2 text-primary-800 md:hidden dark:text-primary-200" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-label={open ? "Close menu" : "Open menu"}>
             {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
         </div>
