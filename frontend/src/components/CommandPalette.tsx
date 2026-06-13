@@ -42,7 +42,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
           ]
         : [
             { id: "action-upload", label: "Action: Upload document", to: "/dashboard/upload", keywords: "new create upload action" },
-            { id: "action-quote", label: "Action: Create quote", to: "/dashboard/quotes", keywords: "new create quote action" },
+            { id: "action-quote", label: "Action: Create Quote", to: "/dashboard/quotes", keywords: "new create quote action calculator" },
             { id: "action-task", label: "Action: Create task", to: "/dashboard/tasks", keywords: "new create task action" },
           ],
     [role],

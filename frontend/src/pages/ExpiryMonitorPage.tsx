@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { AlertTriangle, CheckCircle, Clock, Bell, BellOff, RefreshCw, Plus } from "lucide-react";
+import { Link } from "react-router-dom";
+import { AlertTriangle, CheckCircle, Clock, Bell, BellOff, RefreshCw, Plus, ArrowRight } from "lucide-react";
 import { db } from "../lib/db";
 import { useAuth } from "../context/AuthContext";
 import { differenceInDays, format } from "date-fns";
@@ -138,6 +139,14 @@ export function ExpiryMonitorPage() {
           )}
         </div>
       </div>
+
+      <Link
+        to="/dashboard/renewals"
+        className="flex items-center justify-between gap-2 rounded-xl border border-border bg-surface px-4 py-3 text-sm font-medium text-surface-foreground hover:bg-muted/60 transition-colors duration-200"
+      >
+        <span>Manage renewal reminders &amp; client messaging</span>
+        <ArrowRight className="h-4 w-4 shrink-0" aria-hidden />
+      </Link>
 
       {/* Summary cards */}
       <div className="grid gap-4 sm:grid-cols-3">

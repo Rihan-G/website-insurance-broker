@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { BarChart2, Users, FileText, TrendingUp, Award, RefreshCw } from "lucide-react";
-import { supabase } from "../lib/supabase";
-import { db } from "../lib/db";
+import { supabase } from "../../lib/supabase";
+import { db } from "../../lib/db";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import { format, subMonths, startOfMonth, endOfMonth } from "date-fns";
-import { CHART_COLORS, PIE_COLORS } from "../lib/chartColors";
+import { CHART_COLORS, PIE_COLORS } from "../../lib/chartColors";
 
 interface BrokerStat {
   id: string;
@@ -22,7 +22,7 @@ interface MonthlyData {
   payments: number;
 }
 
-export function CapacityPage() {
+export function PerformanceWorkloadTab() {
   const [brokers, setBrokers] = useState<BrokerStat[]>([]);
   const [monthlyData, setMonthlyData] = useState<MonthlyData[]>([]);
   const [productMix, setProductMix] = useState<{ name: string; value: number }[]>([]);
@@ -97,11 +97,6 @@ export function CapacityPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-surface-foreground">Capacity Management</h2>
-        <p className="text-muted-foreground">Portfolio overview, broker workload, and business performance</p>
-      </div>
-
       <div className="rounded-xl border border-primary-200 bg-primary-50/90 p-4 text-sm dark:border-primary-800/50 dark:bg-primary-950/35 dark:text-primary-100">
         <p className="font-semibold text-surface-foreground">Capacity &amp; workload review</p>
         <p className="mt-1 text-muted-foreground dark:text-primary-100/85">

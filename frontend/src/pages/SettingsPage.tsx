@@ -13,7 +13,8 @@ import { useAuth } from "../context/AuthContext";
 const langToI18n: Record<string, string> = { English: "en", French: "fr", "Kreol Morisien": "kr" };
 
 export function SettingsPage() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
+  const isStaff = profile?.role === "admin" || profile?.role === "broker";
   const { i18n } = useTranslation();
   const { preference, setPreference } = useTheme();
   const { currency, setCurrency, allCurrencies } = useCurrency();
@@ -164,9 +165,11 @@ export function SettingsPage() {
               <Link to="/dashboard/2fa" className="block w-full rounded-lg border border-border px-4 py-2.5 text-center text-sm font-medium text-surface-foreground hover:bg-muted">
                 Enable 2FA
               </Link>
-              <Link to="/dashboard/audit" className="block w-full rounded-lg border border-border px-4 py-2.5 text-center text-sm font-medium text-surface-foreground hover:bg-muted">
-                View Audit Log
-              </Link>
+              {isStaff && (
+                <Link to="/dashboard/audit" className="block w-full rounded-lg border border-border px-4 py-2.5 text-center text-sm font-medium text-surface-foreground hover:bg-muted">
+                  View Audit Log
+                </Link>
+              )}
             </div>
           </div>
 

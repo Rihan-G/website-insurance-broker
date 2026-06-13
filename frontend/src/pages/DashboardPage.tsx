@@ -635,7 +635,7 @@ export function DashboardPage() {
               ? ([
                   { to: "/dashboard/renewals", label: "Renewals", hint: "Runway & reminders", Icon: CalendarClock },
                   { to: "/dashboard/claims", label: "Claims", hint: "FNOL wizard", Icon: FileWarning },
-                  { to: "/dashboard/quote-leads", label: "Quote leads", hint: "Site & calculator", Icon: UserPlus },
+                  { to: "/dashboard/quote-leads", label: "Quote Pipeline", hint: "Site & quote leads", Icon: UserPlus },
                   { to: "/dashboard/secure-messages", label: "Secure chat", hint: "Policy threads", Icon: MessagesSquare },
                   { to: "/dashboard/notifications", label: "Alerts", hint: "Activity feed", Icon: BellRing },
                   { to: "/dashboard/tasks", label: "Tasks", hint: "SLAs & follow-ups", Icon: ListTodo },
@@ -764,14 +764,14 @@ export function DashboardPage() {
         <section className="dashboard-panel min-w-0 rounded-2xl p-5" aria-label="Quote leads preview">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Quote pipeline</p>
-              <p className="mt-0.5 text-sm text-muted-foreground">Latest calculator saves and website quick-quote leads</p>
+              <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Quote Pipeline</p>
+              <p className="mt-0.5 text-sm text-muted-foreground">Latest Create Quote saves and website quick-quote leads</p>
             </div>
             <Link
               to="/dashboard/quote-leads"
               className="inline-flex items-center gap-1 text-sm font-semibold text-primary-600 hover:underline dark:text-primary-400 whitespace-nowrap"
             >
-              Manage leads <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+              Open pipeline <ArrowRight className="h-3.5 w-3.5" aria-hidden />
             </Link>
           </div>
           <div className="mt-4 overflow-x-auto rounded-xl border border-border/80">
