@@ -1,6 +1,13 @@
 # Feature ideas backlog — net-new (beyond PHASES.md)
 
-This doc is **additional** to [`PHASES.md`](../PHASES.md) and [`FEATURES_BY_PHASE.md`](FEATURES_BY_PHASE.md), which cover finishing/wiring **existing** screens to real Supabase data. Everything below is **new product surface** — not yet started. Pick items to scope and build individually; nothing here is built yet.
+This doc is **additional** to [`PHASES.md`](../PHASES.md) and [`FEATURES_BY_PHASE.md`](FEATURES_BY_PHASE.md), which cover finishing/wiring **existing** screens to real Supabase data. Everything below is **new product surface**. Pick items to scope and build individually.
+
+## Status
+
+- **Batch 1 (done):** #1 French translation bundle + language switcher, #3 lead pipeline kanban view, #4 renewal countdown chips — all shipped (marketing nav switcher, `RenewalCountdown` + `.ics` reminder on `ClientPortalPage`, `QuoteLeadsKanban` view toggle on `QuoteLeadsPage`).
+- **Batch 2 (next sprint, new table + RLS):** #5 referral program (v1 = status tracking only), #7 data privacy/DSAR center (v1 = request capture + manual staff queue), #8 automated renewal reminder drip (check `pg_cron` availability first; in-app notification only for v1).
+- **Batch 3 (scope individually before building):** #10 guided claim photo capture, #11 multi-currency portal display.
+- **Removed from consideration for now:** #2 FSC license badge, #6 digital insurance card, #9 household/multi-policy view.
 
 Each item lists **value**, **effort**, **scope** (files/tables to touch), and **dependencies/risks**, following existing patterns in this repo (e.g. `newsletter_subscribers` as the RLS template for new tables).
 
@@ -104,8 +111,8 @@ Verified against the current codebase so we don't duplicate:
 
 ## Recommended sequencing
 
-1. **Tier 1 first** (#1–#4) — no schema risk, ships visible value fast, and #1 (French) directly serves the bilingual Mauritius audience called out in `PRODUCT.md`.
-2. **Tier 2** (#5–#8) — each is one focused migration following the `newsletter_subscribers` RLS template; #7 (privacy center) and #5 (referrals) are the most self-contained.
-3. **Tier 3** — scope individually with a short design note first (especially #9, due to cross-client RLS).
+1. ~~**Tier 1 first** (#1, #3, #4)~~ — done, see Status above.
+2. **Tier 2 next** (#5, #7, #8) — each is one focused migration following the `newsletter_subscribers` RLS template; #7 (privacy center) and #5 (referrals) are the most self-contained.
+3. **Tier 3** — scope individually with a short design note first (#10, #11).
 
-Nothing here is implemented yet — tell me which item(s) to scope into a real implementation plan and I'll start there.
+Tell me which Batch 2 item(s) to scope into a real implementation plan and I'll start there.
