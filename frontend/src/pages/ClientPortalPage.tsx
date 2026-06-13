@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { FileText, CreditCard, MessageSquare, RefreshCw, Calendar, CheckCircle, Clock, AlertTriangle, ChevronRight, Download, FileWarning, FolderOpen } from "lucide-react";
+import { FileText, CreditCard, MessageSquare, RefreshCw, Calendar, CalendarPlus, CheckCircle, Clock, AlertTriangle, ChevronRight, Download, FileWarning, FolderOpen } from "lucide-react";
 import { supabase } from "../lib/supabase";
 import { db } from "../lib/db";
 import { useAuth } from "../context/AuthContext";
 import { generatePolicyCertificate } from "../lib/pdfService";
+import { downloadPolicyRenewalReminder } from "../lib/icsExport";
 import { differenceInDays, format } from "date-fns";
 import toast from "react-hot-toast";
 import { ClaimsTimeline } from "../components/ClaimsTimeline";
+import { RenewalCountdown } from "../components/RenewalCountdown";
 
 interface Policy {
   id: string;
@@ -357,32 +359,35 @@ export function ClientPortalPage() {
             </div>
           ) : (
             <div className="divide-y divide-border">
-              {policies.map((p) => {
-                const daysLeft = differenceInDays(new Date(p.end_date), now);
-                return (
-                  <div key={p.id} className="flex items-center gap-4 px-6 py-4">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <p className="font-medium text-surface-foreground">{p.product_type}</p>
-                        <span className={`rounded-full px-2 py-0.5 text-xs font-medium capitalize ${statusStyles[p.status] ?? ""}`}>{p.status}</span>
-                      </div>
-                      <p className="text-xs text-muted-foreground mt-0.5">{p.policy_number} · {p.insurer}</p>
-                      <p className="text-xs text-muted-foreground">
-                        <Calendar className="inline h-3 w-3 mr-1" />
-                        {format(new Date(p.end_date), "dd MMM yyyy")}
-                        {daysLeft >= 0 && daysLeft <= 30 && <span className="ml-1 text-warning-600 font-medium">({daysLeft}d left)</span>}
-                      </p>
+              {policies.map((p) => (
+                <div key={p.id} className="flex items-center gap-4 px-6 py-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="font-medium text-surface-foreground">{p.product_type}</p>
+                      <span className={`rounded-full px-2 py-0.5 text-xs font-medium capitalize ${statusStyles[p.status] ?? ""}`}>{p.status}</span>
+                      {p.status === "active" && <RenewalCountdown endDate={p.end_date} />}
                     </div>
-                    <div className="text-right shrink-0">
-                      <p className="text-sm font-semibold text-surface-foreground">MUR {p.premium.toLocaleString()}</p>
-                      <button onClick={() => downloadCertificate(p)} className="mt-1 inline-flex items-center gap-1 text-xs text-primary-600 hover:underline cursor-pointer">
-                        <Download className="h-3 w-3" />
-                        Certificate
-                      </button>
-                    </div>
+                    <p className="text-xs text-muted-foreground mt-0.5">{p.policy_number} · {p.insurer}</p>
+                    <p className="text-xs text-muted-foreground">
+                      <Calendar className="inline h-3 w-3 mr-1" />
+                      {format(new Date(p.end_date), "dd MMM yyyy")}
+                    </p>
                   </div>
-                );
-              })}
+                  <div className="text-right shrink-0 space-y-1">
+                    <p className="text-sm font-semibold text-surface-foreground">MUR {p.premium.toLocaleString()}</p>
+                    <button onClick={() => downloadCertificate(p)} className="flex items-center gap-1 text-xs text-primary-600 hover:underline cursor-pointer">
+                      <Download className="h-3 w-3" />
+                      Certificate
+                    </button>
+                    {p.status === "active" && (
+                      <button onClick={() => downloadPolicyRenewalReminder(p)} className="flex items-center gap-1 text-xs text-primary-600 hover:underline cursor-pointer">
+                        <CalendarPlus className="h-3 w-3" />
+                        Remind me
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </div>
