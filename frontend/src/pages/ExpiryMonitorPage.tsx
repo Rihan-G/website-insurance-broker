@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import { AlertTriangle, CheckCircle, Clock, Bell, BellOff, RefreshCw, Plus } from "lucide-react";
+import { AlertTriangle, CheckCircle, Clock, Bell, BellOff, RefreshCw, Plus, BellRing } from "lucide-react";
 import { db } from "../lib/db";
+import { supabase } from "../lib/supabase";
 import { useAuth } from "../context/AuthContext";
 import { differenceInDays, format } from "date-fns";
 import toast from "react-hot-toast";
@@ -43,6 +44,7 @@ export function ExpiryMonitorPage() {
     daysBeforeAlert: "30",
   });
   const [adding, setAdding] = useState(false);
+  const [sendingReminders, setSendingReminders] = useState(false);
 
   const isAdminOrBroker = profile?.role === "admin" || profile?.role === "broker";
 
@@ -100,6 +102,18 @@ export function ExpiryMonitorPage() {
     }
   };
 
+  const sendRenewalReminders = async () => {
+    setSendingReminders(true);
+    const { data, error } = await supabase.rpc("generate_renewal_notifications");
+    setSendingReminders(false);
+    if (error) {
+      toast.error(error.message ?? "Failed to send reminders.");
+      return;
+    }
+    const count = data as number;
+    toast.success(count > 0 ? `${count} renewal notification${count === 1 ? "" : "s"} sent to clients.` : "No new notifications needed today — all clients already notified.");
+  };
+
   const now = new Date();
 
   const filtered = alerts.filter((a) => {
@@ -131,10 +145,21 @@ export function ExpiryMonitorPage() {
             <RefreshCw className="h-4 w-4" />
           </button>
           {isAdminOrBroker && (
-            <button onClick={() => setShowAddForm(true)} className="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-700 cursor-pointer transition-colors duration-200">
-              <Plus className="h-4 w-4" />
-              Add Alert
-            </button>
+            <>
+              <button
+                type="button"
+                onClick={() => void sendRenewalReminders()}
+                disabled={sendingReminders}
+                className="inline-flex items-center gap-2 rounded-lg border border-border bg-surface px-4 py-2.5 text-sm font-semibold text-surface-foreground hover:bg-muted disabled:opacity-50 cursor-pointer transition-colors duration-200"
+              >
+                <BellRing className="h-4 w-4" />
+                {sendingReminders ? "Sending…" : "Send renewal reminders"}
+              </button>
+              <button onClick={() => setShowAddForm(true)} className="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-700 cursor-pointer transition-colors duration-200">
+                <Plus className="h-4 w-4" />
+                Add Alert
+              </button>
+            </>
           )}
         </div>
       </div>

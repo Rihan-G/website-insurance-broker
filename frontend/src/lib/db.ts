@@ -32,4 +32,6 @@ export const db = {
   portalNotifications: () => sb.from("portal_notifications"),
   brokerTasks: () => sb.from("broker_tasks"),
   newsletterSubscribers: () => sb.from("newsletter_subscribers"),
+  referrals: () => sb.from("referrals"),
+  dataRequests: () => sb.from("data_requests"),
 };
