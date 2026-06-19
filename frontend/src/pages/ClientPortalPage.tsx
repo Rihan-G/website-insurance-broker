@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { FileText, CreditCard, MessageSquare, RefreshCw, Calendar, CalendarPlus, CheckCircle, Clock, AlertTriangle, ChevronRight, Download, FileWarning, FolderOpen } from "lucide-react";
+import { FileText, CreditCard, MessageSquare, RefreshCw, Calendar, CalendarPlus, CheckCircle, Clock, AlertTriangle, ChevronRight, Download, FileWarning, FolderOpen, Gift, Users2, Send } from "lucide-react";
 import { supabase } from "../lib/supabase";
 import { db } from "../lib/db";
 import { useAuth } from "../context/AuthContext";
@@ -54,6 +54,15 @@ interface QuoteRow {
   created_at: string;
 }
 
+interface ReferralRow {
+  id: string;
+  referred_email: string;
+  referred_name: string;
+  code: string;
+  status: "pending" | "contacted" | "converted";
+  created_at: string;
+}
+
 const statusStyles: Record<string, string> = {
   active: "bg-accent-50 text-accent-600",
   pending: "bg-warning-50 text-warning-600",
@@ -70,6 +79,9 @@ export function ClientPortalPage() {
   const [savedQuotes, setSavedQuotes] = useState<QuoteRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [unreadMessages, setUnreadMessages] = useState(0);
+  const [referrals, setReferrals] = useState<ReferralRow[]>([]);
+  const [referralForm, setReferralForm] = useState({ name: "", email: "" });
+  const [submittingReferral, setSubmittingReferral] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -108,6 +120,37 @@ export function ClientPortalPage() {
     };
     fetchAll();
   }, [user]);
+
+  useEffect(() => {
+    void loadReferrals();
+  }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const loadReferrals = async () => {
+    if (!user) return;
+    const { data } = await db.referrals().select("*").eq("referrer_id", user.id).order("created_at", { ascending: false });
+    setReferrals((data as ReferralRow[]) ?? []);
+  };
+
+  const submitReferral = async () => {
+    if (!user || !referralForm.email.trim()) {
+      toast.error("Email is required.");
+      return;
+    }
+    setSubmittingReferral(true);
+    const { error } = await db.referrals().insert({
+      referrer_id: user.id,
+      referred_email: referralForm.email.trim(),
+      referred_name: referralForm.name.trim(),
+    });
+    setSubmittingReferral(false);
+    if (error) {
+      toast.error(error.message ?? "Failed to submit referral.");
+      return;
+    }
+    setReferralForm({ name: "", email: "" });
+    toast.success("Referral submitted — we'll be in touch!");
+    void loadReferrals();
+  };
 
   const downloadCertificate = (p: Policy) => {
     void generatePolicyCertificate({
@@ -343,6 +386,66 @@ export function ClientPortalPage() {
             <ChevronRight className="ml-auto h-4 w-4 opacity-60" />
           </Link>
         ))}
+      </div>
+
+      {/* Refer a Friend */}
+      <div className="rounded-xl border border-border bg-surface">
+        <div className="flex items-center gap-2 border-b border-border px-6 py-4">
+          <div className="rounded-lg bg-accent-50 p-1.5 dark:bg-accent-950/40">
+            <Gift className="h-4 w-4 text-accent-600 dark:text-accent-400" aria-hidden />
+          </div>
+          <h3 className="font-semibold text-surface-foreground">Refer a Friend</h3>
+          <span className="ml-auto text-xs text-muted-foreground">Help someone you know get covered</span>
+        </div>
+        <div className="p-6">
+          <div className="grid gap-3 sm:grid-cols-[1fr_1fr_auto]">
+            <input
+              type="text"
+              placeholder="Their name (optional)"
+              value={referralForm.name}
+              onChange={(e) => setReferralForm((f) => ({ ...f, name: e.target.value }))}
+              className="rounded-lg border border-border bg-surface px-3 py-2 text-sm focus:border-primary-500 focus:outline-none"
+            />
+            <input
+              type="email"
+              placeholder="Their email address"
+              value={referralForm.email}
+              onChange={(e) => setReferralForm((f) => ({ ...f, email: e.target.value }))}
+              className="rounded-lg border border-border bg-surface px-3 py-2 text-sm focus:border-primary-500 focus:outline-none"
+            />
+            <button
+              type="button"
+              onClick={() => void submitReferral()}
+              disabled={submittingReferral || !referralForm.email.trim()}
+              className="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-700 disabled:opacity-50"
+            >
+              <Send className="h-4 w-4" aria-hidden />
+              {submittingReferral ? "Sending…" : "Refer"}
+            </button>
+          </div>
+          {referrals.length > 0 && (
+            <div className="mt-4 divide-y divide-border rounded-lg border border-border">
+              {referrals.map((r) => (
+                <div key={r.id} className="flex items-center gap-3 px-4 py-3">
+                  <Users2 className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium text-surface-foreground truncate">{r.referred_name || r.referred_email}</p>
+                    <p className="text-xs text-muted-foreground truncate">{r.referred_email}</p>
+                  </div>
+                  <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium capitalize ${
+                    r.status === "converted"
+                      ? "bg-accent-50 text-accent-700 dark:bg-accent-950/30 dark:text-accent-300"
+                      : r.status === "contacted"
+                        ? "bg-primary-50 text-primary-700 dark:bg-primary-950/30 dark:text-primary-300"
+                        : "bg-muted text-muted-foreground"
+                  }`}>
+                    {r.status}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { Save, Bell, Lock, Globe, Palette } from "lucide-react";
+import { Save, Bell, Lock, Globe, Palette, ShieldCheck, Download as DownloadIcon, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useTheme, type ThemePreference } from "../context/ThemeContext";
 import { COMPANY_NAME } from "../lib/branding";
@@ -9,6 +9,11 @@ import { useCurrency, type CurrencyCode } from "../context/CurrencyContext";
 import { type StoredUserPrefs } from "../lib/localPrefs";
 import { loadPrefsForUser, savePrefsForUser } from "../lib/userPrefsService";
 import { useAuth } from "../context/AuthContext";
+import { db } from "../lib/db";
+
+type DataRequestType = "export" | "delete";
+type DataRequestStatus = "pending" | "in_progress" | "done";
+interface DataRequestRow { id: string; type: DataRequestType; status: DataRequestStatus; created_at: string; }
 
 const langToI18n: Record<string, string> = { English: "en", French: "fr", "Kreol Morisien": "kr" };
 
@@ -18,10 +23,38 @@ export function SettingsPage() {
   const { preference, setPreference } = useTheme();
   const { currency, setCurrency, allCurrencies } = useCurrency();
   const [prefs, setPrefs] = useState<StoredUserPrefs | null>(null);
+  const [dataRequests, setDataRequests] = useState<DataRequestRow[]>([]);
+  const [submittingDsar, setSubmittingDsar] = useState(false);
 
   useEffect(() => {
     void loadPrefsForUser(user?.id, COMPANY_NAME).then(setPrefs);
   }, [user?.id]);
+
+  useEffect(() => {
+    if (!user) return;
+    void db.dataRequests().select("id, type, status, created_at").eq("client_id", user.id).order("created_at", { ascending: false }).then((res: { data: unknown }) => {
+      setDataRequests((res.data as DataRequestRow[]) ?? []);
+    });
+  }, [user]);
+
+  const submitDsar = async (type: DataRequestType) => {
+    if (!user) return;
+    const alreadyOpen = dataRequests.some((r) => r.type === type && r.status !== "done");
+    if (alreadyOpen) {
+      toast.error("You already have an open request of this type.");
+      return;
+    }
+    setSubmittingDsar(true);
+    const { error } = await db.dataRequests().insert({ client_id: user.id, type });
+    setSubmittingDsar(false);
+    if (error) {
+      toast.error(error.message ?? "Failed to submit request.");
+      return;
+    }
+    toast.success("Request submitted. Our team will be in touch within 30 days.");
+    const { data } = await db.dataRequests().select("id, type, status, created_at").eq("client_id", user.id).order("created_at", { ascending: false });
+    setDataRequests((data as DataRequestRow[]) ?? []);
+  };
 
   const setNotification = (key: keyof StoredUserPrefs["notifications"], value: boolean) => {
     setPrefs((p) => (p ? { ...p, notifications: { ...p.notifications, [key]: value } } : p));
@@ -199,6 +232,52 @@ export function SettingsPage() {
                 </button>
               ))}
             </div>
+          </div>
+          <div className="rounded-xl border border-border bg-surface p-6">
+            <h3 className="flex items-center gap-2 text-lg font-semibold text-surface-foreground">
+              <div className="rounded-lg bg-muted p-1.5">
+                <ShieldCheck className="h-5 w-5 text-muted-foreground" />
+              </div>
+              Data &amp; Privacy
+            </h3>
+            <p className="mt-2 text-xs text-muted-foreground">
+              Mauritius Data Protection Act rights. Requests are actioned within 30 days.
+            </p>
+            <div className="mt-4 space-y-2">
+              <button
+                type="button"
+                disabled={submittingDsar || !user}
+                onClick={() => void submitDsar("export")}
+                className="flex w-full items-center gap-2 rounded-lg border border-border px-4 py-2.5 text-sm font-medium text-surface-foreground hover:bg-muted disabled:opacity-50"
+              >
+                <DownloadIcon className="h-4 w-4 shrink-0 text-primary-600" />
+                Request a copy of my data
+              </button>
+              <button
+                type="button"
+                disabled={submittingDsar || !user}
+                onClick={() => void submitDsar("delete")}
+                className="flex w-full items-center gap-2 rounded-lg border border-danger-200 px-4 py-2.5 text-sm font-medium text-danger-700 hover:bg-danger-50 disabled:opacity-50 dark:border-danger-800/50 dark:text-danger-400 dark:hover:bg-danger-950/30"
+              >
+                <Trash2 className="h-4 w-4 shrink-0" />
+                Request account deletion
+              </button>
+            </div>
+            {dataRequests.length > 0 && (
+              <div className="mt-4 space-y-1">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Your requests</p>
+                {dataRequests.map((r) => (
+                  <div key={r.id} className="flex items-center justify-between rounded-lg bg-muted/30 px-3 py-2 text-xs">
+                    <span className="capitalize text-surface-foreground">{r.type === "delete" ? "Account deletion" : "Data export"}</span>
+                    <span className={`rounded-full px-2 py-0.5 font-medium capitalize ${
+                      r.status === "done"
+                        ? "bg-accent-50 text-accent-700 dark:bg-accent-950/30 dark:text-accent-300"
+                        : "bg-warning-50 text-warning-700 dark:bg-warning-950/30 dark:text-warning-300"
+                    }`}>{r.status.replace("_", " ")}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

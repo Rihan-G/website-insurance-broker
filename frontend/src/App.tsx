@@ -53,6 +53,7 @@ const LazySecureMessagesPage = lazy(() => import("./pages/SecureMessagesPage").t
 const LazyNotificationsPage = lazy(() => import("./pages/NotificationsPage").then((m) => ({ default: m.NotificationsPage })));
 const LazyTasksPage = lazy(() => import("./pages/TasksPage").then((m) => ({ default: m.TasksPage })));
 const LazyQuoteLeadsPage = lazy(() => import("./pages/QuoteLeadsPage").then((m) => ({ default: m.QuoteLeadsPage })));
+const LazyPrivacyRequestsPage = lazy(() => import("./pages/PrivacyRequestsPage").then((m) => ({ default: m.PrivacyRequestsPage })));
 
 function AdminPortalEntry() {
   if (getPortalFlavor() === "client") {
@@ -301,6 +302,16 @@ export default function App() {
                 <LazyCommissionPage />
               </Suspense>
             </RoleGuard>
+          }
+        />
+        <Route
+          path="privacy-requests"
+          element={
+            <Suspense fallback={<PageFallback />}>
+              <RoleGuard allowedRoles={["admin", "broker"]}>
+                <LazyPrivacyRequestsPage />
+              </RoleGuard>
+            </Suspense>
           }
         />
         <Route path="*" element={<NotFoundPage />} />
