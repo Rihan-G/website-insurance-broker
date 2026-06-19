@@ -1,0 +1,258 @@
+BACKEND UPDATE CHECKLIST
+========================
+Project: Sindicom Brokers (website-insurance-broker)
+Generated: 2026-06-19
+Branch: feature/next-improvements
+
+All items below are things that need real Supabase backend work.
+Currently they run on demo/mock data. Follow the priority order.
+
+
+================================================================
+PRIORITY 1 — DO FIRST (nothing else works without these)
+================================================================
+
+1. Apply all database migrations in order
+   Files: supabase/migrations/ (run in numbered order)
+   - 00001_initial_schema.sql          — profiles, policies, documents, quotes tables
+   - 00002_rls_policies.sql            — row-level security for all core tables
+   - 00003_staff_read_access.sql       — broker/admin cross-client read policies
+   - 00004_documents_storage_bucket.sql — private 'documents' bucket + storage RLS
+   - 00005_care_workspace.sql          — tasks, secure_messages, notifications tables
+   - 00009_audit_logs_broker_select.sql — audit log read policy for brokers
+   - 00010_claim_intake_attachments.sql — claim file attachments table + RLS
+   Command: supabase db push  (or paste each file into Supabase Dashboard > SQL editor)
+
+2. Set environment variables
+   File: frontend/.env  (copy from frontend/.env.example)
+   Required:
+     VITE_SUPABASE_URL=<your project URL>
+     VITE_SUPABASE_ANON_KEY=<your anon/publishable key>
+   Optional (for AI assistant feature):
+     SUPABASE_SERVICE_ROLE_KEY=<set in Supabase Edge Function secrets only — never in .env>
+
+3. Create real Auth users
+   - At least one admin, one broker, one client
+   - Use Supabase Dashboard > Auth > Users > Invite user
+   - The handle_new_user trigger should auto-create a profiles row
+   - If profiles row is missing, insert manually with the correct role field
+
+4. Smoke-test RLS
+   - Log in as client: should see only own documents/policies
+   - Log in as broker: should see client list, all documents
+   - Log in as admin: should see everything including analytics/audit
+
+
+================================================================
+PRIORITY 2 — NEW FEATURES (added in this branch) — all mock data
+================================================================
+
+These 7 features were built in feature/next-improvements and currently
+show hard-coded demo data. Each needs a real data source.
+
+5. Renewal Banner (component: RenewalBanner.tsx, shown on DashboardPage)
+   Needs:
+   - Query: SELECT id, policy_number, product_type, end_date FROM policies
+             WHERE client_id = <current user> AND end_date BETWEEN now() AND now() + interval '30 days'
+   - Table: policies (should exist after migration 00001)
+   - Replace: DEMO_RENEWAL_POLICIES constant with a live Supabase query
+   - Demo flag: currently shows demo data when demoAuthActive is true
+
+6. Document Expiry Widget (component: DocExpiryWidget.tsx, shown on DashboardPage)
+   Needs:
+   - Query: SELECT id, name, expiry_date, doc_type FROM documents
+             WHERE client_id = <current user> AND expiry_date BETWEEN now() AND now() + interval '60 days'
+   - Table: documents (exists after migration 00001)
+   - New column needed: expiry_date DATE on the documents table (add a migration)
+   - Replace: DEMO_EXPIRING_DOCS constant with a live query
+   Migration to write:
+     ALTER TABLE documents ADD COLUMN IF NOT EXISTS expiry_date DATE;
+
+7. Cover Gap Analyser (page: CoverGapPage.tsx, route: /dashboard/cover-gap)
+   Needs:
+   - Query: SELECT DISTINCT product_type FROM policies WHERE client_id = <current user> AND status = 'active'
+   - Table: policies
+   - The page compares owned products against the full product list to show gaps
+   - No new tables needed — just replace the toggle state with real policy data on load
+
+8. Renewal Pipeline Board (page: RenewalPipelinePage.tsx, route: /dashboard/renewal-pipeline)
+   Needs:
+   - Query: SELECT p.id, c.full_name AS client_name, p.product_type, p.policy_number,
+                    p.insurer, p.end_date, p.preferred_channel
+             FROM policies p JOIN profiles c ON c.id = p.client_id
+             WHERE p.end_date BETWEEN now() - interval '7 days' AND now() + interval '30 days'
+   - Table: policies (need preferred_channel column — currently hardcoded per card)
+   - New column needed: preferred_channel TEXT DEFAULT 'email' on policies table
+   Migration to write:
+     ALTER TABLE policies ADD COLUMN IF NOT EXISTS preferred_channel TEXT DEFAULT 'email';
+   - Replace: DEMO array with live query result
+
+9. Bulk Outreach Tool (page: BulkOutreachPage.tsx, route: /dashboard/bulk-outreach)
+   Needs:
+   - Same policies query as Renewal Pipeline above, joined with profiles for email + phone
+   - Query: SELECT p.id, pr.full_name, p.product_type, p.policy_number, p.end_date,
+                    pr.email, pr.phone
+             FROM policies p JOIN profiles pr ON pr.id = p.client_id
+             WHERE p.end_date <= now() + interval '30 days' AND p.end_date >= now() - interval '1 day'
+   - Table: policies + profiles
+   - New column needed: phone TEXT on profiles table (check if already exists)
+   Migration to write (if phone not on profiles):
+     ALTER TABLE profiles ADD COLUMN IF NOT EXISTS phone TEXT;
+   - Replace: DEMO_CLIENTS array with live query
+
+10. Insurer Rate Sheet Repository (page: RateSheetsPage.tsx, route: /dashboard/rate-sheets)
+    Needs:
+    - New table: rate_sheets
+    - New migration file to create:
+
+      CREATE TABLE IF NOT EXISTS rate_sheets (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        insurer TEXT NOT NULL,
+        product TEXT NOT NULL,
+        version TEXT NOT NULL,
+        file_path TEXT NOT NULL,          -- path in Supabase Storage
+        file_name TEXT NOT NULL,
+        file_size TEXT,
+        uploaded_by UUID REFERENCES profiles(id),
+        created_at TIMESTAMPTZ DEFAULT now()
+      );
+
+      ALTER TABLE rate_sheets ENABLE ROW LEVEL SECURITY;
+      -- Only admin/broker can read or write
+      CREATE POLICY "staff read rate_sheets" ON rate_sheets
+        FOR SELECT USING (
+          EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role IN ('admin','broker'))
+        );
+      CREATE POLICY "staff insert rate_sheets" ON rate_sheets
+        FOR INSERT WITH CHECK (
+          EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role IN ('admin','broker'))
+        );
+      CREATE POLICY "staff delete rate_sheets" ON rate_sheets
+        FOR DELETE USING (
+          EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role IN ('admin','broker'))
+        );
+
+    - New storage bucket: rate_sheets (private, staff only)
+      Add to Supabase Dashboard > Storage > New bucket > name: rate-sheets, private: true
+      Or add to the migration above:
+        INSERT INTO storage.buckets (id, name, public) VALUES ('rate-sheets', 'rate-sheets', false);
+
+    - Update RateSheetsPage.tsx:
+        - Upload: use supabase.storage.from('rate-sheets').upload(path, file)
+        - List: SELECT * FROM rate_sheets ORDER BY created_at DESC
+        - Download: use supabase.storage.from('rate-sheets').createSignedUrl(file_path, 3600)
+        - Delete: DELETE FROM rate_sheets WHERE id = ? + storage.remove([file_path])
+    - Replace: DEMO_SHEETS array with live Supabase query
+
+
+================================================================
+PRIORITY 3 — EXISTING FEATURES STILL ON MOCK DATA
+================================================================
+
+11. Payments (page: PaymentsPage.tsx)
+    - Currently generates fake payment links
+    - Needs: real payment gateway integration (e.g. Juice by MCB, BNI, or Stripe)
+    - OR document as "broker sends link manually" for MVP
+
+12. WhatsApp notification log (page: WhatsAppPage.tsx)
+    - Uses mockLog array
+    - Needs: Meta Cloud API webhook + Edge Function to log outbound messages
+    - Table target: notification_log (check if this exists, else create it)
+
+13. Compliance / KYC / AML (page: CompliancePage.tsx)
+    - Uses mockRecords
+    - Needs: compliance_records table with KYC status, AML flags, review dates
+    - Also uses lib/amlNameMatch.ts for local fuzzy matching (already built)
+
+14. Analytics dashboard (page: AnalyticsPage.tsx)
+    - Revenue chart is illustrative
+    - Needs: monthly aggregates query or a Postgres view
+    Example view:
+      CREATE VIEW monthly_premium_totals AS
+        SELECT date_trunc('month', created_at) AS month, SUM(premium_amount) AS total
+        FROM policies GROUP BY 1 ORDER BY 1;
+
+15. Add Client flow (page: ClientsPage.tsx)
+    - "Add client" button is UI only
+    - Needs: supabase.auth.admin.inviteUserByEmail() call from an Edge Function
+      (service role key required — must be server-side only)
+
+16. 2FA / TOTP (page: TwoFactorPage.tsx)
+    - QR code generation exists but not wired to profiles
+    - Needs: profiles.totp_secret + profiles.totp_enabled columns
+    Migration:
+      ALTER TABLE profiles ADD COLUMN IF NOT EXISTS totp_secret TEXT;
+      ALTER TABLE profiles ADD COLUMN IF NOT EXISTS totp_enabled BOOLEAN DEFAULT false;
+
+17. AI Assistant (Supabase Edge Function: supabase/functions/ai-assistant/)
+    - Already routed through Edge Function (API key is server-side — CORRECT)
+    - Needs: OPENROUTER_API_KEY set as a Supabase Edge Function secret
+    Command: supabase secrets set OPENROUTER_API_KEY=sk-or-...
+    Then deploy: supabase functions deploy ai-assistant
+
+
+================================================================
+PRIORITY 4 — NICE TO HAVE / HARDENING
+================================================================
+
+18. Extend Vitest tests
+    - Add tests for: auth mocks, document upload service, signed URL logic
+    - Files to test: uploadService.ts, documentStorage.ts, demoAuth.ts
+
+19. WhatsApp Advisor FAB (component: WhatsAppAdvisorFab.tsx)
+    - Currently opens wa.me link — no backend needed
+    - Optional: log each click to notification_log for CRM tracking
+
+20. Renewal Banner dismissal
+    - Currently dismisses per session (React state only)
+    - Optional: persist dismissed policy IDs to profiles.dismissed_renewal_ids (jsonb)
+      or a separate dismissed_renewals table
+
+21. Observability
+    - Add Sentry DSN to frontend for client error tracking
+    - Add Supabase Edge Function log drain for AI assistant errors
+
+22. Secrets audit
+    - Confirm no API keys in git history: git log -S "sk-" --all
+    - Rotate any key that was ever committed
+    - Service role key must only exist as a Supabase Edge Function secret, never in .env
+
+
+================================================================
+MIGRATION FILE NAMING (suggested)
+================================================================
+
+Write new migrations as:
+  supabase/migrations/00011_rate_sheets.sql
+  supabase/migrations/00012_document_expiry_date.sql
+  supabase/migrations/00013_policy_preferred_channel.sql
+  supabase/migrations/00014_profiles_phone_totp.sql
+
+Run with: supabase db push
+
+
+================================================================
+SUMMARY TABLE
+================================================================
+
+Feature                     | File(s)                     | Status       | Priority
+----------------------------|-----------------------------|--------------|----------
+DB migrations (all)         | supabase/migrations/        | NOT applied  | P1 BLOCKER
+Auth users + profiles       | Supabase Dashboard          | NOT created  | P1 BLOCKER
+RLS smoke test              | All pages                   | NOT tested   | P1 BLOCKER
+Renewal Banner              | RenewalBanner.tsx           | Mock data    | P2
+Doc Expiry Widget           | DocExpiryWidget.tsx         | Mock data    | P2
+Cover Gap Analyser          | CoverGapPage.tsx            | Mock data    | P2
+Renewal Pipeline Board      | RenewalPipelinePage.tsx     | Mock data    | P2
+Bulk Outreach Tool          | BulkOutreachPage.tsx        | Mock data    | P2
+Rate Sheet Repository       | RateSheetsPage.tsx          | Mock data    | P2
+Payments                    | PaymentsPage.tsx            | Mock links   | P3
+WhatsApp log                | WhatsAppPage.tsx            | Mock log     | P3
+Compliance / KYC            | CompliancePage.tsx          | Mock records | P3
+Analytics revenue chart     | AnalyticsPage.tsx           | Illustrative | P3
+Add Client                  | ClientsPage.tsx             | UI only      | P3
+2FA / TOTP                  | TwoFactorPage.tsx           | Partial      | P3
+AI Assistant secrets        | supabase/functions/         | Key missing  | P3
+Tests                       | frontend/src/test/          | Minimal      | P4
+Renewal dismissal persist   | RenewalBanner.tsx           | Session only | P4
+Observability               | —                           | Not set up   | P4

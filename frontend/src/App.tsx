@@ -58,6 +58,13 @@ const LazyCoverGapPage = lazy(() => import("./pages/CoverGapPage").then((m) => (
 const LazyRenewalPipelinePage = lazy(() => import("./pages/RenewalPipelinePage").then((m) => ({ default: m.RenewalPipelinePage })));
 const LazyBulkOutreachPage = lazy(() => import("./pages/BulkOutreachPage").then((m) => ({ default: m.BulkOutreachPage })));
 const LazyRateSheetsPage = lazy(() => import("./pages/RateSheetsPage").then((m) => ({ default: m.RateSheetsPage })));
+const LazyPolicyCertificatePage = lazy(() => import("./pages/PolicyCertificatePage").then((m) => ({ default: m.PolicyCertificatePage })));
+const LazyRenewalRequestPage = lazy(() => import("./pages/RenewalRequestPage").then((m) => ({ default: m.RenewalRequestPage })));
+const LazyClaimsTrackerPage = lazy(() => import("./pages/ClaimsTrackerPage").then((m) => ({ default: m.ClaimsTrackerPage })));
+const LazyBrokerPerformancePage = lazy(() => import("./pages/BrokerPerformancePage").then((m) => ({ default: m.BrokerPerformancePage })));
+const LazyInsurerComparePage = lazy(() => import("./pages/InsurerComparePage").then((m) => ({ default: m.InsurerComparePage })));
+const LazyDocRequestsPage = lazy(() => import("./pages/DocRequestsPage").then((m) => ({ default: m.DocRequestsPage })));
+const LazyCommissionStatementPage = lazy(() => import("./pages/CommissionStatementPage").then((m) => ({ default: m.CommissionStatementPage })));
 
 function AdminPortalEntry() {
   if (getPortalFlavor() === "client") {
@@ -353,6 +360,66 @@ export default function App() {
             <RoleGuard allowedRoles={["admin", "broker"]}>
               <Suspense fallback={<PageFallback />}>
                 <LazyRateSheetsPage />
+              </Suspense>
+            </RoleGuard>
+          }
+        />
+        <Route
+          path="policy-certificate"
+          element={
+            <Suspense fallback={<PageFallback />}>
+              <LazyPolicyCertificatePage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="renewal-request"
+          element={
+            <Suspense fallback={<PageFallback />}>
+              <LazyRenewalRequestPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="claims-tracker"
+          element={
+            <Suspense fallback={<PageFallback />}>
+              <LazyClaimsTrackerPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="broker-performance"
+          element={
+            <RoleGuard allowedRoles={["admin", "broker"]}>
+              <Suspense fallback={<PageFallback />}>
+                <LazyBrokerPerformancePage />
+              </Suspense>
+            </RoleGuard>
+          }
+        />
+        <Route
+          path="insurer-compare"
+          element={
+            <Suspense fallback={<PageFallback />}>
+              <LazyInsurerComparePage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="doc-requests"
+          element={
+            <Suspense fallback={<PageFallback />}>
+              <LazyDocRequestsPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="commission-statement"
+          element={
+            <RoleGuard allowedRoles={["admin", "broker"]}>
+              <Suspense fallback={<PageFallback />}>
+                <LazyCommissionStatementPage />
               </Suspense>
             </RoleGuard>
           }
