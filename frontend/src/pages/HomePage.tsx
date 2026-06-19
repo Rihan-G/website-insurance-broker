@@ -176,18 +176,34 @@ export function HomePage() {
         <WaveDivider topColor={heroWaveTop} bottomColor={waveLightFill} height={80} />
       </section>
 
-      <section className="home-insurer-band border-y border-primary-200/70 bg-gradient-to-r from-primary-50 via-primary-100/60 to-primary-50 py-6 overflow-hidden dark:border-border dark:from-surface dark:via-background dark:to-surface">
-        <p className="text-center text-xs font-bold text-muted-foreground uppercase tracking-widest mb-5">Partnered with leading insurers</p>
-        <div className="marquee-container">
-          <div className="flex animate-marquee gap-0">
-            {[...insurers, ...insurers].map((name, i) => (
-              <div key={`${name}-${i}`} className="flex items-center gap-8 px-8 shrink-0">
-                <span className="text-sm font-semibold text-muted-foreground/70 hover:text-primary-600 cursor-default transition-colors duration-200 whitespace-nowrap">
-                  {name}
-                </span>
-                <span className="h-1 w-1 rounded-full bg-primary-200 shrink-0" />
+      <section className="home-insurer-band border-y border-primary-200/70 bg-gradient-to-r from-primary-50 via-primary-100/60 to-primary-50 py-8 overflow-hidden dark:border-border dark:from-surface dark:via-background dark:to-surface">
+        <div className="mx-auto max-w-7xl px-5 sm:px-6">
+          <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex shrink-0 flex-col items-center gap-2 sm:items-start">
+              <div className="flex items-center gap-2.5 rounded-xl border border-accent-200/80 bg-white/80 px-4 py-2.5 shadow-sm dark:border-accent-600/30 dark:bg-surface/60">
+                <ShieldCheck className="h-5 w-5 shrink-0 text-accent-600 dark:text-accent-400" aria-hidden />
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-wider text-accent-700 dark:text-accent-300">FSC Licensed Broker</p>
+                  <p className="text-[11px] text-muted-foreground">Financial Services Commission · Mauritius</p>
+                </div>
               </div>
-            ))}
+            </div>
+            <div className="h-px w-full bg-primary-200/60 sm:h-10 sm:w-px sm:shrink-0 dark:bg-border" aria-hidden />
+            <div className="min-w-0 flex-1 overflow-hidden">
+              <p className="mb-3 text-center text-[11px] font-bold uppercase tracking-widest text-muted-foreground sm:text-left">Cover placed with</p>
+              <div className="marquee-container">
+                <div className="flex animate-marquee gap-0">
+                  {[...insurers, ...insurers].map((name, i) => (
+                    <div key={`${name}-${i}`} className="flex items-center gap-6 px-6 shrink-0">
+                      <span className="text-sm font-semibold text-primary-700/80 hover:text-primary-600 cursor-default transition-colors duration-200 whitespace-nowrap dark:text-primary-300/80 dark:hover:text-primary-200">
+                        {name}
+                      </span>
+                      <span className="h-1 w-1 rounded-full bg-primary-300 shrink-0 dark:bg-primary-600" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -354,14 +370,20 @@ export function HomePage() {
           <div className="mt-16 grid gap-6 md:grid-cols-3">
             {testimonials.map((t, i) => (
               <AnimatedSection key={t.name} className={`stagger-${i + 1}`} animation="animate-on-scroll">
-                <div className="card-hover group rounded-2xl border border-border bg-surface p-8 relative overflow-hidden">
+                <div className="card-hover group rounded-2xl border border-border bg-surface p-8 relative overflow-hidden flex flex-col">
                   <div className="home-testimonial-hover absolute top-0 left-0 h-1 w-full opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                  {"detail" in t && (
+                    <span className="mb-4 inline-flex w-fit items-center gap-1.5 rounded-full border border-accent-200/80 bg-accent-50 px-3 py-1 text-xs font-semibold text-accent-700 dark:border-accent-600/30 dark:bg-accent-950/40 dark:text-accent-300">
+                      <CheckCircle className="h-3 w-3 shrink-0" aria-hidden />
+                      {(t as { detail: string }).detail}
+                    </span>
+                  )}
                   <div className="flex gap-1">
                     {Array.from({ length: t.rating }).map((_, j) => (
                       <Star key={j} className="h-4 w-4 fill-warning-500 text-warning-500" />
                     ))}
                   </div>
-                  <p className="mt-4 text-sm text-muted-foreground leading-relaxed italic">&ldquo;{t.text}&rdquo;</p>
+                  <p className="mt-4 flex-1 text-sm text-muted-foreground leading-relaxed italic">&ldquo;{t.text}&rdquo;</p>
                   <div className="mt-6 flex items-center gap-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-primary-100 to-primary-200 dark:from-primary-800 dark:to-primary-900 text-primary-700 dark:text-primary-100 text-sm font-bold shadow-sm">
                       {t.name
