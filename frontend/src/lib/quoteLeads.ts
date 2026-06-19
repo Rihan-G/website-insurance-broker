@@ -1,5 +1,29 @@
 /** Helpers for `quotes` rows from the calculator and home quick-quote lead capture. */
 
+export type QuoteStatus = "draft" | "sent" | "accepted" | "rejected" | "converted";
+
+export const QUOTE_STATUS_OPTIONS: QuoteStatus[] = ["draft", "sent", "accepted", "rejected", "converted"];
+
+export const quoteStatusLabel: Record<QuoteStatus, string> = {
+  draft: "Draft",
+  sent: "Sent",
+  accepted: "Accepted",
+  rejected: "Rejected",
+  converted: "Converted",
+};
+
+export interface QuoteLeadRow {
+  id: string;
+  product_type: string;
+  estimated_premium: number | null;
+  status: QuoteStatus;
+  notes: string | null;
+  created_at: string;
+  client_id: string | null;
+  input_data: Record<string, unknown> | null;
+  client: { full_name: string; email: string } | null;
+}
+
 export function describeQuoteSource(inputData: Record<string, unknown> | null | undefined): string {
   if (!inputData || typeof inputData !== "object") return "Calculator";
   const src = inputData.source;

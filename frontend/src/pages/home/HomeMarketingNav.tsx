@@ -1,26 +1,30 @@
 import { useEffect, useId, useState } from "react";
 import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { BrandLogo } from "../../components/BrandLogo";
 import { ThemeToggle } from "../../components/ThemeToggle";
 import { CurrencySwitcher } from "../../components/CurrencySwitcher";
+import { LanguageSwitcher } from "../../components/LanguageSwitcher";
 import { useTheme } from "../../context/ThemeContext";
 import { COMPANY_NAME_SHORT } from "../../lib/branding";
+import "../../lib/i18n";
 
 const navLinks = [
-  { href: "#platform", label: "Platform" },
-  { href: "#claims", label: "Claims" },
-  { href: "#services", label: "Services" },
-  { href: "#products", label: "Products" },
-  { href: "#quote", label: "Get Quote" },
-  { href: "#testimonials", label: "Testimonials" },
-  { href: "#faq", label: "FAQ" },
-  { href: "#contact", label: "Contact" },
+  { href: "#platform", key: "platform" },
+  { href: "#claims", key: "claims" },
+  { href: "#services", key: "services" },
+  { href: "#products", key: "products" },
+  { href: "#quote", key: "quote" },
+  { href: "#testimonials", key: "testimonials" },
+  { href: "#faq", key: "faq" },
+  { href: "#contact", key: "contact" },
 ] as const;
 
 const SCROLL_THRESHOLD = 24;
 
 export function HomeMarketingNav() {
+  const { t } = useTranslation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(() =>
     typeof window !== "undefined" ? window.scrollY > SCROLL_THRESHOLD : false,
@@ -94,9 +98,9 @@ export function HomeMarketingNav() {
         </div>
 
         <div className="hidden items-center gap-7 text-sm font-semibold md:flex">
-          {navLinks.map(({ href, label }) => (
+          {navLinks.map(({ href, key }) => (
             <a key={href} href={href} className={`${linkBase} ${linkIdle}`}>
-              {label}
+              {t(`marketing.nav.${key}`)}
             </a>
           ))}
         </div>
@@ -108,8 +112,9 @@ export function HomeMarketingNav() {
               scrolled ? "btn-marketing text-white" : heroCta
             }`}
           >
-            Get Quote
+            {t("marketing.nav.getQuote")}
           </a>
+          <LanguageSwitcher variant={scrolled || !isDark ? "default" : "onDark"} className="hidden sm:flex" />
           <CurrencySwitcher />
           <ThemeToggle variant={scrolled || !isDark ? "default" : "onDark"} />
           <Link
@@ -120,7 +125,7 @@ export function HomeMarketingNav() {
                 : heroCta
             }`}
           >
-            Sign in
+            {t("marketing.nav.signIn")}
           </Link>
           <button
             type="button"
@@ -135,7 +140,7 @@ export function HomeMarketingNav() {
             aria-controls={panelId}
             onClick={() => setMobileOpen((o) => !o)}
           >
-            <span className="sr-only">{mobileOpen ? "Close menu" : "Open menu"}</span>
+            <span className="sr-only">{mobileOpen ? t("marketing.nav.closeMenu") : t("marketing.nav.openMenu")}</span>
             {mobileOpen ? <X className="h-6 w-6" aria-hidden /> : <Menu className="h-6 w-6" aria-hidden />}
           </button>
         </div>
@@ -147,14 +152,14 @@ export function HomeMarketingNav() {
           className="border-t border-primary-100 bg-white/98 backdrop-blur-lg dark:border-border dark:bg-surface/98 md:hidden"
         >
           <div className="mx-auto max-w-7xl space-y-1 px-4 py-4">
-            {navLinks.map(({ href, label }) => (
+            {navLinks.map(({ href, key }) => (
               <a
                 key={href}
                 href={href}
                 onClick={closeMobile}
                 className="flex min-h-[48px] items-center rounded-lg px-3 py-3 text-base font-medium text-primary-800 hover:bg-primary-50 dark:text-primary-100 dark:hover:bg-muted"
               >
-                {label}
+                {t(`marketing.nav.${key}`)}
               </a>
             ))}
             <a
@@ -162,15 +167,16 @@ export function HomeMarketingNav() {
               onClick={closeMobile}
               className="btn-marketing flex min-h-[48px] items-center justify-center rounded-lg px-3 text-center text-sm font-bold text-white"
             >
-              Get Quote
+              {t("marketing.nav.getQuote")}
             </a>
-            <div className="border-t border-primary-100 pt-4 dark:border-border">
+            <div className="flex items-center justify-between gap-3 border-t border-primary-100 pt-4 dark:border-border">
+              <LanguageSwitcher />
               <Link
                 to="/login"
                 onClick={closeMobile}
-                className="flex min-h-[48px] items-center justify-center rounded-lg bg-primary-600 px-3 text-center text-sm font-semibold text-white hover:bg-primary-700"
+                className="flex min-h-[48px] flex-1 items-center justify-center rounded-lg bg-primary-600 px-3 text-center text-sm font-semibold text-white hover:bg-primary-700"
               >
-                Sign in
+                {t("marketing.nav.signIn")}
               </Link>
             </div>
           </div>

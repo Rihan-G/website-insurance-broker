@@ -40,3 +40,23 @@ export function downloadIcsCalendar(events: PortalCalendarEvent[], filename = "s
   a.click();
   URL.revokeObjectURL(url);
 }
+
+/** Download a single calendar reminder for a policy's renewal date. */
+export function downloadPolicyRenewalReminder(policy: {
+  id: string;
+  policy_number: string;
+  insurer: string;
+  product_type: string;
+  end_date: string;
+}): void {
+  const event: PortalCalendarEvent = {
+    id: `policy-renewal-${policy.id}`,
+    date: policy.end_date,
+    title: `${policy.product_type} renewal — ${policy.policy_number}`,
+    notes: `Insurer: ${policy.insurer}. Contact Sindicom Brokers before this date to renew your cover.`,
+    kind: "renewal",
+    scope: "client",
+    reminderTime: "09:00",
+  };
+  downloadIcsCalendar([event], `renewal-${policy.policy_number || policy.id}.ics`);
+}

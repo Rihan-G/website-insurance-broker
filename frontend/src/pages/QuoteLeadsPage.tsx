@@ -1,31 +1,24 @@
 import { useCallback, useEffect, useState } from "react";
 import { format } from "date-fns";
-import { Calculator, Download, RefreshCw } from "lucide-react";
+import { Calculator, Download, LayoutGrid, List, RefreshCw } from "lucide-react";
 import { EmptyState } from "../components/EmptyState";
 import { QuoteComparePanel } from "../components/QuoteComparePanel";
+import { QuoteLeadsKanban } from "../components/QuoteLeadsKanban";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { db } from "../lib/db";
 import { supabase } from "../lib/supabase";
 import { exportToCsv } from "../lib/exportService";
-import { describeQuoteSource, quoteLeadContact } from "../lib/quoteLeads";
+import {
+  describeQuoteSource,
+  quoteLeadContact,
+  QUOTE_STATUS_OPTIONS,
+  type QuoteLeadRow,
+  type QuoteStatus,
+} from "../lib/quoteLeads";
 
-type QuoteStatus = "draft" | "sent" | "accepted" | "rejected" | "converted";
-
-interface QuoteLeadRow {
-  id: string;
-  product_type: string;
-  estimated_premium: number | null;
-  status: QuoteStatus;
-  notes: string | null;
-  created_at: string;
-  client_id: string | null;
-  input_data: Record<string, unknown> | null;
-  client: { full_name: string; email: string } | null;
-}
-
-const STATUS_OPTIONS: QuoteStatus[] = ["draft", "sent", "accepted", "rejected", "converted"];
+const STATUS_OPTIONS = QUOTE_STATUS_OPTIONS;
 
 const demoRows: QuoteLeadRow[] = [
   {
@@ -58,6 +51,7 @@ export function QuoteLeadsPage() {
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [compareIds, setCompareIds] = useState<string[]>([]);
+  const [view, setView] = useState<"table" | "kanban">("table");
 
   const load = useCallback(async () => {
     if (demoAuthActive) {
@@ -146,6 +140,32 @@ export function QuoteLeadsPage() {
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
+          <div className="inline-flex rounded-xl border border-border bg-surface p-1">
+            <button
+              type="button"
+              onClick={() => setView("table")}
+              aria-pressed={view === "table"}
+              aria-label="Table view"
+              className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-semibold ${
+                view === "table" ? "bg-primary-600 text-white" : "text-muted-foreground hover:bg-muted"
+              }`}
+            >
+              <List className="h-4 w-4" aria-hidden />
+              Table
+            </button>
+            <button
+              type="button"
+              onClick={() => setView("kanban")}
+              aria-pressed={view === "kanban"}
+              aria-label="Kanban view"
+              className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-semibold ${
+                view === "kanban" ? "bg-primary-600 text-white" : "text-muted-foreground hover:bg-muted"
+              }`}
+            >
+              <LayoutGrid className="h-4 w-4" aria-hidden />
+              Kanban
+            </button>
+          </div>
           <button
             type="button"
             onClick={() => void load()}
@@ -170,6 +190,9 @@ export function QuoteLeadsPage() {
         <QuoteComparePanel quotes={rows.filter((r) => compareIds.includes(r.id))} />
       )}
 
+      {!loading && rows.length > 0 && view === "kanban" ? (
+        <QuoteLeadsKanban rows={rows} updatingId={updatingId} onStatusChange={(id, next) => void onStatusChange(id, next)} />
+      ) : (
       <div className="rounded-2xl border border-border bg-surface shadow-sm dark:shadow-none">
         {loading ? (
           <div className="flex h-48 items-center justify-center">
@@ -252,6 +275,7 @@ export function QuoteLeadsPage() {
           </div>
         )}
       </div>
+      )}
     </div>
   );
 }
