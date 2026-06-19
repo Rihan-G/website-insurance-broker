@@ -15,12 +15,12 @@ type RenewalType = "same" | "review" | "cancel";
 type Status = "idle" | "submitted";
 
 export function RenewalRequestPage() {
-  const [selectedId, setSelectedId] = useState(DEMO_POLICIES[0].id);
+  const [selectedId, setSelectedId] = useState(DEMO_POLICIES[0]!.id);
   const [renewalType, setRenewalType] = useState<RenewalType>("same");
   const [note, setNote] = useState("");
   const [status, setStatus] = useState<Status>("idle");
 
-  const policy = DEMO_POLICIES.find((p) => p.id === selectedId) ?? DEMO_POLICIES[0];
+  const policy = DEMO_POLICIES.find((p) => p.id === selectedId) ?? DEMO_POLICIES[0]!;
   const days = differenceInCalendarDays(policy.endDate, new Date());
 
   const handleSubmit = (e: React.FormEvent) => {

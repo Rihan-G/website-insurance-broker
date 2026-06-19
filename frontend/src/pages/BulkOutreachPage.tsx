@@ -2,7 +2,6 @@ import { addDays, differenceInCalendarDays, format } from "date-fns";
 import { useState } from "react";
 import { Send, MessageCircle, Mail, CheckSquare, Square, Users, Copy, CheckCheck } from "lucide-react";
 import toast from "react-hot-toast";
-import { CONTACT_PHONE_WHATSAPP } from "../lib/branding";
 
 type ClientRow = {
   id: string;

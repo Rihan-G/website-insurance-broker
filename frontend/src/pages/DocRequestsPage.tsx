@@ -48,8 +48,8 @@ export function DocRequestsPage() {
 
   const [requests, setRequests] = useState<DocRequest[]>(DEMO_REQUESTS);
   const [showForm, setShowForm] = useState(false);
-  const [newClient, setNewClient] = useState(DEMO_CLIENTS[0]);
-  const [newDocType, setNewDocType] = useState(DOC_TYPES[0]);
+  const [newClient, setNewClient] = useState(DEMO_CLIENTS[0] ?? "");
+  const [newDocType, setNewDocType] = useState(DOC_TYPES[0] ?? "");
   const [newNote, setNewNote] = useState("");
 
   const handleSend = (e: React.FormEvent) => {

@@ -62,8 +62,8 @@ function StepIcon({ status }: { status: StepStatus }) {
 }
 
 export function ClaimsTrackerPage() {
-  const [selectedId, setSelectedId] = useState(DEMO_CLAIMS[0].id);
-  const claim = DEMO_CLAIMS.find((c) => c.id === selectedId) ?? DEMO_CLAIMS[0];
+  const [selectedId, setSelectedId] = useState(DEMO_CLAIMS[0]!.id);
+  const claim = DEMO_CLAIMS.find((c) => c.id === selectedId) ?? DEMO_CLAIMS[0]!;
   const doneCount = claim.steps.filter((s) => s.status === "done").length;
   const progress = Math.round((doneCount / claim.steps.length) * 100);
 

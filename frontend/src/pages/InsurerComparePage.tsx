@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CheckCircle2, XCircle, ChevronDown, Shield } from "lucide-react";
+import { CheckCircle2, XCircle, Shield } from "lucide-react";
 
 type Product = "motor" | "home" | "health" | "business" | "travel" | "life";
 

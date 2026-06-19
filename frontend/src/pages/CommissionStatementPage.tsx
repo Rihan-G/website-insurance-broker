@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { subMonths, format, startOfMonth, endOfMonth } from "date-fns";
-import { Printer, Download, TrendingUp } from "lucide-react";
+import { Printer } from "lucide-react";
 import { COMPANY_NAME as BRAND_NAME, OFFICE_ADDRESS as BRAND_ADDRESS, CONTACT_EMAIL as BRAND_EMAIL } from "../lib/branding";
 import { useAuth } from "../context/AuthContext";
 
