@@ -1,0 +1,24 @@
+export declare const db: {
+    inboxMessages: () => any;
+    payments: () => any;
+    quotes: () => any;
+    expiryAlerts: () => any;
+    documentReviews: () => any;
+    voiceNotes: () => any;
+    midTermAdjustments: () => any;
+    commissions: () => any;
+    generatedDocuments: () => any;
+    notificationLog: () => any;
+    profiles: () => any;
+    documents: () => any;
+    policies: () => any;
+    auditLogs: () => any;
+    renewalPreferences: () => any;
+    claimIntakes: () => any;
+    claimIntakeAttachments: () => any;
+    secureThreads: () => any;
+    secureMessages: () => any;
+    portalNotifications: () => any;
+    brokerTasks: () => any;
+    newsletterSubscribers: () => any;
+};

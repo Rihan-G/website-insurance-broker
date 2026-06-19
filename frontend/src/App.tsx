@@ -54,6 +54,10 @@ const LazyNotificationsPage = lazy(() => import("./pages/NotificationsPage").the
 const LazyTasksPage = lazy(() => import("./pages/TasksPage").then((m) => ({ default: m.TasksPage })));
 const LazyQuoteLeadsPage = lazy(() => import("./pages/QuoteLeadsPage").then((m) => ({ default: m.QuoteLeadsPage })));
 const LazyPrivacyRequestsPage = lazy(() => import("./pages/PrivacyRequestsPage").then((m) => ({ default: m.PrivacyRequestsPage })));
+const LazyCoverGapPage = lazy(() => import("./pages/CoverGapPage").then((m) => ({ default: m.CoverGapPage })));
+const LazyRenewalPipelinePage = lazy(() => import("./pages/RenewalPipelinePage").then((m) => ({ default: m.RenewalPipelinePage })));
+const LazyBulkOutreachPage = lazy(() => import("./pages/BulkOutreachPage").then((m) => ({ default: m.BulkOutreachPage })));
+const LazyRateSheetsPage = lazy(() => import("./pages/RateSheetsPage").then((m) => ({ default: m.RateSheetsPage })));
 
 function AdminPortalEntry() {
   if (getPortalFlavor() === "client") {
@@ -312,6 +316,45 @@ export default function App() {
                 <LazyPrivacyRequestsPage />
               </RoleGuard>
             </Suspense>
+          }
+        />
+        {/* New features */}
+        <Route
+          path="cover-gap"
+          element={
+            <Suspense fallback={<PageFallback />}>
+              <LazyCoverGapPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="renewal-pipeline"
+          element={
+            <RoleGuard allowedRoles={["admin", "broker"]}>
+              <Suspense fallback={<PageFallback />}>
+                <LazyRenewalPipelinePage />
+              </Suspense>
+            </RoleGuard>
+          }
+        />
+        <Route
+          path="bulk-outreach"
+          element={
+            <RoleGuard allowedRoles={["admin", "broker"]}>
+              <Suspense fallback={<PageFallback />}>
+                <LazyBulkOutreachPage />
+              </Suspense>
+            </RoleGuard>
+          }
+        />
+        <Route
+          path="rate-sheets"
+          element={
+            <RoleGuard allowedRoles={["admin", "broker"]}>
+              <Suspense fallback={<PageFallback />}>
+                <LazyRateSheetsPage />
+              </Suspense>
+            </RoleGuard>
           }
         />
         <Route path="*" element={<NotFoundPage />} />

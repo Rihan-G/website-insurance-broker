@@ -80,20 +80,26 @@ export const policyTypes: Array<{ icon: LucideIcon; name: string; slug: string; 
 export const testimonials = [
   {
     name: "Marie Dupont",
-    role: "Client, 3 years",
-    text: `${COMPANY_NAME_SHORT} made managing my insurance policies effortless. The upload portal is easy to use and I always know the status of my documents.`,
+    role: "Motor client, Port Louis",
+    location: "Port Louis",
+    detail: "Motor claim settled in 9 days",
+    text: "My car was hit while parked in Rose Hill. I reported the incident through the portal on a Tuesday morning and had a settlement confirmation by the following Thursday. Nine days start to finish, with updates at every stage.",
     rating: 5,
   },
   {
     name: "Jean-Pierre R.",
-    role: "Business Client",
-    text: "I finally have one place to see renewals, messages, and documents for our shop policies. The team is responsive and the online experience feels professional.",
+    role: "Business owner, Quatre Bornes",
+    location: "Quatre Bornes",
+    detail: "3 commercial policies, one place",
+    text: "We insure our shop stock, vehicles, and staff health through Sindicom. Before, I was chasing three separate insurers at renewal time. Now I get one reminder, upload once, and the advisor handles the rest.",
     rating: 5,
   },
   {
     name: "Priya Devi",
-    role: "New Client",
-    text: "Setting up was quick and the WhatsApp notifications keep me informed about my policy renewals. Highly recommended for anyone in Mauritius.",
+    role: "New client, Vacoas",
+    location: "Vacoas",
+    detail: "First policy set up in under 20 minutes",
+    text: "I had been putting off getting home contents cover for two years because the paperwork felt overwhelming. The checklist on the portal told me exactly what to upload, and my advisor confirmed cover the same afternoon.",
     rating: 5,
   },
 ];

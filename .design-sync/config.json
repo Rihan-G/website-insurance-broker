@@ -1,0 +1,27 @@
+{
+  "pkg": "frontend",
+  "globalName": "SindicomUI",
+  "projectId": "778dde27-e584-43c8-9676-696cdba02d84",
+  "shape": "package",
+  "buildCmd": "cd frontend && node_modules/.bin/vite build && cp dist/assets/index-*.css dist/ds-styles.css",
+  "srcDir": "frontend/src/components",
+  "cssEntry": "dist/ds-styles.css",
+  "runtimeFontPrefixes": ["Inter", "IBM Plex Sans"],
+  "componentSrcMap": {
+    "CrossPortalNavigate": null
+  },
+  "extraEntries": [
+    "./src/context/ThemeContext.tsx",
+    "./src/context/CurrencyContext.tsx",
+    "react-router-dom"
+  ],
+  "provider": {
+    "component": "MemoryRouter",
+    "inner": {
+      "component": "ThemeProvider",
+      "inner": {
+        "component": "CurrencyProvider"
+      }
+    }
+  }
+}
