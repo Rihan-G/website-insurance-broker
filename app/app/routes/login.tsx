@@ -13,6 +13,10 @@ export async function loader({ request }: Route.LoaderArgs) {
 
 export async function action({ request }: Route.ActionArgs) {
   const headers = new Headers();
+  const supabaseUrl = process.env.SUPABASE_URL ?? "";
+  if (!supabaseUrl || supabaseUrl.includes("your-supabase")) {
+    return { error: "Supabase is not configured. Add SUPABASE_URL and SUPABASE_ANON_KEY to app/.dev.vars to enable authentication." };
+  }
   const supabase = createSupabaseServerClient(request, headers);
   const form = await request.formData();
 

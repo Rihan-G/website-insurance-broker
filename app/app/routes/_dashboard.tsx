@@ -3,17 +3,17 @@ import {
   LayoutDashboard, FileText, Upload, CreditCard, Settings, LogOut,
   Bell, Users, ClipboardList, ShieldCheck, MessageSquare, BarChart3,
 } from "lucide-react";
-import { getSession, createSupabaseServerClient } from "~/lib/supabase.server";
+import { getSession, createSupabaseServerClient as createClient } from "~/lib/supabase.server";
 import { COMPANY_NAME_SHORT } from "~/lib/branding";
 import type { Route } from "./+types/_dashboard";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const headers = new Headers();
-  const { session } = await getSession(request);
+  const { session, supabase: sb } = await getSession(request);
+  if (!sb) throw redirect("/login?notice=setup");
   if (!session) throw redirect("/login");
 
-  const supabase = createSupabaseServerClient(request, headers);
-  const { data: profile } = await supabase
+  const { data: profile } = await sb
     .from("profiles")
     .select("id, full_name, email, role")
     .eq("id", session.user.id)
@@ -24,7 +24,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
 export async function action({ request }: Route.ActionArgs) {
   const headers = new Headers();
-  const supabase = createSupabaseServerClient(request, headers);
+  const supabase = createClient(request, headers);
   await supabase.auth.signOut();
   return redirect("/login", { headers });
 }
