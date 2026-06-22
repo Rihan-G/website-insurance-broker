@@ -104,21 +104,34 @@ export function PaymentsPage() {
       toast.error("Client email and amount are required.");
       return;
     }
+
+    const parsedAmount = parseFloat(form.amount);
+    if (isNaN(parsedAmount) || parsedAmount <= 0) {
+      toast.error("Amount must be a positive number.");
+      return;
+    }
+    if (parsedAmount > 10_000_000) {
+      toast.error("Amount exceeds the maximum allowed (MUR 10,000,000).");
+      return;
+    }
+
     setCreating(true);
     try {
       const { data: clientData } = await db.profiles().select("id").eq("email", form.clientEmail).single();
       if (!clientData) { toast.error("Client not found."); setCreating(false); return; }
 
       const expiresAt = new Date(Date.now() + Number(form.expiryDays) * 86400000).toISOString();
-      const mockLink = `${PAYMENTS_BASE_URL}/${Math.random().toString(36).slice(2, 10)}`;
+      // Use a cryptographically secure token — never Math.random() for payment links
+      const secureToken = crypto.randomUUID().replace(/-/g, "");
+      const paymentLink = `${PAYMENTS_BASE_URL}/${secureToken}`;
 
       const { data: payment, error } = await db.payments().insert({
         client_id: (clientData as { id: string }).id,
-        amount: parseFloat(form.amount),
+        amount: parsedAmount,
         currency: form.currency,
         gateway: form.gateway,
         description: form.description || "Insurance Premium Payment",
-        payment_link: mockLink,
+        payment_link: paymentLink,
         link_expires_at: expiresAt,
         created_by: user.id,
       }).select().single();
@@ -145,8 +158,9 @@ export function PaymentsPage() {
   };
 
   const downloadReceipt = (p: Payment) => {
+    const epoch = new Date(p.created_at).getTime();
     void generateReceipt({
-      receiptNumber: `REC-${p.id.slice(0, 8).toUpperCase()}`,
+      receiptNumber: `REC-${epoch.toString(36).toUpperCase().slice(-8)}`,
       clientName: p.client?.full_name ?? "Client",
       clientEmail: p.client?.email ?? "",
       policyNumber: "POL-000000",
