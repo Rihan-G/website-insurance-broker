@@ -67,6 +67,7 @@ const navGroups: Array<{ label: string; items: NavItem[] }> = [
       { name: "secure-messages", to: "/dashboard/secure-messages", icon: MessagesSquare },
       { name: "notifications", to: "/dashboard/notifications", icon: BellRing },
       { name: "payments", to: "/dashboard/payments", icon: CreditCard },
+      { name: "referrals", to: "/dashboard/referrals", icon: Award, roles: ["client"] },
       { name: "claims", to: "/dashboard/claims", icon: FileWarning },
       { name: "whatsapp", to: "/dashboard/whatsapp", icon: MessageCircle, roles: ["admin", "broker"] },
       { name: "tasks", to: "/dashboard/tasks", icon: ListTodo, roles: ["admin", "broker"] },
@@ -123,6 +124,7 @@ const navLabels: Record<string, string> = {
   "mid-term": "Mid-Term Adjust.",
   inbox: "Inbox",
   payments: "Payments",
+  referrals: "Referrals",
   renewals: "Renewals",
   claims: "Claims intake",
   "secure-messages": "Secure messages",
@@ -427,6 +429,7 @@ export function AppLayout() {
   useEffect(() => {
     mainRef.current?.scrollTo(0, 0);
     setQuickCreateOpen(false);
+    setSidebarOpen(false);
   }, [location.pathname]);
 
   useEffect(() => {

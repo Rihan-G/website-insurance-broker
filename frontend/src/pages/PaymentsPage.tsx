@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
+import { usePageMeta } from "../hooks/usePageMeta";
 import { CreditCard, Plus, Copy, CheckCircle, Clock, XCircle, Download, ExternalLink, RefreshCw } from "lucide-react";
 import { db } from "../lib/db";
 import { useAuth } from "../context/AuthContext";
 import { logAudit } from "../lib/auditService";
 import { generateReceipt } from "../lib/pdfService";
 import { exportToCsv, formatPaymentsForExport } from "../lib/exportService";
-import { COMPANY_NAME, PAYMENTS_BASE_URL } from "../lib/branding";
+import { COMPANY_NAME, PAYMENTS_BASE_URL, CONTACT_PHONE_DISPLAY } from "../lib/branding";
 import toast from "react-hot-toast";
 
 interface Payment {
@@ -48,6 +49,7 @@ const gatewayLabels: Record<string, string> = {
 };
 
 export function PaymentsPage() {
+  usePageMeta({ title: "Payments — Sindicom Portal" });
   const { user, profile } = useAuth();
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
@@ -171,7 +173,7 @@ export function PaymentsPage() {
       gateway: p.gateway,
       paidAt: p.paid_at ?? p.created_at,
       brokerName: COMPANY_NAME,
-      brokerPhone: "+230 XXXX XXXX",
+      brokerPhone: CONTACT_PHONE_DISPLAY,
     })
       .then(() => toast.success("Receipt downloaded."))
       .catch(() => toast.error("Could not generate receipt."));

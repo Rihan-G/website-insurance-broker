@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from "react";
+import { usePageMeta } from "../hooks/usePageMeta";
 import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeOff, Lock, CheckCircle, Sparkles, AlertTriangle } from "lucide-react";
 import { BrandLogo } from "../components/BrandLogo";
@@ -18,6 +19,7 @@ const trustSignals = [
 const LAST_LOGIN_EMAIL_KEY = "sb_last_login_email";
 
 export function LoginPage() {
+  usePageMeta({ title: "Sign In — Sindicom Portal", description: "Sign in to the Sindicom Brokers client and staff portal." });
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

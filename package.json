@@ -6,7 +6,9 @@
   },
   "scripts": {
     "dev": "corepack pnpm --filter frontend dev",
+    "dev:app": "npm --prefix app run dev",
     "build": "corepack pnpm --filter frontend build",
+    "build:app": "npm --prefix app run build",
     "build:cloudflare": "corepack enable && corepack prepare pnpm@10 --activate && corepack pnpm install && corepack pnpm build",
     "deploy:cloudflare": "npm run build:cloudflare && npx wrangler pages deploy frontend/dist --project-name website-insurance-broker",
     "build:portal-client": "corepack pnpm --filter frontend build:portal-client",

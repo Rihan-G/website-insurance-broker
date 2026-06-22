@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
+import { usePageMeta } from "../hooks/usePageMeta";
 import { Search, Filter, Download, Eye, FileText, ChevronDown } from "lucide-react";
 import toast from "react-hot-toast";
 import { BrokerTemplateDownloads } from "../components/BrokerTemplateDownloads";
@@ -79,6 +80,7 @@ function stripMockMeta(row: MockDocumentSource): DocumentRow {
 }
 
 export function DocumentsPage() {
+  usePageMeta({ title: "Documents — Sindicom Portal" });
   const { user, demoAuthActive, profile } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");

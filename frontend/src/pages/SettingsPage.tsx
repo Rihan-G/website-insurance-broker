@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { usePageMeta } from "../hooks/usePageMeta";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { Save, Bell, Lock, Globe, Palette, ShieldCheck, Download as DownloadIcon, Trash2 } from "lucide-react";
@@ -18,6 +19,7 @@ interface DataRequestRow { id: string; type: DataRequestType; status: DataReques
 const langToI18n: Record<string, string> = { English: "en", French: "fr", "Kreol Morisien": "kr" };
 
 export function SettingsPage() {
+  usePageMeta({ title: "Settings — Sindicom Portal" });
   const { user, profile } = useAuth();
   const isStaff = profile?.role === "admin" || profile?.role === "broker";
   const { i18n } = useTranslation();

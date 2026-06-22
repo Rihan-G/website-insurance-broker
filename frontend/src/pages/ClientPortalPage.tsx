@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { usePageMeta } from "../hooks/usePageMeta";
 import { Link } from "react-router-dom";
 import { FileText, CreditCard, MessageSquare, RefreshCw, Calendar, CalendarPlus, CheckCircle, Clock, AlertTriangle, ChevronRight, Download, FileWarning, FolderOpen, Gift, Users2, Send } from "lucide-react";
 import { supabase } from "../lib/supabase";
@@ -71,6 +72,7 @@ const statusStyles: Record<string, string> = {
 };
 
 export function ClientPortalPage() {
+  usePageMeta({ title: "My Policies — Sindicom Portal" });
   const { user, profile, demoAuthActive } = useAuth();
   const [policies, setPolicies] = useState<Policy[]>([]);
   const [payments, setPayments] = useState<Payment[]>([]);

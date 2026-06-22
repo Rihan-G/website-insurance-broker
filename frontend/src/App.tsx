@@ -33,6 +33,7 @@ const LazyInboxPage = lazy(() => import("./pages/InboxPage").then((m) => ({ defa
 const LazyPaymentsPage = lazy(() => import("./pages/PaymentsPage").then((m) => ({ default: m.PaymentsPage })));
 const LazyQuoteCalculatorPage = lazy(() => import("./pages/QuoteCalculatorPage").then((m) => ({ default: m.QuoteCalculatorPage })));
 const LazyNotFoundPage = lazy(() => import("./pages/NotFoundPage").then((m) => ({ default: m.NotFoundPage })));
+const LazyReferralPage = lazy(() => import("./pages/ReferralPage").then((m) => ({ default: m.ReferralPage })));
 
 const LazyReviewPage = lazy(() => import("./pages/ReviewPage").then((m) => ({ default: m.ReviewPage })));
 const LazyAuditLogPage = lazy(() => import("./pages/AuditLogPage").then((m) => ({ default: m.AuditLogPage })));
@@ -317,6 +318,14 @@ export default function App() {
           }
         />
         {/* New features */}
+        <Route
+          path="referrals"
+          element={
+            <Suspense fallback={<PageFallback />}>
+              <LazyReferralPage />
+            </Suspense>
+          }
+        />
         <Route
           path="cover-gap"
           element={

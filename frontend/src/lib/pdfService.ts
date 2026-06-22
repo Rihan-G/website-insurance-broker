@@ -1,6 +1,6 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import { COMPANY_NAME, CONTACT_EMAIL } from "./branding";
+import { COMPANY_NAME, CONTACT_EMAIL, CONTACT_PHONE_DISPLAY } from "./branding";
 import { BRAND_LOGO_PNG, BRAND_LOGO_SVG } from "./brandAssets";
 
 let cachedLogoDataUrl: string | null | undefined;
@@ -87,7 +87,7 @@ function addFooter(doc: jsPDF) {
     doc.setFontSize(8);
     doc.setTextColor(120, 120, 120);
     doc.text(
-      `${COMPANY_NAME} · Tel: +230 XXXX XXXX · Email: ${CONTACT_EMAIL}`,
+      `${COMPANY_NAME} · Tel: ${CONTACT_PHONE_DISPLAY} · Email: ${CONTACT_EMAIL}`,
       105,
       287,
       { align: "center" }

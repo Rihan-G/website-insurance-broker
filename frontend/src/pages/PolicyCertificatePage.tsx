@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Printer, ShieldCheck, ChevronDown } from "lucide-react";
+import { Printer, ShieldCheck, ChevronDown, FileDown } from "lucide-react";
+import toast from "react-hot-toast";
 import { format } from "date-fns";
-import { COMPANY_NAME as BRAND_NAME, OFFICE_ADDRESS as BRAND_ADDRESS, CONTACT_EMAIL as BRAND_EMAIL, CONTACT_PHONE_TEL as BRAND_PHONE } from "../lib/branding";
+import { COMPANY_NAME as BRAND_NAME, OFFICE_ADDRESS as BRAND_ADDRESS, CONTACT_EMAIL as BRAND_EMAIL, CONTACT_PHONE_TEL as BRAND_PHONE, FSC_LICENCE_NUMBER } from "../lib/branding";
 
 type Policy = {
   id: string;
@@ -71,6 +72,32 @@ const DEMO_POLICIES: Policy[] = [
   },
 ];
 
+async function downloadCertificatePdf(policyNumber: string) {
+  const el = document.getElementById("certificate");
+  if (!el) return;
+  const toastId = toast.loading("Generating PDF…");
+  try {
+    const [{ default: html2canvas }, { default: jsPDF }] = await Promise.all([
+      import("html2canvas"),
+      import("jspdf"),
+    ]);
+    const canvas = await html2canvas(el, { scale: 2, useCORS: true });
+    const imgData = canvas.toDataURL("image/png");
+    const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+    const pageW = pdf.internal.pageSize.getWidth();
+    const pageH = pdf.internal.pageSize.getHeight();
+    const ratio = canvas.height / canvas.width;
+    const imgW = pageW;
+    const imgH = imgW * ratio;
+    const yOffset = imgH > pageH ? 0 : (pageH - imgH) / 2;
+    pdf.addImage(imgData, "PNG", 0, yOffset, imgW, Math.min(imgH, pageH));
+    pdf.save(`Certificate-${policyNumber}.pdf`);
+    toast.success("PDF downloaded.", { id: toastId });
+  } catch {
+    toast.error("Could not generate PDF.", { id: toastId });
+  }
+}
+
 export function PolicyCertificatePage() {
   const [selectedId, setSelectedId] = useState(DEMO_POLICIES[0]!.id);
   const policy = DEMO_POLICIES.find((p) => p.id === selectedId) ?? DEMO_POLICIES[0]!;
@@ -88,9 +115,16 @@ export function PolicyCertificatePage() {
           <button
             type="button"
             onClick={() => window.print()}
+            className="inline-flex items-center gap-2 rounded-xl border border-border bg-surface px-5 py-2.5 text-sm font-semibold text-surface-foreground shadow-sm hover:bg-muted transition-colors"
+          >
+            <Printer className="h-4 w-4" aria-hidden /> Print
+          </button>
+          <button
+            type="button"
+            onClick={() => void downloadCertificatePdf(policy.policyNumber)}
             className="inline-flex items-center gap-2 rounded-xl bg-primary-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-primary-700 transition-colors"
           >
-            <Printer className="h-4 w-4" aria-hidden /> Print / Save PDF
+            <FileDown className="h-4 w-4" aria-hidden /> Save PDF
           </button>
         </div>
       </div>
@@ -124,7 +158,7 @@ export function PolicyCertificatePage() {
             <p className="text-2xl font-bold text-primary-700" style={{ fontFamily: "sans-serif" }}>{BRAND_NAME}</p>
             <p className="mt-1 text-xs text-gray-500" style={{ fontFamily: "sans-serif" }}>{BRAND_ADDRESS}</p>
             <p className="text-xs text-gray-500" style={{ fontFamily: "sans-serif" }}>{BRAND_PHONE} · {BRAND_EMAIL}</p>
-            <p className="text-xs text-gray-500" style={{ fontFamily: "sans-serif" }}>FSC Licensed Insurance Broker · Licence No. IB/00XX/2024</p>
+            <p className="text-xs text-gray-500" style={{ fontFamily: "sans-serif" }}>FSC Licensed Insurance Broker · Licence No. {FSC_LICENCE_NUMBER}</p>
           </div>
           <div className="flex flex-col items-end gap-1">
             <ShieldCheck className="h-10 w-10 text-primary-600" aria-hidden />

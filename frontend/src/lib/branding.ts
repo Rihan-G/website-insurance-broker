@@ -14,3 +14,5 @@ export const OFFICE_ADDRESS = "Port Louis, Mauritius";
 export const LINKEDIN_URL = "https://www.linkedin.com/company/sindicom-brokers";
 export const FACEBOOK_URL = "https://www.facebook.com/sindicombrokers";
 export const SITE_URL = "https://sindicombrokers.mu";
+/** FSC insurance broker licence number — update when issued. */
+export const FSC_LICENCE_NUMBER = "IB/00XX/2024";

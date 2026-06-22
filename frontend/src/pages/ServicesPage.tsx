@@ -6,7 +6,7 @@ import {
   CheckCircle, Phone, MessageCircle, Mail, MapPin,
   Award, ShieldCheck, Star, ChevronRight, ArrowRight,
 } from "lucide-react";
-import { COMPANY_NAME, COMPANY_NAME_SHORT, CONTACT_EMAIL } from "../lib/branding";
+import { COMPANY_NAME, COMPANY_NAME_SHORT, CONTACT_EMAIL, CONTACT_PHONE_DISPLAY, CONTACT_PHONE_TEL, CONTACT_PHONE_WHATSAPP } from "../lib/branding";
 
 const products = [
   {
@@ -255,8 +255,8 @@ export function ServicesPage() {
           </div>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {[
-              { icon: Phone, label: "Call Us", value: "+230 XXXX XXXX", href: "tel:+230XXXXXXXX" },
-              { icon: MessageCircle, label: "WhatsApp", value: "+230 XXXX XXXX", href: "https://wa.me/230XXXXXXXX" },
+              { icon: Phone, label: "Call Us", value: CONTACT_PHONE_DISPLAY, href: `tel:${CONTACT_PHONE_TEL}` },
+              { icon: MessageCircle, label: "WhatsApp", value: CONTACT_PHONE_DISPLAY, href: `https://wa.me/${CONTACT_PHONE_WHATSAPP}` },
               { icon: Mail, label: "Email", value: CONTACT_EMAIL, href: `mailto:${CONTACT_EMAIL}` },
               { icon: MapPin, label: "Office", value: "Port Louis, Mauritius", href: "#" },
             ].map((c) => (

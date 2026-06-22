@@ -1,4 +1,5 @@
 import { useEffect, useState, useId } from "react";
+import { usePageMeta } from "../hooks/usePageMeta";
 import { format as formatDate } from "date-fns";
 import { Link } from "react-router-dom";
 import type { ComponentType } from "react";
@@ -211,6 +212,7 @@ function StatGridSkeleton() {
 }
 
 export function DashboardPage() {
+  usePageMeta({ title: "Dashboard — Sindicom Portal" });
   const revenueGradientId = `dashboard-rev-bar-${useId().replace(/:/g, "")}`;
   const { format } = useCurrency();
   const { user, profile, session, demoAuthActive } = useAuth();

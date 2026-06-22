@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { usePageMeta } from "../hooks/usePageMeta";
 import {
   ShieldCheck,
   Globe,
@@ -55,6 +56,7 @@ import {
 } from "./home/homeMarketingData";
 
 export function HomePage() {
+  usePageMeta({ title: "Sindicom Brokers — Insurance Brokers in Mauritius", description: "Compare insurance quotes, manage your policies, and file claims with Sindicom Brokers Ltd — Mauritius's trusted insurance broker." });
   const heroRef = useInView();
   const { resolved } = useTheme();
   const isDark = resolved === "dark";
