@@ -4,9 +4,9 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
 } from "recharts";
 import { TrendingUp, Users, FileText, CreditCard, Download } from "lucide-react";
-import { supabase } from "../lib/supabase";
-import { exportToCsv } from "../lib/exportService";
-import { CHART_COLORS } from "../lib/chartColors";
+import { supabase } from "../../lib/supabase";
+import { exportToCsv } from "../../lib/exportService";
+import { CHART_COLORS } from "../../lib/chartColors";
 import toast from "react-hot-toast";
 
 const ANALYTICS_PREFS_LS = "sb_analytics_prefs_v1";
@@ -68,7 +68,7 @@ function KPICard({ title, value, change, icon: Icon, color }: KPICardProps) {
   );
 }
 
-export function AnalyticsPage() {
+export function PerformanceAnalyticsTab() {
   const [period, setPeriod] = useState<"3m" | "6m" | "12m">("12m");
   const [liveStats, setLiveStats] = useState({ clients: 0, docs: 0, payments: 0 });
   const [operatorName, setOperatorName] = useState("");
@@ -122,10 +122,9 @@ export function AnalyticsPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-surface-foreground">Analytics</h2>
-          <p className="text-muted-foreground">
-            Revenue, growth, and performance insights
-            {operatorName.trim() ? ` — personalised for ${operatorName.trim()}` : ""}
+          <h3 className="text-lg font-semibold text-surface-foreground">Revenue &amp; client growth</h3>
+          <p className="text-sm text-muted-foreground">
+            {operatorName.trim() ? `Personalised for ${operatorName.trim()}` : "Revenue, growth, and product mix insights"}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -182,7 +181,7 @@ export function AnalyticsPage() {
 
       {/* Revenue chart */}
       <div className="rounded-xl border border-border bg-surface p-6">
-        <h3 className="font-semibold text-surface-foreground mb-6">Revenue & Client Growth</h3>
+        <h3 className="font-semibold text-surface-foreground mb-6">Revenue &amp; Client Growth</h3>
         <ResponsiveContainer width="100%" height={280}>
           <AreaChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
             <defs>

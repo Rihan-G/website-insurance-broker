@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { addDays, differenceInCalendarDays, format, parseISO } from "date-fns";
-import { CalendarClock, Mail, MessageCircle, Smartphone, Bell, Database, Plus, ExternalLink } from "lucide-react";
+import { Link } from "react-router-dom";
+import { CalendarClock, Mail, MessageCircle, Smartphone, Bell, Database, Plus, ExternalLink, ArrowRight } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
 import { DEMO_IDS } from "../lib/demoAuth";
@@ -326,6 +327,14 @@ export function RenewalsPage() {
           {loading ? "Loading…" : live ? "Live data" : "Demo / offline"}
         </span>
       </div>
+
+      <Link
+        to="/dashboard/expiry"
+        className="flex items-center justify-between gap-2 rounded-xl border border-border bg-surface px-4 py-3 text-sm font-medium text-surface-foreground hover:bg-muted/60 transition-colors duration-200"
+      >
+        <span>See all expiry alerts including documents &amp; payments</span>
+        <ArrowRight className="h-4 w-4 shrink-0" aria-hidden />
+      </Link>
 
       {isStaff && (
         <div className="dashboard-panel rounded-2xl space-y-4 p-5">

@@ -36,7 +36,7 @@ import { getPortalFlavor, staffPortalBaseUrl } from "./lib/portalFlavor";
 
 const LazyReviewPage = lazy(() => import("./pages/ReviewPage").then((m) => ({ default: m.ReviewPage })));
 const LazyAuditLogPage = lazy(() => import("./pages/AuditLogPage").then((m) => ({ default: m.AuditLogPage })));
-const LazyAnalyticsPage = lazy(() => import("./pages/AnalyticsPage").then((m) => ({ default: m.AnalyticsPage })));
+const LazyPerformancePage = lazy(() => import("./pages/PerformancePage").then((m) => ({ default: m.PerformancePage })));
 const LazyExpiryMonitorPage = lazy(() => import("./pages/ExpiryMonitorPage").then((m) => ({ default: m.ExpiryMonitorPage })));
 const LazyWhatsAppPage = lazy(() => import("./pages/WhatsAppPage").then((m) => ({ default: m.WhatsAppPage })));
 const LazyVoiceUploadPage = lazy(() => import("./pages/VoiceUploadPage").then((m) => ({ default: m.VoiceUploadPage })));
@@ -44,7 +44,6 @@ const LazyCompliancePage = lazy(() => import("./pages/CompliancePage").then((m) 
 const LazyServicesPage = lazy(() => import("./pages/ServicesPage").then((m) => ({ default: m.ServicesPage })));
 const LazyClientPortalPage = lazy(() => import("./pages/ClientPortalPage").then((m) => ({ default: m.ClientPortalPage })));
 const LazyMidTermPage = lazy(() => import("./pages/MidTermPage").then((m) => ({ default: m.MidTermPage })));
-const LazyCapacityPage = lazy(() => import("./pages/CapacityPage").then((m) => ({ default: m.CapacityPage })));
 const LazyHolidayCalendarPage = lazy(() => import("./pages/HolidayCalendarPage").then((m) => ({ default: m.HolidayCalendarPage })));
 const LazyCommissionPage = lazy(() => import("./pages/CommissionPage").then((m) => ({ default: m.CommissionPage })));
 const LazyRenewalsPage = lazy(() => import("./pages/RenewalsPage").then((m) => ({ default: m.RenewalsPage })));
@@ -203,14 +202,13 @@ export default function App() {
 
         {/* Phase 4 – Advanced */}
         <Route path="quotes" element={<QuoteCalculatorPage />} />
+        <Route path="analytics" element={<Navigate to="/dashboard/performance?tab=analytics" replace />} />
         <Route
-          path="analytics"
+          path="performance"
           element={
-            <RoleGuard allowedRoles={["admin", "broker"]}>
-              <Suspense fallback={<PageFallback />}>
-                <LazyAnalyticsPage />
-              </Suspense>
-            </RoleGuard>
+            <Suspense fallback={<PageFallback />}>
+              <LazyPerformancePage />
+            </Suspense>
           }
         />
         <Route
@@ -287,16 +285,7 @@ export default function App() {
             </Suspense>
           }
         />
-        <Route
-          path="capacity"
-          element={
-            <RoleGuard allowedRoles={["admin", "broker"]}>
-              <Suspense fallback={<PageFallback />}>
-                <LazyCapacityPage />
-              </Suspense>
-            </RoleGuard>
-          }
-        />
+        <Route path="capacity" element={<Navigate to="/dashboard/performance?tab=workload" replace />} />
         <Route
           path="calendar"
           element={

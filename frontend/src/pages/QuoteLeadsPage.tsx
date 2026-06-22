@@ -179,9 +179,9 @@ export function QuoteLeadsPage() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary-600/90 dark:text-primary-400/90">Sales</p>
-          <h2 className="mt-1 text-2xl font-bold tracking-tight text-surface-foreground sm:text-3xl">Quote leads</h2>
+          <h2 className="mt-1 text-2xl font-bold tracking-tight text-surface-foreground sm:text-3xl">Quote Pipeline</h2>
           <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-            Saved estimates from the <Link className="text-primary-600 hover:underline dark:text-primary-400" to="/dashboard/quotes">calculator</Link> and the public{" "}
+            Saved estimates from <Link className="text-primary-600 hover:underline dark:text-primary-400" to="/dashboard/quotes">Create Quote</Link> and the public{" "}
             <strong>quick quote</strong> widget. Update status as you work the lead.
           </p>
         </div>
@@ -319,8 +319,8 @@ export function QuoteLeadsPage() {
             <EmptyState
               icon={Calculator}
               title="No quote leads yet"
-              description="Leads appear when visitors submit the home estimate or staff save from the calculator."
-              actionLabel="Open calculator"
+              description="Leads appear when visitors submit the home estimate or staff save from Create Quote."
+              actionLabel="Open Create Quote"
               actionTo="/dashboard/quotes"
             />
           </div>

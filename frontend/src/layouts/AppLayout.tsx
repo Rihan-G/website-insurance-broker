@@ -35,49 +35,49 @@ interface NavItem {
 
 const navGroups: Array<{ label: string; items: NavItem[] }> = [
   {
-    label: "Core",
+    label: "Overview",
     items: [
       { name: "dashboard", to: "/dashboard", icon: LayoutDashboard },
+    ],
+  },
+  {
+    label: "Clients & Policies",
+    items: [
       { name: "my-policies", to: "/dashboard/my-policies", icon: Home, roles: ["client"] },
+      { name: "clients", to: "/dashboard/clients", icon: Users, roles: ["admin", "broker"] },
       { name: "documents", to: "/dashboard/documents", icon: FileText },
       { name: "upload", to: "/dashboard/upload", icon: Upload },
-      { name: "clients", to: "/dashboard/clients", icon: Users, roles: ["admin", "broker"] },
-    ],
-  },
-  {
-    label: "Services",
-    items: [
-      { name: "services", to: "/dashboard/services", icon: Globe },
-      { name: "quotes", to: "/dashboard/quotes", icon: Calculator },
       { name: "mid-term", to: "/dashboard/mid-term", icon: RefreshCw },
+      { name: "services", to: "/dashboard/services", icon: Globe },
     ],
   },
   {
-    label: "Communication",
+    label: "Quotes & Renewals",
+    items: [
+      { name: "quotes", to: "/dashboard/quotes", icon: Calculator },
+      { name: "quote-leads", to: "/dashboard/quote-leads", icon: UserPlus, roles: ["admin", "broker"] },
+      { name: "renewals", to: "/dashboard/renewals", icon: CalendarClock },
+      { name: "expiry", to: "/dashboard/expiry", icon: Bell },
+    ],
+  },
+  {
+    label: "Communication & Care",
     items: [
       { name: "inbox", to: "/dashboard/inbox", icon: MessageSquare },
-      { name: "payments", to: "/dashboard/payments", icon: CreditCard },
-      { name: "whatsapp", to: "/dashboard/whatsapp", icon: MessageCircle, roles: ["admin", "broker"] },
-    ],
-  },
-  {
-    label: "Care",
-    items: [
-      { name: "renewals", to: "/dashboard/renewals", icon: CalendarClock },
-      { name: "claims", to: "/dashboard/claims", icon: FileWarning },
       { name: "secure-messages", to: "/dashboard/secure-messages", icon: MessagesSquare },
       { name: "notifications", to: "/dashboard/notifications", icon: BellRing },
+      { name: "payments", to: "/dashboard/payments", icon: CreditCard },
+      { name: "claims", to: "/dashboard/claims", icon: FileWarning },
+      { name: "whatsapp", to: "/dashboard/whatsapp", icon: MessageCircle, roles: ["admin", "broker"] },
       { name: "tasks", to: "/dashboard/tasks", icon: ListTodo, roles: ["admin", "broker"] },
     ],
   },
   {
-    label: "Admin",
+    label: "Insights & Risk",
     items: [
-      { name: "review", to: "/dashboard/review", icon: ClipboardList, roles: ["admin", "broker"] },
-      { name: "quote-leads", to: "/dashboard/quote-leads", icon: UserPlus, roles: ["admin", "broker"] },
-      { name: "analytics", to: "/dashboard/analytics", icon: BarChart3, roles: ["admin", "broker"] },
+      { name: "performance", to: "/dashboard/performance", icon: BarChart3, roles: ["admin", "broker"] },
       { name: "commissions", to: "/dashboard/commissions", icon: Award, roles: ["admin", "broker"] },
-      { name: "capacity", to: "/dashboard/capacity", icon: Users, roles: ["admin", "broker"] },
+      { name: "review", to: "/dashboard/review", icon: ClipboardList, roles: ["admin", "broker"] },
       { name: "audit", to: "/dashboard/audit", icon: Shield, roles: ["admin", "broker"] },
     ],
   },
@@ -104,6 +104,8 @@ const navGroups: Array<{ label: string; items: NavItem[] }> = [
   {
     label: "Account",
     items: [
+      { name: "voice", to: "/dashboard/voice", icon: Mic },
+      { name: "calendar", to: "/dashboard/calendar", icon: Calendar },
       { name: "2fa", to: "/dashboard/2fa", icon: KeyRound },
       { name: "settings", to: "/dashboard/settings", icon: Settings },
     ],
@@ -117,7 +119,7 @@ const navLabels: Record<string, string> = {
   upload: "Upload",
   clients: "Clients",
   services: "Services",
-  quotes: "Quote Calculator",
+  quotes: "Create Quote",
   "mid-term": "Mid-Term Adjust.",
   inbox: "Inbox",
   payments: "Payments",
@@ -128,10 +130,9 @@ const navLabels: Record<string, string> = {
   tasks: "Tasks",
   whatsapp: "WhatsApp",
   review: "Doc Review",
-  "quote-leads": "Quote leads",
-  analytics: "Analytics",
+  "quote-leads": "Quote Pipeline",
+  performance: "Performance",
   commissions: "Commissions",
-  capacity: "Capacity Mgmt.",
   audit: "Audit Log",
   "cover-gap": "Cover Gap Analyser",
   "insurer-compare": "Insurer Comparison",
@@ -171,9 +172,8 @@ const navEmoji: Record<string, string> = {
   whatsapp: "🟢",
   review: "🗂️",
   "quote-leads": "🎯",
-  analytics: "📈",
+  performance: "📈",
   commissions: "🏅",
-  capacity: "🧑‍🤝‍🧑",
   audit: "🔒",
   "cover-gap": "🛡️",
   "insurer-compare": "⚖️",
@@ -304,19 +304,17 @@ function DashboardSidebarPanel({
               <span className="inline-flex items-center gap-1.5">
                 {showEmojiHints && (
                   <span aria-hidden>
-                    {group.label === "Core"
+                    {group.label === "Overview"
                       ? "🧭"
-                      : group.label === "Services"
-                        ? "🧩"
-                        : group.label === "Communication"
-                          ? "💬"
-                          : group.label === "Care"
-                            ? "🩺"
-                            : group.label === "Admin"
-                              ? "🛠️"
-                              : group.label === "Tools"
-                                ? "🧪"
-                                : "👤"}
+                      : group.label === "Clients & Policies"
+                        ? "🧾"
+                        : group.label === "Quotes & Renewals"
+                          ? "🧩"
+                          : group.label === "Communication & Care"
+                            ? "💬"
+                            : group.label === "Insights & Risk"
+                              ? "📈"
+                              : "👤"}
                   </span>
                 )}
                 {group.label}

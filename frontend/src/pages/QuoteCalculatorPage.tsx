@@ -265,7 +265,7 @@ export function QuoteCalculatorPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-surface-foreground">Quote calculator</h2>
+        <h2 className="text-2xl font-bold text-surface-foreground">Create Quote</h2>
         <p className="text-muted-foreground">Instant premium estimate — enter your own figures and switch currency for display</p>
       </div>
 

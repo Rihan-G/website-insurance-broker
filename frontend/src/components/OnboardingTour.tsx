@@ -18,7 +18,7 @@ const steps = [
   },
   {
     title: "Get a quote anytime",
-    body: "The quote calculator saves estimates. Brokers follow up with firm terms.",
+    body: "Create Quote saves estimates. Brokers follow up with firm terms.",
     cta: "Next",
     link: "/dashboard/quotes",
   },
