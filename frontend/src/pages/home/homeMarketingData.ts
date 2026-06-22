@@ -20,7 +20,6 @@ import {
   BadgeCheck,
   Sparkles,
 } from "lucide-react";
-import { COMPANY_NAME_SHORT } from "../../lib/branding";
 
 export const insurers = [
   "Swan Insurance",

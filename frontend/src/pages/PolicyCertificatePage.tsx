@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Printer, Download, ShieldCheck, ChevronDown } from "lucide-react";
+import { Printer, ShieldCheck, ChevronDown } from "lucide-react";
 import { format } from "date-fns";
 import { COMPANY_NAME as BRAND_NAME, OFFICE_ADDRESS as BRAND_ADDRESS, CONTACT_EMAIL as BRAND_EMAIL, CONTACT_PHONE_TEL as BRAND_PHONE } from "../lib/branding";
 
@@ -72,8 +72,8 @@ const DEMO_POLICIES: Policy[] = [
 ];
 
 export function PolicyCertificatePage() {
-  const [selectedId, setSelectedId] = useState(DEMO_POLICIES[0].id);
-  const policy = DEMO_POLICIES.find((p) => p.id === selectedId) ?? DEMO_POLICIES[0];
+  const [selectedId, setSelectedId] = useState(DEMO_POLICIES[0]!.id);
+  const policy = DEMO_POLICIES.find((p) => p.id === selectedId) ?? DEMO_POLICIES[0]!;
 
   return (
     <div className="min-w-0 space-y-6">

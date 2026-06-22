@@ -17,7 +17,6 @@ export * from "./KineticHeading";
 export * from "./OfflineBanner";
 export * from "./OnboardingTour";
 export * from "./PageFallback";
-export * from "./ParticleField";
 export * from "./QuoteComparePanel";
 export * from "./RoleGuard";
 export * from "./ScrollProgress";
