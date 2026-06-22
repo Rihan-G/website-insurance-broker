@@ -7,32 +7,32 @@ import { PageFallback } from "./components/PageFallback";
 import { HomePage } from "./pages/HomePage";
 import { LoginPage } from "./pages/LoginPage";
 import { AdminLoginPage } from "./pages/AdminLoginPage";
-import { DashboardPage } from "./pages/DashboardPage";
-import { DocumentsPage } from "./pages/DocumentsPage";
-import { UploadPage } from "./pages/UploadPage";
-import { ClientsPage } from "./pages/ClientsPage";
-import { SettingsPage } from "./pages/SettingsPage";
-// Phase 2
-import { TwoFactorPage } from "./pages/TwoFactorPage";
-// Phase 3
-import { InboxPage } from "./pages/InboxPage";
-import { PaymentsPage } from "./pages/PaymentsPage";
-// Phase 4
-import { QuoteCalculatorPage } from "./pages/QuoteCalculatorPage";
-// Phase 5
-import { NotFoundPage } from "./pages/NotFoundPage";
-import { AboutPage } from "./pages/marketing/AboutPage";
-import { LegalPage } from "./pages/marketing/LegalPage";
-import { ProductsIndexPage } from "./pages/marketing/ProductsIndexPage";
-import { ProductDetailPage } from "./pages/marketing/ProductDetailPage";
-import { ClaimsGuidePage } from "./pages/marketing/ClaimsGuidePage";
-import { ComparePage } from "./pages/marketing/ComparePage";
-import { ChecklistsPage } from "./pages/marketing/ChecklistsPage";
-import { BlogIndexPage } from "./pages/marketing/BlogIndexPage";
-import { BlogPostPage } from "./pages/marketing/BlogPostPage";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { CrossPortalNavigate } from "./components/CrossPortalNavigate";
 import { getPortalFlavor, staffPortalBaseUrl } from "./lib/portalFlavor";
+
+// Marketing pages — lazy loaded
+const LazyAboutPage = lazy(() => import("./pages/marketing/AboutPage").then((m) => ({ default: m.AboutPage })));
+const LazyLegalPage = lazy(() => import("./pages/marketing/LegalPage").then((m) => ({ default: m.LegalPage })));
+const LazyProductsIndexPage = lazy(() => import("./pages/marketing/ProductsIndexPage").then((m) => ({ default: m.ProductsIndexPage })));
+const LazyProductDetailPage = lazy(() => import("./pages/marketing/ProductDetailPage").then((m) => ({ default: m.ProductDetailPage })));
+const LazyClaimsGuidePage = lazy(() => import("./pages/marketing/ClaimsGuidePage").then((m) => ({ default: m.ClaimsGuidePage })));
+const LazyComparePage = lazy(() => import("./pages/marketing/ComparePage").then((m) => ({ default: m.ComparePage })));
+const LazyChecklistsPage = lazy(() => import("./pages/marketing/ChecklistsPage").then((m) => ({ default: m.ChecklistsPage })));
+const LazyBlogIndexPage = lazy(() => import("./pages/marketing/BlogIndexPage").then((m) => ({ default: m.BlogIndexPage })));
+const LazyBlogPostPage = lazy(() => import("./pages/marketing/BlogPostPage").then((m) => ({ default: m.BlogPostPage })));
+
+// Dashboard core — lazy loaded
+const LazyDashboardPage = lazy(() => import("./pages/DashboardPage").then((m) => ({ default: m.DashboardPage })));
+const LazyDocumentsPage = lazy(() => import("./pages/DocumentsPage").then((m) => ({ default: m.DocumentsPage })));
+const LazyUploadPage = lazy(() => import("./pages/UploadPage").then((m) => ({ default: m.UploadPage })));
+const LazyClientsPage = lazy(() => import("./pages/ClientsPage").then((m) => ({ default: m.ClientsPage })));
+const LazySettingsPage = lazy(() => import("./pages/SettingsPage").then((m) => ({ default: m.SettingsPage })));
+const LazyTwoFactorPage = lazy(() => import("./pages/TwoFactorPage").then((m) => ({ default: m.TwoFactorPage })));
+const LazyInboxPage = lazy(() => import("./pages/InboxPage").then((m) => ({ default: m.InboxPage })));
+const LazyPaymentsPage = lazy(() => import("./pages/PaymentsPage").then((m) => ({ default: m.PaymentsPage })));
+const LazyQuoteCalculatorPage = lazy(() => import("./pages/QuoteCalculatorPage").then((m) => ({ default: m.QuoteCalculatorPage })));
+const LazyNotFoundPage = lazy(() => import("./pages/NotFoundPage").then((m) => ({ default: m.NotFoundPage })));
 
 const LazyReviewPage = lazy(() => import("./pages/ReviewPage").then((m) => ({ default: m.ReviewPage })));
 const LazyAuditLogPage = lazy(() => import("./pages/AuditLogPage").then((m) => ({ default: m.AuditLogPage })));
@@ -95,17 +95,17 @@ export default function App() {
     <ErrorBoundary label="Application">
     <Routes>
       <Route path="/" element={<HomePage />} />
-      <Route path="/about" element={<AboutPage />} />
-      <Route path="/privacy" element={<LegalPage kind="privacy" />} />
-      <Route path="/terms" element={<LegalPage kind="terms" />} />
-      <Route path="/products" element={<ProductsIndexPage />} />
-      <Route path="/products/:slug" element={<ProductDetailPage />} />
-      <Route path="/claims-guide" element={<ClaimsGuidePage />} />
-      <Route path="/compare" element={<ComparePage />} />
-      <Route path="/checklists" element={<ChecklistsPage />} />
-      <Route path="/checklists/:id" element={<ChecklistsPage />} />
-      <Route path="/blog" element={<BlogIndexPage />} />
-      <Route path="/blog/:slug" element={<BlogPostPage />} />
+      <Route path="/about" element={<Suspense fallback={<PageFallback />}><LazyAboutPage /></Suspense>} />
+      <Route path="/privacy" element={<Suspense fallback={<PageFallback />}><LazyLegalPage kind="privacy" /></Suspense>} />
+      <Route path="/terms" element={<Suspense fallback={<PageFallback />}><LazyLegalPage kind="terms" /></Suspense>} />
+      <Route path="/products" element={<Suspense fallback={<PageFallback />}><LazyProductsIndexPage /></Suspense>} />
+      <Route path="/products/:slug" element={<Suspense fallback={<PageFallback />}><LazyProductDetailPage /></Suspense>} />
+      <Route path="/claims-guide" element={<Suspense fallback={<PageFallback />}><LazyClaimsGuidePage /></Suspense>} />
+      <Route path="/compare" element={<Suspense fallback={<PageFallback />}><LazyComparePage /></Suspense>} />
+      <Route path="/checklists" element={<Suspense fallback={<PageFallback />}><LazyChecklistsPage /></Suspense>} />
+      <Route path="/checklists/:id" element={<Suspense fallback={<PageFallback />}><LazyChecklistsPage /></Suspense>} />
+      <Route path="/blog" element={<Suspense fallback={<PageFallback />}><LazyBlogIndexPage /></Suspense>} />
+      <Route path="/blog/:slug" element={<Suspense fallback={<PageFallback />}><LazyBlogPostPage /></Suspense>} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/admin" element={<AdminPortalEntry />} />
       <Route path="/admin/login" element={<Navigate to="/admin" replace />} />
@@ -118,21 +118,23 @@ export default function App() {
         }
       >
         {/* Core */}
-        <Route index element={<DashboardPage />} />
-        <Route path="documents" element={<DocumentsPage />} />
-        <Route path="upload" element={<UploadPage />} />
+        <Route index element={<Suspense fallback={<PageFallback />}><LazyDashboardPage /></Suspense>} />
+        <Route path="documents" element={<Suspense fallback={<PageFallback />}><LazyDocumentsPage /></Suspense>} />
+        <Route path="upload" element={<Suspense fallback={<PageFallback />}><LazyUploadPage /></Suspense>} />
         <Route
           path="clients"
           element={
             <RoleGuard allowedRoles={["admin", "broker"]}>
-              <ClientsPage />
+              <Suspense fallback={<PageFallback />}>
+                <LazyClientsPage />
+              </Suspense>
             </RoleGuard>
           }
         />
-        <Route path="settings" element={<SettingsPage />} />
+        <Route path="settings" element={<Suspense fallback={<PageFallback />}><LazySettingsPage /></Suspense>} />
 
         {/* Phase 2 – Admin & Security */}
-        <Route path="2fa" element={<TwoFactorPage />} />
+        <Route path="2fa" element={<Suspense fallback={<PageFallback />}><LazyTwoFactorPage /></Suspense>} />
         <Route
           path="review"
           element={
@@ -155,8 +157,8 @@ export default function App() {
         />
 
         {/* Phase 3 – Client & Payments */}
-        <Route path="inbox" element={<InboxPage />} />
-        <Route path="payments" element={<PaymentsPage />} />
+        <Route path="inbox" element={<Suspense fallback={<PageFallback />}><LazyInboxPage /></Suspense>} />
+        <Route path="payments" element={<Suspense fallback={<PageFallback />}><LazyPaymentsPage /></Suspense>} />
         <Route
           path="renewals"
           element={
@@ -201,7 +203,7 @@ export default function App() {
         />
 
         {/* Phase 4 – Advanced */}
-        <Route path="quotes" element={<QuoteCalculatorPage />} />
+        <Route path="quotes" element={<Suspense fallback={<PageFallback />}><LazyQuoteCalculatorPage /></Suspense>} />
         <Route path="analytics" element={<Navigate to="/dashboard/performance?tab=analytics" replace />} />
         <Route
           path="performance"
@@ -413,9 +415,9 @@ export default function App() {
             </RoleGuard>
           }
         />
-        <Route path="*" element={<NotFoundPage />} />
+        <Route path="*" element={<Suspense fallback={<PageFallback />}><LazyNotFoundPage /></Suspense>} />
       </Route>
-      <Route path="*" element={<NotFoundPage />} />
+      <Route path="*" element={<Suspense fallback={<PageFallback />}><LazyNotFoundPage /></Suspense>} />
     </Routes>
     </ErrorBoundary>
   );
