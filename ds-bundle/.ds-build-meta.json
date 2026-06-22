@@ -1,0 +1,12 @@
+{
+  "namespace": "SindicomUI",
+  "source": "frontend@0.1.0",
+  "shape": "package",
+  "provider": "MemoryRouter",
+  "componentCount": 30,
+  "skippedStoryIds": [],
+  "runtimeFontPrefixes": [
+    "Inter",
+    "IBM Plex Sans"
+  ]
+}

@@ -233,5 +233,7 @@ See also [FREE_TIER_STACK.md](./FREE_TIER_STACK.md).
 
 - [PHASES.md](../PHASES.md) — database & product rollout order
 - [GITHUB_PAGES.md](./GITHUB_PAGES.md) — existing demo deploy
+- [CLOUDFLARE_PAGES_SPLIT_PORTALS.md](./CLOUDFLARE_PAGES_SPLIT_PORTALS.md) — run separate
+  client and staff portals as two Cloudflare Pages projects
 - [FREE_TIER_STACK.md](./FREE_TIER_STACK.md) — stack overview
 - [frontend/.env.example](../frontend/.env.example) — all env vars

@@ -11,6 +11,10 @@
     "deploy:cloudflare": "npm run build:cloudflare && npx wrangler pages deploy frontend/dist --project-name website-insurance-broker",
     "build:portal-client": "corepack pnpm --filter frontend build:portal-client",
     "build:portal-staff": "corepack pnpm --filter frontend build:portal-staff",
+    "build:cloudflare-client": "corepack enable && corepack prepare pnpm@10 --activate && corepack pnpm install && corepack pnpm --filter frontend build:portal-client",
+    "build:cloudflare-staff": "corepack enable && corepack prepare pnpm@10 --activate && corepack pnpm install && corepack pnpm --filter frontend build:portal-staff",
+    "deploy:cloudflare-client": "npm run build:cloudflare-client && npx wrangler pages deploy frontend/dist --project-name website-insurance-broker-client",
+    "deploy:cloudflare-staff": "npm run build:cloudflare-staff && npx wrangler pages deploy frontend/dist --project-name website-insurance-broker-staff",
     "lint": "corepack pnpm --filter frontend lint",
     "test": "corepack pnpm --filter frontend test",
     "preview": "corepack pnpm --filter frontend preview"

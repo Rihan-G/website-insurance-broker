@@ -1,0 +1,42 @@
+[
+  {
+    "sheet": 1,
+    "components": [
+      "BackToTop",
+      "BrandLogo",
+      "BrokerTemplateDownloads",
+      "ClaimsTimeline",
+      "CommandPalette",
+      "CommissionCalculatorTool",
+      "CookieConsent",
+      "CurrencySwitcher",
+      "DashboardAccessSentinel",
+      "EmptyState",
+      "ErrorBoundary",
+      "ExplainCoverTool",
+      "FaqAssistant",
+      "IncidentLocationMap",
+      "KineticHeading",
+      "MarketingFooter"
+    ]
+  },
+  {
+    "sheet": 2,
+    "components": [
+      "MarketingPageLayout",
+      "MarketingSubNav",
+      "OfflineBanner",
+      "OnboardingTour",
+      "PageFallback",
+      "ParticleField",
+      "QuoteComparePanel",
+      "RoleGuard",
+      "ScrollProgress",
+      "StatusPill",
+      "TemplatePreviewModal",
+      "ThemeToggle",
+      "Typewriter",
+      "WaveDivider"
+    ]
+  }
+]

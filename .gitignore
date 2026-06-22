@@ -9,3 +9,12 @@ dist
 coverage
 .vite
 .tmp-skills-install
+
+# Design-sync generated output (rebuilt on every sync run)
+.ds-sync/
+.design-sync/.cache/
+.design-sync/learnings/
+.design-sync/node_modules
+ds-bundle/_preview/
+ds-bundle/_screenshots/
+frontend/dist-dts/

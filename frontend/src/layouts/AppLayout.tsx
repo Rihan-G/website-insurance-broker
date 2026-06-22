@@ -15,6 +15,7 @@ import { ThemeToggle } from "../components/ThemeToggle";
 import { CommandPalette } from "../components/CommandPalette";
 import { DashboardAccessSentinel } from "../components/DashboardAccessSentinel";
 import { OnboardingTour } from "../components/OnboardingTour";
+import { WhatsAppAdvisorFab } from "../components/WhatsAppAdvisorFab";
 import { OfflineBanner } from "../components/OfflineBanner";
 import { CurrencySwitcher } from "../components/CurrencySwitcher";
 import { BrandLogo } from "../components/BrandLogo";
@@ -78,6 +79,25 @@ const navGroups: Array<{ label: string; items: NavItem[] }> = [
       { name: "commissions", to: "/dashboard/commissions", icon: Award, roles: ["admin", "broker"] },
       { name: "review", to: "/dashboard/review", icon: ClipboardList, roles: ["admin", "broker"] },
       { name: "audit", to: "/dashboard/audit", icon: Shield, roles: ["admin", "broker"] },
+    ],
+  },
+  {
+    label: "Tools",
+    items: [
+      { name: "cover-gap", to: "/dashboard/cover-gap", icon: ShieldCheck, roles: ["client"] },
+      { name: "insurer-compare", to: "/dashboard/insurer-compare", icon: BarChart3 },
+      { name: "policy-certificate", to: "/dashboard/policy-certificate", icon: FileText },
+      { name: "renewal-request", to: "/dashboard/renewal-request", icon: RefreshCw, roles: ["client"] },
+      { name: "claims-tracker", to: "/dashboard/claims-tracker", icon: FileWarning, roles: ["client"] },
+      { name: "doc-requests", to: "/dashboard/doc-requests", icon: Upload },
+      { name: "expiry", to: "/dashboard/expiry", icon: Bell },
+      { name: "renewal-pipeline", to: "/dashboard/renewal-pipeline", icon: CalendarClock, roles: ["admin", "broker"] },
+      { name: "bulk-outreach", to: "/dashboard/bulk-outreach", icon: MessageCircle, roles: ["admin", "broker"] },
+      { name: "rate-sheets", to: "/dashboard/rate-sheets", icon: Globe, roles: ["admin", "broker"] },
+      { name: "broker-performance", to: "/dashboard/broker-performance", icon: BarChart3, roles: ["admin", "broker"] },
+      { name: "commission-statement", to: "/dashboard/commission-statement", icon: Award, roles: ["admin", "broker"] },
+      { name: "calendar", to: "/dashboard/calendar", icon: Calendar },
+      { name: "voice", to: "/dashboard/voice", icon: Mic },
       { name: "compliance", to: "/dashboard/compliance", icon: ShieldCheck, roles: ["admin", "broker"] },
     ],
   },
@@ -114,6 +134,17 @@ const navLabels: Record<string, string> = {
   performance: "Performance",
   commissions: "Commissions",
   audit: "Audit Log",
+  "cover-gap": "Cover Gap Analyser",
+  "insurer-compare": "Insurer Comparison",
+  "policy-certificate": "Policy Certificate",
+  "renewal-request": "Request Renewal",
+  "claims-tracker": "Claims Tracker",
+  "doc-requests": "Document Requests",
+  "renewal-pipeline": "Renewal Pipeline",
+  "bulk-outreach": "Bulk Outreach",
+  "rate-sheets": "Rate Sheets",
+  "broker-performance": "Broker Performance",
+  "commission-statement": "Commission Statement",
   expiry: "Expiry Monitor",
   calendar: "Calendar",
   voice: "Voice Upload",
@@ -144,6 +175,17 @@ const navEmoji: Record<string, string> = {
   performance: "📈",
   commissions: "🏅",
   audit: "🔒",
+  "cover-gap": "🛡️",
+  "insurer-compare": "⚖️",
+  "policy-certificate": "📜",
+  "renewal-request": "🔄",
+  "claims-tracker": "🔍",
+  "doc-requests": "📬",
+  "renewal-pipeline": "📋",
+  "bulk-outreach": "📣",
+  "rate-sheets": "📊",
+  "broker-performance": "📈",
+  "commission-statement": "💰",
   expiry: "⏰",
   calendar: "🗓️",
   voice: "🎤",
@@ -437,6 +479,7 @@ export function AppLayout() {
         { to: "/dashboard/upload", label: "New upload", icon: "📤" },
         { to: "/dashboard/claims", label: "Start claim", icon: "⚠️" },
         { to: "/dashboard/secure-messages", label: "New message", icon: "💬" },
+        { to: "/dashboard/cover-gap", label: "Cover gap check", icon: "🛡️" },
       ]
     : [
         { to: "/dashboard/upload", label: "New upload", icon: "📤" },
@@ -638,6 +681,7 @@ export function AppLayout() {
     </div>
     {mobileNavOverlay}
     <OnboardingTour />
+    <WhatsAppAdvisorFab />
     </>
   );
 }

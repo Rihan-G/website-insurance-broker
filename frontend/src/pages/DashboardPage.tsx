@@ -34,6 +34,8 @@ import { useCurrency } from "../context/CurrencyContext";
 import { formatRelativeTime } from "../lib/formatRelativeTime";
 import { describeQuoteSource, quoteLeadContact } from "../lib/quoteLeads";
 import { StatusPill } from "../components/StatusPill";
+import { RenewalBanner, DEMO_RENEWAL_POLICIES } from "../components/RenewalBanner";
+import { DocExpiryWidget, DEMO_EXPIRING_DOCS } from "../components/DocExpiryWidget";
 
 interface RecentQuoteRow {
   id: string;
@@ -500,6 +502,9 @@ export function DashboardPage() {
 
   return (
     <div className="min-w-0 space-y-8">
+      {profile?.role === "client" && (
+        <RenewalBanner policies={demoAuthActive ? DEMO_RENEWAL_POLICIES : []} />
+      )}
       <div className="dashboard-welcome rounded-2xl p-5 sm:p-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="space-y-1">
@@ -624,6 +629,10 @@ export function DashboardPage() {
           </>
         )}
       </div>
+
+      {profile?.role === "client" && (
+        <DocExpiryWidget docs={demoAuthActive ? DEMO_EXPIRING_DOCS : []} />
+      )}
 
       <div className="dashboard-panel min-w-0 rounded-2xl p-5">
         <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Workflow shortcuts</p>

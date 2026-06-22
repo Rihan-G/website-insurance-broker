@@ -1,0 +1,292 @@
+{
+  "global": "SindicomUI",
+  "pkg": "frontend",
+  "pkgDir": "C:\\website-insurance-broker\\frontend",
+  "extraEntries": [
+    "./src/context/ThemeContext.tsx",
+    "./src/context/CurrencyContext.tsx",
+    "react-router-dom"
+  ],
+  "exported": [
+    "BackToTop",
+    "BrandLogo",
+    "BrokerTemplateDownloads",
+    "ClaimsTimeline",
+    "CommandPalette",
+    "CommissionCalculatorTool",
+    "CookieConsent",
+    "CrossPortalNavigate",
+    "CurrencyProvider",
+    "CurrencySwitcher",
+    "DashboardAccessSentinel",
+    "EmptyState",
+    "ErrorBoundary",
+    "ExplainCoverTool",
+    "FaqAssistant",
+    "IncidentLocationMap",
+    "KineticHeading",
+    "MarketingFooter",
+    "MarketingPageLayout",
+    "MarketingSubNav",
+    "OfflineBanner",
+    "OnboardingTour",
+    "PageFallback",
+    "ParticleField",
+    "QuoteComparePanel",
+    "RoleGuard",
+    "ScrollProgress",
+    "StatusPill",
+    "TemplatePreviewModal",
+    "ThemeProvider",
+    "ThemeToggle",
+    "Typewriter",
+    "WaveDivider",
+    "useCurrency",
+    "useTheme"
+  ],
+  "storybookStatic": null,
+  "keyRecipe": 7,
+  "cfgSliceGlobal": "0e08159bfeac720d5028a9a8e7d12230cd6932e5934f29740b9060832019b987",
+  "components": [
+    {
+      "name": "BackToTop",
+      "group": "general",
+      "srcSha": null,
+      "sourceKey": "05fb241187794bc5",
+      "cfgSlice": "5ff899b099eb6923833804cda955efdd69101524bec86f67dac5537cd81802e8",
+      "stories": []
+    },
+    {
+      "name": "BrandLogo",
+      "group": "general",
+      "srcSha": null,
+      "sourceKey": "05fb241187794bc5",
+      "cfgSlice": "5ff899b099eb6923833804cda955efdd69101524bec86f67dac5537cd81802e8",
+      "stories": []
+    },
+    {
+      "name": "BrokerTemplateDownloads",
+      "group": "general",
+      "srcSha": null,
+      "sourceKey": "05fb241187794bc5",
+      "cfgSlice": "5ff899b099eb6923833804cda955efdd69101524bec86f67dac5537cd81802e8",
+      "stories": []
+    },
+    {
+      "name": "ClaimsTimeline",
+      "group": "general",
+      "srcSha": null,
+      "sourceKey": "05fb241187794bc5",
+      "cfgSlice": "5ff899b099eb6923833804cda955efdd69101524bec86f67dac5537cd81802e8",
+      "stories": []
+    },
+    {
+      "name": "CommandPalette",
+      "group": "general",
+      "srcSha": null,
+      "sourceKey": "05fb241187794bc5",
+      "cfgSlice": "5ff899b099eb6923833804cda955efdd69101524bec86f67dac5537cd81802e8",
+      "stories": []
+    },
+    {
+      "name": "CommissionCalculatorTool",
+      "group": "general",
+      "srcSha": null,
+      "sourceKey": "05fb241187794bc5",
+      "cfgSlice": "5ff899b099eb6923833804cda955efdd69101524bec86f67dac5537cd81802e8",
+      "stories": []
+    },
+    {
+      "name": "CookieConsent",
+      "group": "general",
+      "srcSha": null,
+      "sourceKey": "05fb241187794bc5",
+      "cfgSlice": "5ff899b099eb6923833804cda955efdd69101524bec86f67dac5537cd81802e8",
+      "stories": []
+    },
+    {
+      "name": "CurrencySwitcher",
+      "group": "general",
+      "srcSha": null,
+      "sourceKey": "05fb241187794bc5",
+      "cfgSlice": "5ff899b099eb6923833804cda955efdd69101524bec86f67dac5537cd81802e8",
+      "stories": []
+    },
+    {
+      "name": "DashboardAccessSentinel",
+      "group": "general",
+      "srcSha": null,
+      "sourceKey": "05fb241187794bc5",
+      "cfgSlice": "5ff899b099eb6923833804cda955efdd69101524bec86f67dac5537cd81802e8",
+      "stories": []
+    },
+    {
+      "name": "EmptyState",
+      "group": "general",
+      "srcSha": null,
+      "sourceKey": "05fb241187794bc5",
+      "cfgSlice": "5ff899b099eb6923833804cda955efdd69101524bec86f67dac5537cd81802e8",
+      "stories": []
+    },
+    {
+      "name": "ErrorBoundary",
+      "group": "general",
+      "srcSha": null,
+      "sourceKey": "05fb241187794bc5",
+      "cfgSlice": "5ff899b099eb6923833804cda955efdd69101524bec86f67dac5537cd81802e8",
+      "stories": []
+    },
+    {
+      "name": "ExplainCoverTool",
+      "group": "general",
+      "srcSha": null,
+      "sourceKey": "05fb241187794bc5",
+      "cfgSlice": "5ff899b099eb6923833804cda955efdd69101524bec86f67dac5537cd81802e8",
+      "stories": []
+    },
+    {
+      "name": "FaqAssistant",
+      "group": "general",
+      "srcSha": null,
+      "sourceKey": "05fb241187794bc5",
+      "cfgSlice": "5ff899b099eb6923833804cda955efdd69101524bec86f67dac5537cd81802e8",
+      "stories": []
+    },
+    {
+      "name": "IncidentLocationMap",
+      "group": "general",
+      "srcSha": null,
+      "sourceKey": "05fb241187794bc5",
+      "cfgSlice": "5ff899b099eb6923833804cda955efdd69101524bec86f67dac5537cd81802e8",
+      "stories": []
+    },
+    {
+      "name": "KineticHeading",
+      "group": "general",
+      "srcSha": null,
+      "sourceKey": "05fb241187794bc5",
+      "cfgSlice": "5ff899b099eb6923833804cda955efdd69101524bec86f67dac5537cd81802e8",
+      "stories": []
+    },
+    {
+      "name": "MarketingFooter",
+      "group": "marketing",
+      "srcSha": null,
+      "sourceKey": "05fb241187794bc5",
+      "cfgSlice": "5ff899b099eb6923833804cda955efdd69101524bec86f67dac5537cd81802e8",
+      "stories": []
+    },
+    {
+      "name": "MarketingPageLayout",
+      "group": "marketing",
+      "srcSha": null,
+      "sourceKey": "05fb241187794bc5",
+      "cfgSlice": "5ff899b099eb6923833804cda955efdd69101524bec86f67dac5537cd81802e8",
+      "stories": []
+    },
+    {
+      "name": "MarketingSubNav",
+      "group": "marketing",
+      "srcSha": null,
+      "sourceKey": "05fb241187794bc5",
+      "cfgSlice": "5ff899b099eb6923833804cda955efdd69101524bec86f67dac5537cd81802e8",
+      "stories": []
+    },
+    {
+      "name": "OfflineBanner",
+      "group": "general",
+      "srcSha": null,
+      "sourceKey": "05fb241187794bc5",
+      "cfgSlice": "5ff899b099eb6923833804cda955efdd69101524bec86f67dac5537cd81802e8",
+      "stories": []
+    },
+    {
+      "name": "OnboardingTour",
+      "group": "general",
+      "srcSha": null,
+      "sourceKey": "05fb241187794bc5",
+      "cfgSlice": "5ff899b099eb6923833804cda955efdd69101524bec86f67dac5537cd81802e8",
+      "stories": []
+    },
+    {
+      "name": "PageFallback",
+      "group": "general",
+      "srcSha": null,
+      "sourceKey": "05fb241187794bc5",
+      "cfgSlice": "5ff899b099eb6923833804cda955efdd69101524bec86f67dac5537cd81802e8",
+      "stories": []
+    },
+    {
+      "name": "ParticleField",
+      "group": "general",
+      "srcSha": null,
+      "sourceKey": "05fb241187794bc5",
+      "cfgSlice": "5ff899b099eb6923833804cda955efdd69101524bec86f67dac5537cd81802e8",
+      "stories": []
+    },
+    {
+      "name": "QuoteComparePanel",
+      "group": "general",
+      "srcSha": null,
+      "sourceKey": "05fb241187794bc5",
+      "cfgSlice": "5ff899b099eb6923833804cda955efdd69101524bec86f67dac5537cd81802e8",
+      "stories": []
+    },
+    {
+      "name": "RoleGuard",
+      "group": "general",
+      "srcSha": null,
+      "sourceKey": "05fb241187794bc5",
+      "cfgSlice": "5ff899b099eb6923833804cda955efdd69101524bec86f67dac5537cd81802e8",
+      "stories": []
+    },
+    {
+      "name": "ScrollProgress",
+      "group": "general",
+      "srcSha": null,
+      "sourceKey": "05fb241187794bc5",
+      "cfgSlice": "5ff899b099eb6923833804cda955efdd69101524bec86f67dac5537cd81802e8",
+      "stories": []
+    },
+    {
+      "name": "StatusPill",
+      "group": "general",
+      "srcSha": null,
+      "sourceKey": "05fb241187794bc5",
+      "cfgSlice": "5ff899b099eb6923833804cda955efdd69101524bec86f67dac5537cd81802e8",
+      "stories": []
+    },
+    {
+      "name": "TemplatePreviewModal",
+      "group": "general",
+      "srcSha": null,
+      "sourceKey": "05fb241187794bc5",
+      "cfgSlice": "5ff899b099eb6923833804cda955efdd69101524bec86f67dac5537cd81802e8",
+      "stories": []
+    },
+    {
+      "name": "ThemeToggle",
+      "group": "general",
+      "srcSha": null,
+      "sourceKey": "05fb241187794bc5",
+      "cfgSlice": "5ff899b099eb6923833804cda955efdd69101524bec86f67dac5537cd81802e8",
+      "stories": []
+    },
+    {
+      "name": "Typewriter",
+      "group": "general",
+      "srcSha": null,
+      "sourceKey": "05fb241187794bc5",
+      "cfgSlice": "5ff899b099eb6923833804cda955efdd69101524bec86f67dac5537cd81802e8",
+      "stories": []
+    },
+    {
+      "name": "WaveDivider",
+      "group": "general",
+      "srcSha": null,
+      "sourceKey": "05fb241187794bc5",
+      "cfgSlice": "5ff899b099eb6923833804cda955efdd69101524bec86f67dac5537cd81802e8",
+      "stories": []
+    }
+  ]
+}

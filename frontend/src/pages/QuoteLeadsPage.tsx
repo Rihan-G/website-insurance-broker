@@ -1,31 +1,41 @@
 import { useCallback, useEffect, useState } from "react";
 import { format } from "date-fns";
-import { Calculator, Download, RefreshCw } from "lucide-react";
+import { Calculator, Download, LayoutGrid, List, RefreshCw, Users2 } from "lucide-react";
 import { EmptyState } from "../components/EmptyState";
 import { QuoteComparePanel } from "../components/QuoteComparePanel";
+import { QuoteLeadsKanban } from "../components/QuoteLeadsKanban";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { db } from "../lib/db";
 import { supabase } from "../lib/supabase";
 import { exportToCsv } from "../lib/exportService";
-import { describeQuoteSource, quoteLeadContact } from "../lib/quoteLeads";
+import {
+  describeQuoteSource,
+  quoteLeadContact,
+  QUOTE_STATUS_OPTIONS,
+  type QuoteLeadRow,
+  type QuoteStatus,
+} from "../lib/quoteLeads";
 
-type QuoteStatus = "draft" | "sent" | "accepted" | "rejected" | "converted";
+const STATUS_OPTIONS = QUOTE_STATUS_OPTIONS;
 
-interface QuoteLeadRow {
+type ReferralStatus = "pending" | "contacted" | "converted";
+interface ReferralRow {
   id: string;
-  product_type: string;
-  estimated_premium: number | null;
-  status: QuoteStatus;
-  notes: string | null;
+  referred_email: string;
+  referred_name: string;
+  code: string;
+  status: ReferralStatus;
   created_at: string;
-  client_id: string | null;
-  input_data: Record<string, unknown> | null;
-  client: { full_name: string; email: string } | null;
+  referrer?: { full_name: string; email: string } | null;
 }
 
-const STATUS_OPTIONS: QuoteStatus[] = ["draft", "sent", "accepted", "rejected", "converted"];
+const referralStatusTone: Record<ReferralStatus, string> = {
+  pending: "bg-muted text-muted-foreground",
+  contacted: "bg-primary-50 text-primary-700 dark:bg-primary-950/30 dark:text-primary-300",
+  converted: "bg-accent-50 text-accent-700 dark:bg-accent-950/30 dark:text-accent-300",
+};
 
 const demoRows: QuoteLeadRow[] = [
   {
@@ -58,6 +68,10 @@ export function QuoteLeadsPage() {
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [compareIds, setCompareIds] = useState<string[]>([]);
+  const [view, setView] = useState<"table" | "kanban" | "referrals">("table");
+  const [referrals, setReferrals] = useState<ReferralRow[]>([]);
+  const [referralsLoading, setReferralsLoading] = useState(false);
+  const [updatingReferralId, setUpdatingReferralId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     if (demoAuthActive) {
@@ -100,6 +114,32 @@ export function QuoteLeadsPage() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  const loadReferrals = useCallback(async () => {
+    if (!session) return;
+    setReferralsLoading(true);
+    const { data, error } = await db
+      .referrals()
+      .select("*, referrer:profiles!referrals_referrer_id_fkey(full_name, email)")
+      .order("created_at", { ascending: false })
+      .limit(200);
+    if (error) toast.error(error.message ?? "Failed to load referrals.");
+    else setReferrals((data as ReferralRow[]) ?? []);
+    setReferralsLoading(false);
+  }, [session]);
+
+  useEffect(() => {
+    if (view === "referrals") void loadReferrals();
+  }, [view, loadReferrals]);
+
+  const updateReferralStatus = async (id: string, status: ReferralStatus) => {
+    setUpdatingReferralId(id);
+    const { error } = await db.referrals().update({ status }).eq("id", id);
+    setUpdatingReferralId(null);
+    if (error) { toast.error(error.message ?? "Update failed."); return; }
+    setReferrals((prev) => prev.map((r) => (r.id === id ? { ...r, status } : r)));
+    toast.success("Status updated.");
+  };
 
   const onStatusChange = async (id: string, next: QuoteStatus) => {
     if (demoAuthActive) {
@@ -146,6 +186,44 @@ export function QuoteLeadsPage() {
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
+          <div className="inline-flex rounded-xl border border-border bg-surface p-1">
+            <button
+              type="button"
+              onClick={() => setView("table")}
+              aria-pressed={view === "table"}
+              aria-label="Table view"
+              className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-semibold ${
+                view === "table" ? "bg-primary-600 text-white" : "text-muted-foreground hover:bg-muted"
+              }`}
+            >
+              <List className="h-4 w-4" aria-hidden />
+              Table
+            </button>
+            <button
+              type="button"
+              onClick={() => setView("kanban")}
+              aria-pressed={view === "kanban"}
+              aria-label="Kanban view"
+              className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-semibold ${
+                view === "kanban" ? "bg-primary-600 text-white" : "text-muted-foreground hover:bg-muted"
+              }`}
+            >
+              <LayoutGrid className="h-4 w-4" aria-hidden />
+              Kanban
+            </button>
+            <button
+              type="button"
+              onClick={() => setView("referrals")}
+              aria-pressed={view === "referrals"}
+              aria-label="Referrals view"
+              className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-semibold ${
+                view === "referrals" ? "bg-primary-600 text-white" : "text-muted-foreground hover:bg-muted"
+              }`}
+            >
+              <Users2 className="h-4 w-4" aria-hidden />
+              Referrals
+            </button>
+          </div>
           <button
             type="button"
             onClick={() => void load()}
@@ -170,6 +248,67 @@ export function QuoteLeadsPage() {
         <QuoteComparePanel quotes={rows.filter((r) => compareIds.includes(r.id))} />
       )}
 
+      {view === "referrals" ? (
+        <div className="rounded-2xl border border-border bg-surface shadow-sm dark:shadow-none">
+          {referralsLoading ? (
+            <div className="flex h-48 items-center justify-center">
+              <div className="h-9 w-9 animate-spin rounded-full border-4 border-primary-600 border-t-transparent dark:border-primary-400" />
+            </div>
+          ) : referrals.length === 0 ? (
+            <div className="p-6">
+              <EmptyState icon={Users2} title="No referrals yet" description="Clients can refer contacts from the My Policies page. They appear here once submitted." />
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[640px] text-left text-sm">
+                <thead className="border-b border-border bg-muted/30 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  <tr>
+                    <th className="px-4 py-3">Referred by</th>
+                    <th className="px-4 py-3">Referred to</th>
+                    <th className="px-4 py-3">Code</th>
+                    <th className="px-4 py-3">When</th>
+                    <th className="px-4 py-3">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {referrals.map((r) => (
+                    <tr key={r.id} className="hover:bg-muted/20">
+                      <td className="px-4 py-3">
+                        <p className="font-medium text-surface-foreground">{r.referrer?.full_name ?? "—"}</p>
+                        <p className="text-xs text-muted-foreground">{r.referrer?.email ?? ""}</p>
+                      </td>
+                      <td className="px-4 py-3">
+                        <p className="font-medium text-surface-foreground">{r.referred_name || "—"}</p>
+                        <p className="text-xs text-muted-foreground">{r.referred_email}</p>
+                      </td>
+                      <td className="px-4 py-3 font-mono text-xs text-muted-foreground">{r.code}</td>
+                      <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">
+                        {format(new Date(r.created_at), "dd MMM yyyy")}
+                      </td>
+                      <td className="px-4 py-3">
+                        <select
+                          aria-label={`Status for referral ${r.id}`}
+                          disabled={updatingReferralId === r.id}
+                          value={r.status}
+                          onChange={(e) => void updateReferralStatus(r.id, e.target.value as ReferralStatus)}
+                          className="rounded-lg border border-border bg-surface px-2 py-1.5 text-xs font-medium capitalize focus:border-primary-500 focus:outline-none cursor-pointer disabled:opacity-50"
+                        >
+                          {(["pending", "contacted", "converted"] as ReferralStatus[]).map((s) => (
+                            <option key={s} value={s}>{s}</option>
+                          ))}
+                        </select>
+                        <span className={`ml-2 inline-flex rounded-full px-2 py-0.5 text-xs font-medium capitalize ${referralStatusTone[r.status]}`}>{r.status}</span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      ) : !loading && rows.length > 0 && view === "kanban" ? (
+        <QuoteLeadsKanban rows={rows} updatingId={updatingId} onStatusChange={(id, next) => void onStatusChange(id, next)} />
+      ) : (
       <div className="rounded-2xl border border-border bg-surface shadow-sm dark:shadow-none">
         {loading ? (
           <div className="flex h-48 items-center justify-center">
@@ -252,6 +391,7 @@ export function QuoteLeadsPage() {
           </div>
         )}
       </div>
+      )}
     </div>
   );
 }
